@@ -1,5 +1,7 @@
 "use client";
 
+import { WrenchIcon, AlertCircleIcon, SearchIcon, PlusIcon } from "@/components/Icons";
+
 import { useState, useEffect } from "react";
 import PageShell from "@/components/PageShell";
 import { serviceTickets as initialTickets, ServiceTicket, warranties } from "@/data/mockData";
@@ -274,7 +276,7 @@ export default function ServiceDeskPage() {
       case "Critical":
         return "bg-red-50 text-red-700 border-red-300";
       case "High":
-        return "bg-[#FAF4F7] text-[#734960] border-[#8E687F]/30";
+        return "bg-[#F7EEF2] text-[#4A355E] border-[#6D5284]/30";
       case "Medium":
         return "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860]/40";
       case "Low":
@@ -289,11 +291,11 @@ export default function ServiceDeskPage() {
       case "Assigned":
         return "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860]/40";
       case "In Progress":
-        return "bg-[#FAF4F7] text-[#734960] border-[#8E687F]/30";
+        return "bg-[#F7EEF2] text-[#4A355E] border-[#6D5284]/30";
       case "Resolved":
         return "bg-[#EBF5EC] text-[#5B965E] border-[#78B77B]/40";
       case "Closed":
-        return "bg-[#F5F7FA] text-[#666666] border-[#E4E7EB]";
+        return "bg-[#F7EEF2] text-[#666666] border-[#EBCED6]";
     }
   };
 
@@ -303,7 +305,7 @@ export default function ServiceDeskPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-[#333333] flex items-center gap-2">
-            <span>🔧</span> Service Desk &amp; Breakdown Helpdesk
+            <WrenchIcon className="w-6 h-6 text-[#4A355E]" /> Service Desk &amp; Breakdown Helpdesk
           </h1>
           <p className="text-xs sm:text-sm text-[#666666] mt-0.5">
             Customer complaints, zero-power alarms, and task dispatch across all 16 field employees
@@ -311,7 +313,7 @@ export default function ServiceDeskPage() {
         </div>
         <button
           onClick={() => setShowNewModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#734960] hover:bg-[#5A354A] text-white font-semibold rounded-xl text-xs shadow-xs transition"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#4A355E] hover:bg-[#372447] text-white font-semibold rounded-xl text-xs shadow-xs transition"
         >
           <span>+</span> Log Breakdown Ticket
         </button>
@@ -319,7 +321,7 @@ export default function ServiceDeskPage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-red-400 shadow-xs">
+        <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-red-400 shadow-xs">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold text-[#666666] uppercase tracking-wider">Open Complaints</p>
@@ -332,7 +334,7 @@ export default function ServiceDeskPage() {
           <p className="text-[11px] text-[#DC2626] font-medium mt-3">Customer complaints awaiting dispatch</p>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#F4B860] shadow-xs">
+        <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#F4B860] shadow-xs">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold text-[#666666] uppercase tracking-wider">Assigned to Crew</p>
@@ -345,20 +347,20 @@ export default function ServiceDeskPage() {
           <p className="text-[11px] text-[#666666] mt-3">Dispatched across 16 employees</p>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#8E687F] shadow-xs">
+        <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#6D5284] shadow-xs">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold text-[#666666] uppercase tracking-wider">In Diagnosis</p>
-              <p className="text-2xl font-extrabold text-[#8E687F] mt-1">{stats.inProgress}</p>
+              <p className="text-2xl font-extrabold text-[#6D5284] mt-1">{stats.inProgress}</p>
             </div>
-            <div className="w-11 h-11 bg-[#FAF4F7] text-[#8E687F] rounded-xl flex items-center justify-center text-xl font-bold">
+            <div className="w-11 h-11 bg-[#F7EEF2] text-[#6D5284] rounded-xl flex items-center justify-center text-xl font-bold">
               ⚙️
             </div>
           </div>
-          <p className="text-[11px] text-[#734960] font-semibold mt-3">On-site testing &amp; swap</p>
+          <p className="text-[11px] text-[#4A355E] font-semibold mt-3">On-site testing &amp; swap</p>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#78B77B] shadow-xs">
+        <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#78B77B] shadow-xs">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold text-[#666666] uppercase tracking-wider">Resolved</p>
@@ -373,10 +375,10 @@ export default function ServiceDeskPage() {
       </div>
 
       {/* 16 Employees Dispatch Info Banner */}
-      <div className="bg-white border border-[#E4E7EB] rounded-2xl p-5 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-white border border-[#EBCED6] rounded-2xl p-5 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#734960] bg-[#FAF4F7] px-2.5 py-0.5 rounded-full border border-[#8E687F]/30">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#4A355E] bg-[#F7EEF2] px-2.5 py-0.5 rounded-full border border-[#6D5284]/30">
               16 Field Employees Active
             </span>
             <span className="text-[10px] font-bold uppercase text-[#5B965E] bg-[#EBF5EC] px-2.5 py-0.5 rounded-full border border-[#78B77B]/40">
@@ -409,8 +411,8 @@ export default function ServiceDeskPage() {
             onClick={() => setFilterStatus(st)}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition border ${
               filterStatus === st
-                ? "bg-[#734960] text-white border-[#734960] shadow-xs"
-                : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
+                ? "bg-[#4A355E] text-white border-[#4A355E] shadow-xs"
+                : "bg-white text-[#666666] border-[#EBCED6] hover:bg-[#F7EEF2]"
             }`}
           >
             {st}
@@ -419,8 +421,8 @@ export default function ServiceDeskPage() {
       </div>
 
       {/* Tickets Table */}
-      <div className="bg-white rounded-2xl border border-[#E4E7EB] shadow-xs overflow-hidden">
-        <div className="px-5 py-3.5 border-b border-[#E4E7EB] bg-[#F5F7FA] flex items-center justify-between">
+      <div className="bg-white rounded-2xl border border-[#EBCED6] shadow-xs overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-[#EBCED6] bg-[#F7EEF2] flex items-center justify-between">
           <h2 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
             Breakdown &amp; Service Complaints ({filteredTickets.length})
           </h2>
@@ -431,7 +433,7 @@ export default function ServiceDeskPage() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F5F7FA] text-[#666666] font-semibold border-b border-[#E4E7EB]">
+            <thead className="bg-[#F7EEF2] text-[#666666] font-semibold border-b border-[#EBCED6]">
               <tr>
                 <th className="px-4 py-2.5">Ticket ID</th>
                 <th className="px-4 py-2.5">Customer &amp; Phone</th>
@@ -444,10 +446,10 @@ export default function ServiceDeskPage() {
                 <th className="px-4 py-2.5 text-center">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E4E7EB]/60">
+            <tbody className="divide-y divide-[#EBCED6]/60">
               {filteredTickets.map((t) => (
-                <tr key={t.id} className="hover:bg-[#F5F7FA] transition-colors">
-                  <td className="px-4 py-3 font-mono font-bold text-[#734960]">
+                <tr key={t.id} className="hover:bg-[#F7EEF2] transition-colors">
+                  <td className="px-4 py-3 font-mono font-bold text-[#4A355E]">
                     <div>{t.id}</div>
                     <div className="text-[10px] text-gray-400 font-normal">{t.createdAt}</div>
                   </td>
@@ -458,14 +460,14 @@ export default function ServiceDeskPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="font-bold text-[#333333]">{t.productName}</div>
-                    <div className="text-[11px] font-mono text-[#8E687F]">{t.serialNumber}</div>
+                    <div className="text-[11px] font-mono text-[#6D5284]">{t.serialNumber}</div>
                     <span className="text-[10px] text-gray-400">Type: {t.issueType}</span>
                   </td>
                   <td className="px-4 py-3 max-w-[220px]">
                     <p className="text-xs text-[#333333] line-clamp-2">{t.description}</p>
                     {t.photoProofUrl && (
                       <div className="mt-1 flex items-center gap-1.5">
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#734960] bg-[#FAF4F7] px-2 py-0.5 rounded-md border border-[#8E687F]/30">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#4A355E] bg-[#F7EEF2] px-2 py-0.5 rounded-md border border-[#6D5284]/30">
                           📸 Customer Photo Proof Attached
                         </span>
                       </div>
@@ -484,10 +486,10 @@ export default function ServiceDeskPage() {
                   <td className="px-4 py-3 text-center">
                     {t.assignedTechnician ? (
                       <div>
-                        <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#FAF4F7] text-[#734960] border border-[#8E687F]/30">
+                        <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#F7EEF2] text-[#4A355E] border border-[#6D5284]/30">
                           👷 {t.assignedTechnician}
                         </span>
-                        {t.techId && <div className="text-[9px] font-mono text-[#8E687F]">{t.techId}</div>}
+                        {t.techId && <div className="text-[9px] font-mono text-[#6D5284]">{t.techId}</div>}
                       </div>
                     ) : (
                       <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
@@ -504,7 +506,7 @@ export default function ServiceDeskPage() {
                     <div className="flex items-center justify-center gap-1.5">
                       <button
                         onClick={() => setSelectedTicket(t)}
-                        className="px-2.5 py-1 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#333333] text-[11px] font-semibold rounded-lg border border-[#E4E7EB]"
+                        className="px-2.5 py-1 bg-[#F7EEF2] hover:bg-[#EBCED6] text-[#333333] text-[11px] font-semibold rounded-lg border border-[#EBCED6]"
                       >
                         View
                       </button>
@@ -514,7 +516,7 @@ export default function ServiceDeskPage() {
                           setAssignModalTicket(t);
                           if (t.techId) setSelectedTechId(t.techId);
                         }}
-                        className="px-2.5 py-1 bg-[#734960] hover:bg-[#5A354A] text-white text-[11px] font-bold rounded-lg shadow-2xs transition"
+                        className="px-2.5 py-1 bg-[#4A355E] hover:bg-[#372447] text-white text-[11px] font-bold rounded-lg shadow-2xs transition"
                         title="Assign to one of 16 employees"
                       >
                         {t.assignedTechnician ? "Reassign" : "Assign"}
@@ -531,8 +533,8 @@ export default function ServiceDeskPage() {
       {/* ────────────────── MODAL: ASSIGN TICKET TO 1 OF 16 EMPLOYEES ────────────────── */}
       {assignModalTicket && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border border-[#E4E7EB] shadow-2xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
-            <div className="flex items-center justify-between border-b border-[#E4E7EB] pb-3">
+          <div className="bg-white rounded-2xl border border-[#EBCED6] shadow-2xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
+            <div className="flex items-center justify-between border-b border-[#EBCED6] pb-3">
               <div>
                 <h3 className="text-base font-bold text-[#333333] flex items-center gap-2">
                   <span>👷</span> Assign Task to Technician
@@ -550,7 +552,7 @@ export default function ServiceDeskPage() {
             </div>
 
             <form onSubmit={handleAssignSubmit} className="space-y-4 text-xs">
-              <div className="bg-[#F5F7FA] p-3 rounded-xl border border-[#E4E7EB] space-y-1">
+              <div className="bg-[#F7EEF2] p-3 rounded-xl border border-[#EBCED6] space-y-1">
                 <p><strong>Customer:</strong> {assignModalTicket.customerName} ({assignModalTicket.phone})</p>
                 <p><strong>Fault / Issue:</strong> {assignModalTicket.description}</p>
                 <p><strong>Equipment:</strong> {assignModalTicket.productName} ({assignModalTicket.serialNumber})</p>
@@ -563,7 +565,7 @@ export default function ServiceDeskPage() {
                 <select
                   value={selectedTechId}
                   onChange={(e) => setSelectedTechId(e.target.value)}
-                  className="w-full mt-1 px-3 py-2 border border-[#E4E7EB] rounded-xl font-bold text-[#734960] bg-white focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                  className="w-full mt-1 px-3 py-2 border border-[#EBCED6] rounded-xl font-bold text-[#4A355E] bg-white focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none"
                 >
                   {Object.entries(ALL_16_EMPLOYEES).map(([id, emp]) => (
                     <option key={id} value={id}>
@@ -584,7 +586,7 @@ export default function ServiceDeskPage() {
                   rows={2}
                   value={assignInstructions}
                   onChange={(e) => setAssignInstructions(e.target.value)}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                  className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none"
                 />
               </div>
 
@@ -594,17 +596,17 @@ export default function ServiceDeskPage() {
                 </div>
               )}
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E4E7EB]">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#EBCED6]">
                 <button
                   type="button"
                   onClick={() => setAssignModalTicket(null)}
-                  className="px-4 py-2 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#333333] font-semibold rounded-xl text-xs transition"
+                  className="px-4 py-2 bg-[#F7EEF2] hover:bg-[#EBCED6] text-[#333333] font-semibold rounded-xl text-xs transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs shadow-xs transition"
+                  className="px-5 py-2 bg-[#4A355E] hover:bg-[#372447] text-white font-bold rounded-xl text-xs shadow-xs transition"
                 >
                   Dispatch to Employee &amp; Send Alert ➔
                 </button>
@@ -617,8 +619,8 @@ export default function ServiceDeskPage() {
       {/* NEW TICKET MODAL */}
       {showNewModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-[#E4E7EB] space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-[#E4E7EB]">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-[#EBCED6] space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#EBCED6]">
               <h3 className="text-base font-bold text-[#333333]">Log Breakdown / Service Complaint</h3>
               <button onClick={() => setShowNewModal(false)} className="text-gray-400 hover:text-[#333333] text-lg font-bold">
                 ✕
@@ -629,14 +631,14 @@ export default function ServiceDeskPage() {
               <div>
                 <label className="text-[11px] font-bold text-[#666666] uppercase flex justify-between">
                   <span>Customer Phone or Serial (Lookup)</span>
-                  <span className="text-[#734960]">Auto-detects warranty</span>
+                  <span className="text-[#4A355E]">Auto-detects warranty</span>
                 </label>
                 <input
                   type="text"
                   placeholder="e.g. +91 66554 43322 or INV-3K-OG-5501"
                   value={custPhone}
                   onChange={(e) => handlePhoneLookup(e.target.value)}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs focus:ring-2 focus:ring-[#734960]/30 focus:outline-none font-semibold"
+                  className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none font-semibold"
                   required
                 />
               </div>
@@ -648,7 +650,7 @@ export default function ServiceDeskPage() {
                     type="text"
                     value={custName}
                     onChange={(e) => setCustName(e.target.value)}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs"
                     required
                   />
                 </div>
@@ -658,7 +660,7 @@ export default function ServiceDeskPage() {
                     type="text"
                     value={serialNo}
                     onChange={(e) => setSerialNo(e.target.value)}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-mono"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-mono"
                     required
                   />
                 </div>
@@ -685,7 +687,7 @@ export default function ServiceDeskPage() {
                   <select
                     value={issueType}
                     onChange={(e) => setIssueType(e.target.value as ServiceTicket["issueType"])}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs"
                   >
                     <option value="Inverter Error">Inverter Error (E-01/E-04)</option>
                     <option value="No Power">Zero Power Generation</option>
@@ -700,7 +702,7 @@ export default function ServiceDeskPage() {
                   <select
                     value={priority}
                     onChange={(e) => setPriority(e.target.value as ServiceTicket["priority"])}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-bold text-[#734960]"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-bold text-[#4A355E]"
                   >
                     <option value="Critical">Critical (Immediate)</option>
                     <option value="High">High (24 Hours)</option>
@@ -715,7 +717,7 @@ export default function ServiceDeskPage() {
                 <select
                   value={selectedTechId}
                   onChange={(e) => setSelectedTechId(e.target.value)}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-bold text-[#734960] bg-white"
+                  className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-bold text-[#4A355E] bg-white"
                 >
                   {Object.entries(ALL_16_EMPLOYEES).map(([id, emp]) => (
                     <option key={id} value={id}>
@@ -732,7 +734,7 @@ export default function ServiceDeskPage() {
                   placeholder="Describe error code or customer symptoms..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs"
+                  className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs"
                   required
                 />
               </div>
@@ -741,13 +743,13 @@ export default function ServiceDeskPage() {
                 <button
                   type="button"
                   onClick={() => setShowNewModal(false)}
-                  className="px-3.5 py-1.5 border border-[#E4E7EB] text-[#666666] rounded-xl text-xs font-semibold hover:bg-[#F5F7FA]"
+                  className="px-3.5 py-1.5 border border-[#EBCED6] text-[#666666] rounded-xl text-xs font-semibold hover:bg-[#F7EEF2]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#734960] hover:bg-[#5A354A] text-white rounded-xl text-xs font-bold shadow-xs"
+                  className="px-4 py-1.5 bg-[#4A355E] hover:bg-[#372447] text-white rounded-xl text-xs font-bold shadow-xs"
                 >
                   Create Ticket &amp; Dispatch
                 </button>
@@ -760,8 +762,8 @@ export default function ServiceDeskPage() {
       {/* TICKET DETAILS MODAL */}
       {selectedTicket && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#E4E7EB] space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-[#E4E7EB]">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#EBCED6] space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#EBCED6]">
               <div>
                 <h3 className="text-base font-bold text-[#333333]">{selectedTicket.id} - Ticket Details</h3>
                 <p className="text-xs text-[#666666]">{selectedTicket.customerName} • {selectedTicket.phone}</p>
@@ -772,7 +774,7 @@ export default function ServiceDeskPage() {
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="bg-[#F5F7FA] p-3 rounded-2xl space-y-1.5 border border-[#E4E7EB]">
+              <div className="bg-[#F7EEF2] p-3 rounded-2xl space-y-1.5 border border-[#EBCED6]">
                 <div className="flex justify-between">
                   <span className="text-[#666666]">Asset:</span>
                   <span className="font-bold text-[#333333]">{selectedTicket.productName} ({selectedTicket.serialNumber})</span>
@@ -783,7 +785,7 @@ export default function ServiceDeskPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-[#666666]">Assigned Employee:</span>
-                  <span className="font-semibold text-[#8E687F]">
+                  <span className="font-semibold text-[#6D5284]">
                     {selectedTicket.assignedTechnician ? `👷 ${selectedTicket.assignedTechnician} (${selectedTicket.techId || "Assigned"})` : "Unassigned"}
                   </span>
                 </div>
@@ -791,9 +793,9 @@ export default function ServiceDeskPage() {
                   <span className="text-[#666666]">Warranty Status:</span>
                   <span className="font-bold text-[#5B965E]">{selectedTicket.warrantyStatus}</span>
                 </div>
-                <div className="flex justify-between border-t border-[#E4E7EB] pt-1.5">
+                <div className="flex justify-between border-t border-[#EBCED6] pt-1.5">
                   <span className="text-[#666666]">Billed to Customer:</span>
-                  <span className="font-extrabold text-sm text-[#734960]">
+                  <span className="font-extrabold text-sm text-[#4A355E]">
                     {selectedTicket.warrantyStatus === "Under Warranty" ? "₹0 (Warranty Claim)" : `₹${selectedTicket.estimatedCost}`}
                   </span>
                 </div>
@@ -801,7 +803,7 @@ export default function ServiceDeskPage() {
 
               <div>
                 <h4 className="text-[11px] font-bold text-[#666666] uppercase mb-1">Issue Description:</h4>
-                <p className="text-xs text-[#333333] bg-[#F5F7FA] p-2.5 rounded-xl border border-[#E4E7EB]">
+                <p className="text-xs text-[#333333] bg-[#F7EEF2] p-2.5 rounded-xl border border-[#EBCED6]">
                   {selectedTicket.description}
                 </p>
               </div>
@@ -809,14 +811,14 @@ export default function ServiceDeskPage() {
               {/* Customer Photo Proof if uploaded */}
               {selectedTicket.photoProofUrl && (
                 <div className="space-y-1.5">
-                  <h4 className="text-[11px] font-bold text-[#734960] uppercase">
+                  <h4 className="text-[11px] font-bold text-[#4A355E] uppercase">
                     Customer Uploaded Photo Proof
                   </h4>
-                  <div className="p-3 bg-[#FAF4F7] border border-[#8E687F]/30 rounded-2xl space-y-2">
+                  <div className="p-3 bg-[#F7EEF2] border border-[#6D5284]/30 rounded-2xl space-y-2">
                     <img
                       src={selectedTicket.photoProofUrl}
                       alt="Customer Proof"
-                      className="max-h-48 w-full object-contain bg-white rounded-xl border border-[#E4E7EB]"
+                      className="max-h-48 w-full object-contain bg-white rounded-xl border border-[#EBCED6]"
                     />
                     <p className="text-[11px] text-[#666666] font-medium text-center">
                       📎 {selectedTicket.photoProofName || "Customer Photo Proof"}
@@ -826,7 +828,7 @@ export default function ServiceDeskPage() {
               )}
             </div>
 
-            <div className="pt-2 flex justify-between items-center border-t border-[#E4E7EB]">
+            <div className="pt-2 flex justify-between items-center border-t border-[#EBCED6]">
               <div className="flex items-center gap-2">
                 {selectedTicket.status !== "Resolved" && selectedTicket.status !== "Closed" ? (
                   <>
@@ -841,7 +843,7 @@ export default function ServiceDeskPage() {
                         setAssignModalTicket(selectedTicket);
                         if (selectedTicket.techId) setSelectedTechId(selectedTicket.techId);
                       }}
-                      className="px-3.5 py-1.5 bg-[#734960] hover:bg-[#5A354A] text-white rounded-xl text-xs font-bold shadow-xs transition"
+                      className="px-3.5 py-1.5 bg-[#4A355E] hover:bg-[#372447] text-white rounded-xl text-xs font-bold shadow-xs transition"
                     >
                       👷 {selectedTicket.assignedTechnician ? "Reassign Tech" : "Assign to Employee"}
                     </button>
@@ -852,7 +854,7 @@ export default function ServiceDeskPage() {
               </div>
               <button
                 onClick={() => setSelectedTicket(null)}
-                className="px-4 py-1.5 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#333333] rounded-xl text-xs font-semibold border border-[#E4E7EB]"
+                className="px-4 py-1.5 bg-[#F7EEF2] hover:bg-[#EBCED6] text-[#333333] rounded-xl text-xs font-semibold border border-[#EBCED6]"
               >
                 Close
               </button>

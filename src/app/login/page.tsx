@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth, UserRole, ALL_16_EMPLOYEES } from "@/context/AuthContext";
 import Link from "next/link";
+import { SunIcon, CrownIcon, HardHatIcon, UserIcon, ArrowLeftIcon } from "@/components/Icons";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -70,46 +71,56 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] text-[#333333] flex flex-col justify-center items-center p-4 sm:p-6">
+    <div className="min-h-screen bg-[#F7EEF2] text-[#261C33] flex flex-col justify-center items-center p-4 sm:p-6 relative overflow-hidden">
+      {/* Blurry Solar Panel Background */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+        <div
+          className="w-full h-full bg-cover bg-center opacity-40 filter blur-xl scale-110"
+          style={{ backgroundImage: "url('/solar-panel-bg.svg')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#F7EEF2]/70 via-[#F7EEF2]/90 to-[#F7EEF2]" />
+      </div>
+
+      <div className="relative z-10 w-full flex flex-col items-center">
       {/* Back Button Option */}
       <div className="w-full max-w-md mb-3 flex items-center justify-start">
         <button
           onClick={handleBack}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-[#FAF4F7] text-[#734960] hover:text-[#5A354A] border border-[#E4E7EB] hover:border-[#734960]/30 rounded-xl text-xs font-bold card-floating transition cursor-pointer group"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-[#F7EEF2] text-[#4A355E] hover:text-[#372447] border border-[#EBCED6] hover:border-[#4A355E]/30 rounded-xl text-xs font-bold card-floating transition cursor-pointer group"
           title="Return to previous screen"
         >
-          <span className="text-sm font-extrabold transition-transform group-hover:-translate-x-1">←</span>
+          <ArrowLeftIcon className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
           <span>Back</span>
         </button>
       </div>
 
       {/* SunPower Logo & Title */}
       <div className="text-center mb-6 space-y-2">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#F4B860] shadow-sm text-2xl">
-          ☀️
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#8D73A8] to-[#4A355E] shadow-sm border border-[#B39CCB]/40 text-white">
+          <SunIcon className="w-7 h-7 text-white" />
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#333333] tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#261C33] tracking-tight">
           SunPower Solutions
         </h1>
-        <p className="text-xs sm:text-sm text-[#666666]">
+        <p className="text-xs sm:text-sm text-[#6D5284]">
           Unified Solar Installation, Field Crew &amp; Customer Portal
         </p>
       </div>
 
       {/* Main Login Card */}
-      <div className="w-full max-w-md bg-white rounded-3xl border border-[#E4E7EB] shadow-lg overflow-hidden">
+      <div className="w-full max-w-md bg-white rounded-3xl border border-[#EBCED6] shadow-lg overflow-hidden">
         {/* Role Switcher Tabs */}
-        <div className="grid grid-cols-3 border-b border-[#E4E7EB] bg-[#F5F7FA]/70 text-xs font-bold">
+        <div className="grid grid-cols-3 border-b border-[#EBCED6] bg-[#F7EEF2]/70 text-xs font-bold">
           <button
             type="button"
             onClick={() => setActiveTab("admin")}
             className={`py-3.5 text-center transition flex flex-col sm:flex-row items-center justify-center gap-1.5 ${
               activeTab === "admin"
-                ? "bg-white text-[#734960] border-b-2 border-[#734960] shadow-2xs font-extrabold"
-                : "text-[#666666] hover:text-[#333333]"
+                ? "bg-white text-[#4A355E] border-b-2 border-[#4A355E] shadow-2xs font-extrabold"
+                : "text-[#6D5284] hover:text-[#261C33]"
             }`}
           >
-            <span>👑</span>
+            <CrownIcon className="w-4 h-4 text-[#8D73A8]" />
             <span>Admin</span>
           </button>
 
@@ -118,11 +129,11 @@ export default function LoginPage() {
             onClick={() => setActiveTab("technician")}
             className={`py-3.5 text-center transition flex flex-col sm:flex-row items-center justify-center gap-1.5 ${
               activeTab === "technician"
-                ? "bg-white text-[#734960] border-b-2 border-[#734960] shadow-2xs font-extrabold"
-                : "text-[#666666] hover:text-[#333333]"
+                ? "bg-white text-[#4A355E] border-b-2 border-[#4A355E] shadow-2xs font-extrabold"
+                : "text-[#6D5284] hover:text-[#261C33]"
             }`}
           >
-            <span>👷</span>
+            <HardHatIcon className="w-4 h-4 text-[#8D73A8]" />
             <span>Technician</span>
           </button>
 
@@ -131,11 +142,11 @@ export default function LoginPage() {
             onClick={() => setActiveTab("customer")}
             className={`py-3.5 text-center transition flex flex-col sm:flex-row items-center justify-center gap-1.5 ${
               activeTab === "customer"
-                ? "bg-white text-[#734960] border-b-2 border-[#734960] shadow-2xs font-extrabold"
-                : "text-[#666666] hover:text-[#333333]"
+                ? "bg-white text-[#4A355E] border-b-2 border-[#4A355E] shadow-2xs font-extrabold"
+                : "text-[#6D5284] hover:text-[#261C33]"
             }`}
           >
-            <span>👤</span>
+            <UserIcon className="w-4 h-4 text-[#8D73A8]" />
             <span>Customer</span>
           </button>
         </div>
@@ -146,18 +157,18 @@ export default function LoginPage() {
           {activeTab === "admin" && (
             <form onSubmit={handleAdminSubmit} className="space-y-4">
               <div className="space-y-1">
-                <span className="text-[10px] uppercase font-bold text-[#734960] bg-[#FAF4F7] px-2.5 py-0.5 rounded-full border border-[#8E687F]/30">
+                <span className="text-[10px] uppercase font-bold text-[#4A355E] bg-[#F7EEF2] px-2.5 py-0.5 rounded-full border border-[#6D5284]/30">
                   Management &amp; Operations
                 </span>
-                <h3 className="text-base font-bold text-[#333333] pt-1">Director &amp; Admin Sign In</h3>
-                <p className="text-xs text-[#666666]">Access ERP, CRM, Warehouses, and Financial Dashboards</p>
+                <h3 className="text-base font-bold text-[#261C33] pt-1">Director &amp; Admin Sign In</h3>
+                <p className="text-xs text-[#6D5284]">Access ERP, CRM, Warehouses, and Financial Dashboards</p>
               </div>
 
               {/* Google Login Option for Admin */}
               <button
                 type="button"
                 onClick={handleGoogleSubmit}
-                className="w-full py-2.5 px-4 bg-white hover:bg-[#F5F7FA] text-[#333333] border border-[#E4E7EB] rounded-2xl text-xs font-bold shadow-2xs flex items-center justify-center gap-2 transition cursor-pointer"
+                className="w-full py-2.5 px-4 bg-white hover:bg-[#F7EEF2] text-[#261C33] border border-[#EBCED6] rounded-2xl text-xs font-bold shadow-2xs flex items-center justify-center gap-2 transition cursor-pointer"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path
@@ -181,32 +192,32 @@ export default function LoginPage() {
               </button>
 
               <div className="relative flex py-1 items-center">
-                <div className="flex-grow border-t border-[#E4E7EB]"></div>
+                <div className="flex-grow border-t border-[#EBCED6]"></div>
                 <span className="flex-shrink mx-3 text-[10px] text-gray-400 font-bold uppercase">or email sign-in</span>
-                <div className="flex-grow border-t border-[#E4E7EB]"></div>
+                <div className="flex-grow border-t border-[#EBCED6]"></div>
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-[#666666] uppercase">Admin Email</label>
+                <label className="text-[11px] font-bold text-[#6D5284] uppercase">Admin Email</label>
                 <input
                   type="email"
                   value={adminEmail}
                   onChange={(e) => setAdminEmail(e.target.value)}
-                  className="w-full mt-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                  className="w-full mt-1 px-3.5 py-2 border border-[#EBCED6] rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none"
                   required
                 />
               </div>
 
               <div>
                 <div className="flex justify-between items-center">
-                  <label className="text-[11px] font-bold text-[#666666] uppercase">Password</label>
+                  <label className="text-[11px] font-bold text-[#6D5284] uppercase">Password</label>
                   <button
                     type="button"
                     onClick={() => {
                       setForgotEmail(adminEmail);
                       setShowForgotModal(true);
                     }}
-                    className="text-[11px] text-[#734960] hover:underline font-semibold"
+                    className="text-[11px] text-[#4A355E] hover:underline font-semibold"
                   >
                     Forgot Password?
                   </button>
@@ -215,14 +226,14 @@ export default function LoginPage() {
                   type="password"
                   value={adminPassword}
                   onChange={(e) => setAdminPassword(e.target.value)}
-                  className="w-full mt-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                  className="w-full mt-1 px-3.5 py-2 border border-[#EBCED6] rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none"
                   required
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-2.5 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs shadow-sm transition cursor-pointer"
+                className="w-full py-2.5 bg-[#4A355E] hover:bg-[#372447] text-white font-bold rounded-xl text-xs shadow-sm transition cursor-pointer"
               >
                 Sign In to Admin Portal ➔
               </button>
@@ -236,16 +247,16 @@ export default function LoginPage() {
                 <span className="text-[10px] uppercase font-bold text-[#DA9B40] bg-[#FEF6EB] px-2.5 py-0.5 rounded-full border border-[#F4B860]/40">
                   Field Operations Crew
                 </span>
-                <h3 className="text-base font-bold text-[#333333] pt-1">Select Field Technician &amp; PIN</h3>
-                <p className="text-xs text-[#666666]">Access your daily rooftop installation and maintenance jobs</p>
+                <h3 className="text-base font-bold text-[#261C33] pt-1">Select Field Technician &amp; PIN</h3>
+                <p className="text-xs text-[#6D5284]">Access your daily rooftop installation and maintenance jobs</p>
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-[#666666] uppercase">Select Assigned Crew Member</label>
+                <label className="text-[11px] font-bold text-[#6D5284] uppercase">Select Assigned Crew Member</label>
                 <select
                   value={selectedTech}
                   onChange={(e) => setSelectedTech(e.target.value)}
-                  className="w-full mt-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs font-bold bg-white focus:outline-none"
+                  className="w-full mt-1 px-3.5 py-2 border border-[#EBCED6] rounded-xl text-xs font-bold bg-white focus:outline-none"
                 >
                   {Object.entries(ALL_16_EMPLOYEES).map(([id, tech]) => (
                     <option key={id} value={id}>
@@ -257,14 +268,14 @@ export default function LoginPage() {
 
               <div>
                 <div className="flex justify-between items-center">
-                  <label className="text-[11px] font-bold text-[#666666] uppercase">4-Digit Field PIN</label>
+                  <label className="text-[11px] font-bold text-[#6D5284] uppercase">4-Digit Field PIN</label>
                   <button
                     type="button"
                     onClick={() => {
                       setForgotEmail("rohit.meena@sunpower.com");
                       setShowForgotModal(true);
                     }}
-                    className="text-[11px] text-[#734960] hover:underline font-semibold"
+                    className="text-[11px] text-[#4A355E] hover:underline font-semibold"
                   >
                     Forgot PIN?
                   </button>
@@ -274,7 +285,7 @@ export default function LoginPage() {
                   maxLength={4}
                   value={techPin}
                   onChange={(e) => setTechPin(e.target.value)}
-                  className="w-full mt-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs font-mono text-center tracking-widest text-lg font-bold"
+                  className="w-full mt-1 px-3.5 py-2 border border-[#EBCED6] rounded-xl text-xs font-mono text-center tracking-widest text-lg font-bold"
                   required
                 />
               </div>
@@ -299,32 +310,32 @@ export default function LoginPage() {
                 <span className="text-[10px] uppercase font-bold text-[#5B965E] bg-[#EBF5EC] px-2.5 py-0.5 rounded-full border border-[#78B77B]/40">
                   Solar Homeowner Access
                 </span>
-                <h3 className="text-base font-bold text-[#333333] pt-1">Track Your Rooftop Installation</h3>
-                <p className="text-xs text-[#666666]">Monitor daily generation, upload photos, and track subsidy status</p>
+                <h3 className="text-base font-bold text-[#261C33] pt-1">Track Your Rooftop Installation</h3>
+                <p className="text-xs text-[#6D5284]">Monitor daily generation, upload photos, and track subsidy status</p>
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-[#666666] uppercase">Registered Mobile Number</label>
+                <label className="text-[11px] font-bold text-[#6D5284] uppercase">Registered Mobile Number</label>
                 <input
                   type="tel"
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   placeholder="+91 99887 76655"
-                  className="w-full mt-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#78B77B]/30 focus:outline-none"
+                  className="w-full mt-1 px-3.5 py-2 border border-[#EBCED6] rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#78B77B]/30 focus:outline-none"
                   required
                 />
               </div>
 
               <div>
                 <div className="flex justify-between items-center">
-                  <label className="text-[11px] font-bold text-[#666666] uppercase">OTP / Access Code</label>
+                  <label className="text-[11px] font-bold text-[#6D5284] uppercase">OTP / Access Code</label>
                   <button
                     type="button"
                     onClick={() => {
                       setForgotEmail("rajesh.gupta@email.com");
                       setShowForgotModal(true);
                     }}
-                    className="text-[11px] text-[#734960] hover:underline font-semibold"
+                    className="text-[11px] text-[#4A355E] hover:underline font-semibold"
                   >
                     Resend Code?
                   </button>
@@ -334,7 +345,7 @@ export default function LoginPage() {
                   maxLength={6}
                   value={customerOtp}
                   onChange={(e) => setCustomerOtp(e.target.value)}
-                  className="w-full mt-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs font-mono text-center tracking-widest text-lg font-bold"
+                  className="w-full mt-1 px-3.5 py-2 border border-[#EBCED6] rounded-xl text-xs font-mono text-center tracking-widest text-lg font-bold"
                   required
                 />
               </div>
@@ -353,8 +364,8 @@ export default function LoginPage() {
           )}
 
           {/* ───────────────── 1-CLICK DEMO TESTERS FOR JUDGES ───────────────── */}
-          <div className="pt-2 border-t border-[#E4E7EB] space-y-2">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#666666] text-center">
+          <div className="pt-2 border-t border-[#EBCED6] space-y-2">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#6D5284] text-center">
               ⚡ Hackathon Demo Quick Switcher (1-Click)
             </p>
             <div className="grid grid-cols-3 gap-2">
@@ -364,7 +375,7 @@ export default function LoginPage() {
                   loginAsAdmin();
                   router.push("/");
                 }}
-                className="py-1.5 px-2 bg-[#FAF4F7] hover:bg-[#734960] hover:text-white text-[#734960] border border-[#8E687F]/30 rounded-xl text-[10px] font-bold transition text-center cursor-pointer"
+                className="py-1.5 px-2 bg-[#F7EEF2] hover:bg-[#4A355E] hover:text-white text-[#4A355E] border border-[#6D5284]/30 rounded-xl text-[10px] font-bold transition text-center cursor-pointer"
               >
                 👑 Admin
               </button>
@@ -376,7 +387,7 @@ export default function LoginPage() {
                 }}
                 className="py-1.5 px-2 bg-[#FEF6EB] hover:bg-[#DA9B40] hover:text-white text-[#DA9B40] border border-[#F4B860]/40 rounded-xl text-[10px] font-bold transition text-center cursor-pointer"
               >
-                👷 Rohit (Tech)
+                Rohit (Field Tech)
               </button>
               <button
                 type="button"
@@ -386,7 +397,7 @@ export default function LoginPage() {
                 }}
                 className="py-1.5 px-2 bg-[#EBF5EC] hover:bg-[#5B965E] hover:text-white text-[#5B965E] border border-[#78B77B]/40 rounded-xl text-[10px] font-bold transition text-center cursor-pointer"
               >
-                👤 Rajesh (Client)
+                Rajesh (Homeowner)
               </button>
             </div>
           </div>
@@ -395,41 +406,43 @@ export default function LoginPage() {
 
       {/* Back to Home link */}
       <div className="mt-6 text-center">
-        <Link href="/" className="text-xs font-semibold text-[#734960] hover:underline">
+        <Link href="/" className="text-xs font-semibold text-[#4A355E] hover:underline">
           ← Return to Public Dashboard
         </Link>
+      </div>
+
       </div>
 
       {/* ───────────────── FORGOT PASSWORD MODAL ───────────────── */}
       {showForgotModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-[#E4E7EB] space-y-4 animate-in fade-in">
-            <div className="flex items-center justify-between pb-2 border-b border-[#E4E7EB]">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-[#EBCED6] space-y-4 animate-in fade-in">
+            <div className="flex items-center justify-between pb-2 border-b border-[#EBCED6]">
               <div className="flex items-center gap-2">
                 <span className="text-xl">🔑</span>
-                <h3 className="text-base font-bold text-[#333333]">Reset Password / PIN</h3>
+                <h3 className="text-base font-bold text-[#261C33]">Reset Password / PIN</h3>
               </div>
               <button
                 onClick={() => setShowForgotModal(false)}
-                className="text-gray-400 hover:text-[#333333] text-lg font-bold cursor-pointer"
+                className="text-gray-400 hover:text-[#261C33] text-lg font-bold cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <p className="text-xs text-[#666666]">
+            <p className="text-xs text-[#6D5284]">
               Enter your registered email address or mobile phone number to receive a secure password recovery link.
             </p>
 
             <form onSubmit={handleForgotSubmit} className="space-y-3">
               <div>
-                <label className="text-[11px] font-bold text-[#666666] uppercase">Registered Email or Phone</label>
+                <label className="text-[11px] font-bold text-[#6D5284] uppercase">Registered Email or Phone</label>
                 <input
                   type="text"
                   placeholder="admin@sunpower.com or +91..."
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
-                  className="w-full mt-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs font-semibold focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                  className="w-full mt-1 px-3.5 py-2 border border-[#EBCED6] rounded-xl text-xs font-semibold focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none"
                   required
                 />
               </div>
@@ -444,13 +457,13 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowForgotModal(false)}
-                  className="px-3.5 py-1.5 border border-[#E4E7EB] text-[#666666] rounded-xl text-xs font-semibold hover:bg-[#F5F7FA] cursor-pointer"
+                  className="px-3.5 py-1.5 border border-[#EBCED6] text-[#6D5284] rounded-xl text-xs font-semibold hover:bg-[#F7EEF2] cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#734960] hover:bg-[#5A354A] text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
+                  className="px-4 py-1.5 bg-[#4A355E] hover:bg-[#372447] text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
                 >
                   Send Reset Link
                 </button>

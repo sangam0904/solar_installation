@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- Background atmospheric gradient based on theme -->
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F7EEF2" />
+      <stop offset="35%" stop-color="#EBCED6" />
+      <stop offset="70%" stop-color="#D7B6C7" />
+      <stop offset="100%" stop-color="#B39CCB" />
+    </linearGradient>
+
+    <!-- Solar Cell Gradient -->
+    <linearGradient id="cellGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4A355E" />
+      <stop offset="50%" stop-color="#3A284B" />
+      <stop offset="100%" stop-color="#261A33" />
+    </linearGradient>
+
+    <!-- Panel Glare Reflection Gradient -->
+    <linearGradient id="glareGrad" x1="0%" y1="0%" x2="100%" y2="80%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.35" />
+      <stop offset="40%" stop-color="#D7B6C7" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#4A355E" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Frame Metallic Gradient -->
+    <linearGradient id="frameGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8D73A8" />
+      <stop offset="50%" stop-color="#6D5284" />
+      <stop offset="100%" stop-color="#4A355E" />
+    </linearGradient>
+
+    <!-- Gaussian Blur for depth of field / blurry background look -->
+    <filter id="solarBlur" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="16" />
+    </filter>
+
+    <filter id="heavyAtmosphere" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="28" />
+    </filter>
+  </defs>
+
+  <!-- Sky & Horizon backdrop -->
+  <rect width="1920" height="1080" fill="url(#skyGrad)" />
+
+  <!-- Ambient Light Orbs for depth -->
+  <g filter="url(#heavyAtmosphere)">
+    <circle cx="200" cy="180" r="320" fill="#EBCED6" opacity="0.7" />
+    <circle cx="1600" cy="300" r="450" fill="#B39CCB" opacity="0.6" />
+    <circle cx="960" cy="800" r="500" fill="#8D73A8" opacity="0.3" />
+  </g>
+
+  <!-- Solar Panel Array (Angled Perspective Grid with Blur) -->
+  <g filter="url(#solarBlur)" opacity="0.82">
+    <!-- Row 1: Distant Roof Panels -->
+    <g opacity="0.45" transform="translate(100, 160)">
+      <!-- Panel 1 -->
+      <polygon points="120,40 380,40 340,180 60,180" fill="url(#cellGrad)" stroke="url(#frameGrad)" stroke-width="4" />
+      <polygon points="120,40 380,40 340,180 60,180" fill="url(#glareGrad)" />
+      <!-- Grid lines -->
+      <line x1="200" y1="40" x2="150" y2="180" stroke="#8D73A8" stroke-width="1.5" opacity="0.5" />
+      <line x1="290" y1="40" x2="250" y2="180" stroke="#8D73A8" stroke-width="1.5" opacity="0.5" />
+      <line x1="90" y1="110" x2="360" y2="110" stroke="#8D73A8" stroke-width="1.5" opacity="0.5" />
+
+      <!-- Panel 2 -->
+      <polygon points="400,40 660,40 620,180 340,180" fill="url(#cellGrad)" stroke="url(#frameGrad)" stroke-width="4" />
+      <polygon points="400,40 660,40 620,180 340,180" fill="url(#glareGrad)" />
+      <!-- Panel 3 -->
+      <polygon points="680,40 940,40 900,180 620,180" fill="url(#cellGrad)" stroke="url(#frameGrad)" stroke-width="4" />
+      <polygon points="680,40 940,40 900,180 620,180" fill="url(#glareGrad)" />
+      <!-- Panel 4 -->
+      <polygon points="960,40 1220,40 1180,180 900,180" fill="url(#cellGrad)" stroke="url(#frameGrad)" stroke-width="4" />
+      <!-- Panel 5 -->
+      <polygon points="1240,40 1500,40 1460,180 1180,180" fill="url(#cellGrad)" stroke="url(#frameGrad)" stroke-width="4" />
+    </g>
+
+    <!-- Row 2: Midground Rooftop Array -->
+    <g opacity="0.7" transform="translate(60, 320)">
+      <!-- Panel 2A -->
+      <polygon points="180,60 560,60 500,280 80,280" fill="url(#cellGrad)" stroke="url(#frameGrad)" stroke-width="6" />
+      <polygon points="180,60 560,60 500,280 80,280" fill="url(#glareGrad)" />
+      <!-- Photovoltaic Grid Cells -->
+      <line x1="300" y1="60" x2="220" y2="280" stroke="#B39CCB" stroke-width="2" opacity="0.6" />
+      <line x1="430" y1="60" x2="360" y2="280" stroke="#B39CCB" stroke-width="2" opacity="0.6" />
+      <line x1="140" y1="130" x2="540" y2="130" stroke="#B39CCB" stroke-width="2" opacity="0.6" />
+      <line x1="110" y1="205" x2="520" y2="205" stroke="#B39CCB" stroke-width="2" opacity="0.6" />
+
+      <!-- Panel 2B -->
+      <polygon points="580,60 960,60 900,280 480,280" fill="url(#cellGrad)" stroke="url(#frameGrad)" stroke-width="6" />
+      <polygon points="580,60 960,60 900,280 480,280" fill="url(#glareGrad)" />
+      <!-- Photovoltaic Grid Cells -->
+      <line x1="700" y1="60" x2="620" y2="280" stroke="#B39CCB" stroke-width="2" opacity="0.6" />
+      <line x1="830" y1="60" x2="760" y2="280" stroke="#B39CCB" stroke-width="2" opacity="0.6" />
+      <line x1="540" y1="130" x2="940" y2="130" stroke="#B39CCB" stroke-width="2" opacity="0.6" />
+      <line x1="510" y1="205" x2="920" y2="205" stroke="#B39CCB" stroke-width="2" opacity="0.6" />
+
+      <!-- Panel 2C -->
+      <polygon points="980,60 1360,60 1300,280 880,280" fill="url(#cellGrad)" stroke="url(#frameGrad)" stroke-width="6" />
+      <polygon points="980,60 1360,60 1300,280 880,280" fill="url(#glareGrad)" />
+      <!-- Panel 2D -->
+      <polygon points="1380,60 1760,60 1700,280 1280,280" fill="url(#cellGrad)" stroke="url(#frameGrad)" stroke-width="6" />
+      <polygon points="1380,60 1760,60 1700,280 1280,280" fill="url(#glareGrad)" />
+    </g>
+
+    <!-- Row 3: Foreground Solar Modules -->
+    <g opacity="0.88" transform="translate(0, 560)">
+      <!-- Module 3A -->
+      <polygon points="260,80 780,80 700,420 120,420" fill="url(#cellGrad)" stroke="url(#frameGrad)" stroke-width="8" />
+      <polygon points="260,80 780,80 700,420 120,420" fill="url(#glareGrad)" />
+      <!-- Silicon Busbars -->
+      <line x1="420" y1="80" x2="310" y2="420" stroke="#D7B6C7" stroke-width="3" opacity="0.65" />
+      <line x1="600" y1="80" x2="510" y2="420" stroke="#D7B6C7" stroke-width="3" opacity="0.65" />
+      <line x1="210" y1="190" x2="750" y2="190" stroke="#D7B6C7" stroke-width="2.5" opacity="0.65" />
+      <line x1="160" y1="310" x2="720" y2="310" stroke="#D7B6C7" stroke-width="2.5" opacity="0.65" />
+
+      <!-- Module 3B -->
+      <polygon points="810,80 1330,80 1250,420 670,420" fill="url(#cellGrad)" stroke="url(#frameGrad)" stroke-width="8" />
+      <polygon points="810,80 1330,80 1250,420 670,420" fill="url(#glareGrad)" />
+      <line x1="970" y1="80" x2="860" y2="420" stroke="#D7B6C7" stroke-width="3" opacity="0.65" />
+      <line x1="1150" y1="80" x2="1060" y2="420" stroke="#D7B6C7" stroke-width="3" opacity="0.65" />
+      <line x1="760" y1="190" x2="1300" y2="190" stroke="#D7B6C7" stroke-width="2.5" opacity="0.65" />
+      <line x1="710" y1="310" x2="1270" y2="310" stroke="#D7B6C7" stroke-width="2.5" opacity="0.65" />
+
+      <!-- Module 3C -->
+      <polygon points="1360,80 1880,80 1800,420 1220,420" fill="url(#cellGrad)" stroke="url(#frameGrad)" stroke-width="8" />
+      <polygon points="1360,80 1880,80 1800,420 1220,420" fill="url(#glareGrad)" />
+    </g>
+  </g>
+
+  <!-- Soft Vignette & Lavender Sunlight Glow -->
+  <rect width="1920" height="1080" fill="none" stroke="#6D5284" stroke-width="20" opacity="0.15" />
+</svg>

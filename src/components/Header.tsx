@@ -5,6 +5,20 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useNav } from "@/context/NavContext";
 import { useAuth } from "@/context/AuthContext";
+import {
+  SearchIcon,
+  BellIcon,
+  ArrowLeftIcon,
+  PlusIcon,
+  LogOutIcon,
+  CrownIcon,
+  HardHatIcon,
+  UserIcon,
+  AlertCircleIcon,
+  ClockIcon,
+  DashboardIcon,
+  ChevronLeftIcon,
+} from "@/components/Icons";
 
 export interface AppNotification {
   id: number | string;
@@ -25,47 +39,44 @@ const defaultAdminNotifications: AppNotification[] = [
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const [showNotifications, setShowNotifications] = useState(false);
   const { isNavOpen, toggleNav } = useNav();
-  const { user, role, logout } = useAuth();
+  const { role, user, logout } = useAuth();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState<AppNotification[]>(defaultAdminNotifications);
 
   const handleBack = () => {
-    if (typeof window !== "undefined" && window.history.length > 1) {
-      router.back();
-    } else {
-      router.push("/");
+    if (typeof window !== "undefined") {
+      if (window.history.length > 1) {
+        router.back();
+      } else {
+        router.push("/");
+      }
     }
   };
 
-  const [notifications, setNotifications] = useState<AppNotification[]>(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const saved = localStorage.getItem("sunpower_notifications");
-        if (saved) return JSON.parse(saved);
-      } catch {
-        // Ignore
-      }
-    }
-    return defaultAdminNotifications;
-  });
-
-  // Reload notifications when role changes or window focuses
+  // Sync notifications with localStorage
   useEffect(() => {
-    const loadNotifs = () => {
+    const loadStoredNotifs = () => {
       try {
-        const saved = localStorage.getItem("sunpower_notifications");
-        if (saved) {
-          setNotifications(JSON.parse(saved));
+        const stored = localStorage.getItem("sunpower_notifications");
+        if (stored) {
+          setNotifications(JSON.parse(stored));
+        } else {
+          setNotifications(defaultAdminNotifications);
         }
       } catch {
-        // Ignore
+        setNotifications(defaultAdminNotifications);
       }
     };
 
-    loadNotifs();
-    window.addEventListener("focus", loadNotifs);
-    return () => window.removeEventListener("focus", loadNotifs);
-  }, [role, user]);
+    loadStoredNotifs();
+    window.addEventListener("storage", loadStoredNotifs);
+    window.addEventListener("sunpower_customer_update", loadStoredNotifs);
+    return () => {
+      window.removeEventListener("storage", loadStoredNotifs);
+      window.removeEventListener("sunpower_customer_update", loadStoredNotifs);
+    };
+  }, []);
 
   // Filter notifications relevant to current logged-in role & technician ID
   const relevantNotifications = notifications.filter((n) => {
@@ -96,35 +107,37 @@ export default function Header() {
   };
 
   return (
-    <header className="h-14 bg-white border-b border-[#E4E7EB] flex items-center justify-between px-3 sm:px-6 sticky top-0 z-40 card-floating">
+    <header className="h-14 bg-white/90 backdrop-blur-md border-b border-[#EBCED6] flex items-center justify-between px-3 sm:px-6 sticky top-0 z-40 card-floating">
       {/* Left Side: Navbar Toggle + Back Button + Search */}
       <div className="flex items-center gap-2 sm:gap-3 flex-1 max-w-xl">
-        {/* Navbar Open/Close Hamburger Toggle */}
+        {/* Navbar Toggle */}
         <button
           onClick={toggleNav}
-          className="p-1.5 rounded-lg text-[#666666] hover:text-[#734960] hover:bg-[#F5F7FA] border border-[#E4E7EB] transition-colors flex items-center justify-center flex-shrink-0 cursor-pointer"
-          title={isNavOpen ? "Collapse Navbar (◀)" : "Expand Navbar (▶)"}
+          className="p-1.5 rounded-lg text-[#6D5284] hover:text-[#4A355E] hover:bg-[#F7EEF2] border border-[#EBCED6] transition-colors flex items-center justify-center flex-shrink-0 cursor-pointer"
+          title={isNavOpen ? "Collapse Navigation" : "Expand Navigation"}
           aria-label="Toggle Navigation Bar"
         >
-          <span className="text-base font-bold leading-none">
-            {isNavOpen ? "◀" : "☰"}
-          </span>
+          {isNavOpen ? (
+            <ChevronLeftIcon className="w-4 h-4" />
+          ) : (
+            <DashboardIcon className="w-4 h-4" />
+          )}
         </button>
 
         {/* Global Back Option Button */}
         <button
           onClick={handleBack}
-          className="px-2.5 py-1.5 rounded-lg text-[#734960] hover:text-[#5A354A] bg-[#FAF4F7] hover:bg-[#F3E8EF] border border-[#734960]/20 hover:border-[#734960]/40 transition-all flex items-center gap-1.5 flex-shrink-0 text-xs font-bold card-floating cursor-pointer group"
+          className="px-2.5 py-1.5 rounded-lg text-[#4A355E] hover:text-[#372447] bg-[#F7EEF2] hover:bg-[#EBCED6] border border-[#D7B6C7] transition-all flex items-center gap-1.5 flex-shrink-0 text-xs font-bold card-floating cursor-pointer group"
           title="Go Back to Previous Page"
           aria-label="Go Back"
         >
-          <span className="text-sm font-extrabold transition-transform group-hover:-translate-x-0.5">←</span>
-          <span className="text-xs font-bold">Back</span>
+          <ArrowLeftIcon className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+          <span>Back</span>
         </button>
 
         {/* Global Search Bar */}
         <div className="relative w-full">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">🔍</span>
+          <SearchIcon className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#8D73A8]" />
           <input
             type="text"
             placeholder={
@@ -134,7 +147,7 @@ export default function Header() {
                 ? "Search my solar passbook, warranty..."
                 : "Search leads, serials, warranties..."
             }
-            className="w-full pl-8 pr-3 py-1.5 bg-[#F5F7FA] border border-[#E4E7EB] rounded-xl text-xs text-[#333333] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#734960]/30 focus:border-[#734960] transition"
+            className="w-full pl-8 pr-3 py-1.5 bg-[#F7EEF2]/70 border border-[#EBCED6] rounded-xl text-xs text-[#261C33] placeholder-[#8D73A8] focus:outline-none focus:ring-2 focus:ring-[#8D73A8]/30 focus:border-[#6D5284] transition"
           />
         </div>
       </div>
@@ -145,17 +158,19 @@ export default function Header() {
         {role === "admin" && (
           <Link
             href="/leads"
-            className="px-3 py-1.5 bg-[#734960] hover:bg-[#5A354A] text-white text-xs font-semibold rounded-xl card-floating transition-colors inline-flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-[#4A355E] hover:bg-[#6D5284] text-white text-xs font-semibold rounded-xl card-floating transition-colors inline-flex items-center gap-1.5 shadow-xs"
           >
-            <span>+</span> <span className="hidden sm:inline">New</span> Lead
+            <PlusIcon className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">New</span> Lead
           </Link>
         )}
         {role === "customer" && (
           <Link
             href="/customer?tab=complaint"
-            className="px-3 py-1.5 bg-[#78B77B] hover:bg-[#5B965E] text-white text-xs font-bold rounded-xl card-floating transition-colors inline-flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-[#6D5284] hover:bg-[#4A355E] text-white text-xs font-bold rounded-xl card-floating transition-colors inline-flex items-center gap-1.5 shadow-xs"
           >
-            <span>🚨</span> <span className="hidden sm:inline">Report</span> Issue
+            <AlertCircleIcon className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Report</span> Issue
           </Link>
         )}
 
@@ -163,51 +178,54 @@ export default function Header() {
         <div className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-1.5 text-[#666666] hover:text-[#734960] hover:bg-[#F5F7FA] rounded-xl transition-colors border border-transparent hover:border-[#E4E7EB] cursor-pointer"
+            className="relative p-1.5 text-[#6D5284] hover:text-[#4A355E] hover:bg-[#F7EEF2] rounded-xl transition-colors border border-transparent hover:border-[#EBCED6] cursor-pointer"
             title="Notifications"
           >
-            <span className="text-base">🔔</span>
+            <BellIcon className="w-4 h-4" />
             {relevantNotifications.length > 0 && (
-              <span className="absolute top-0 right-0 min-w-4 h-4 px-1 bg-[#F4B860] text-[#333333] rounded-full border border-white text-[9px] font-extrabold flex items-center justify-center animate-pulse">
+              <span className="absolute top-0 right-0 min-w-4 h-4 px-1 bg-[#8D73A8] text-white rounded-full border border-white text-[9px] font-extrabold flex items-center justify-center animate-pulse">
                 {relevantNotifications.length}
               </span>
             )}
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 top-11 w-80 bg-white rounded-2xl shadow-xl border border-[#E4E7EB] overflow-hidden z-50">
-              <div className="px-4 py-2.5 border-b border-[#E4E7EB] flex items-center justify-between bg-[#F5F7FA]">
-                <h3 className="font-bold text-xs text-[#333333]">
+            <div className="absolute right-0 top-11 w-80 bg-white rounded-2xl shadow-xl border border-[#EBCED6] overflow-hidden z-50">
+              <div className="px-4 py-2.5 border-b border-[#EBCED6] flex items-center justify-between bg-[#F7EEF2]">
+                <h3 className="font-bold text-xs text-[#261C33]">
                   {role === "technician" ? "Field Task Notifications" : "System Notifications"}
                 </h3>
-                <span className="text-[10px] bg-[#FEF6EB] text-[#DA9B40] border border-[#F4B860]/40 px-2 py-0.5 rounded-full font-bold">
+                <span className="text-[10px] bg-[#EBCED6] text-[#4A355E] border border-[#D7B6C7] px-2 py-0.5 rounded-full font-bold">
                   {relevantNotifications.length} new
                 </span>
               </div>
 
-              <div className="max-h-72 overflow-y-auto divide-y divide-[#E4E7EB]/50">
+              <div className="max-h-72 overflow-y-auto divide-y divide-[#EBCED6]/50">
                 {relevantNotifications.length > 0 ? (
                   relevantNotifications.map((n) => (
                     <div
                       key={n.id}
-                      className="px-3.5 py-2.5 hover:bg-[#F5F7FA] cursor-pointer transition text-xs space-y-0.5"
+                      className="px-3.5 py-2.5 hover:bg-[#F7EEF2] cursor-pointer transition text-xs space-y-0.5"
                     >
-                      <p className="text-[#333333] font-medium leading-snug">{n.text}</p>
-                      <p className="text-[10px] text-[#666666]">🕒 {n.time}</p>
+                      <p className="text-[#261C33] font-medium leading-snug">{n.text}</p>
+                      <p className="text-[10px] text-[#8D73A8] flex items-center gap-1 mt-1">
+                        <ClockIcon className="w-3 h-3 text-[#8D73A8]" />
+                        <span>{n.time}</span>
+                      </p>
                     </div>
                   ))
                 ) : (
-                  <div className="p-4 text-center text-xs text-[#666666]">
+                  <div className="p-4 text-center text-xs text-[#6D5284]">
                     No new notifications right now.
                   </div>
                 )}
               </div>
 
               {relevantNotifications.length > 0 && (
-                <div className="px-3.5 py-2 border-t border-[#E4E7EB] bg-[#F5F7FA] text-center">
+                <div className="px-3.5 py-2 border-t border-[#EBCED6] bg-[#F7EEF2] text-center">
                   <button
                     onClick={handleClearNotifications}
-                    className="text-xs text-[#734960] font-semibold hover:underline cursor-pointer"
+                    className="text-xs text-[#4A355E] font-semibold hover:underline cursor-pointer"
                   >
                     Mark all as read
                   </button>
@@ -218,34 +236,40 @@ export default function Header() {
         </div>
 
         {/* User Pill & Switcher */}
-        <div className="flex items-center gap-2 pl-2 border-l border-[#E4E7EB]">
+        <div className="flex items-center gap-2 pl-2 border-l border-[#EBCED6]">
           <Link href="/settings" className="hover:opacity-85 transition" title="Go to Profile / Settings">
             {user?.profilePhoto ? (
               <img
                 src={user.profilePhoto}
                 alt="Profile"
-                className="w-7 h-7 rounded-full object-cover border border-[#E4E7EB]"
+                className="w-7 h-7 rounded-full object-cover border border-[#EBCED6]"
               />
             ) : (
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold card-floating ${
+                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold card-floating shadow-xs ${
                   role === "technician"
-                    ? "bg-[#DA9B40] text-[#333333]"
+                    ? "bg-[#6D5284] text-white"
                     : role === "customer"
-                    ? "bg-[#78B77B] text-white"
-                    : "bg-[#734960] text-white"
+                    ? "bg-[#8D73A8] text-white"
+                    : "bg-[#4A355E] text-white"
                 }`}
               >
-                {user?.avatar || (role === "technician" ? "👷" : role === "customer" ? "👤" : "👑")}
+                {role === "technician" ? (
+                  <HardHatIcon className="w-3.5 h-3.5 text-white" />
+                ) : role === "customer" ? (
+                  <UserIcon className="w-3.5 h-3.5 text-white" />
+                ) : (
+                  <CrownIcon className="w-3.5 h-3.5 text-white" />
+                )}
               </div>
             )}
           </Link>
 
           <div className="hidden md:block leading-tight text-left">
-            <p className="text-xs font-bold text-[#333333] truncate max-w-[120px]">
+            <p className="text-xs font-bold text-[#261C33] truncate max-w-[120px]">
               {user ? user.name.split(" ")[0] : "Admin"}
             </p>
-            <p className="text-[10px] text-[#666666] capitalize font-medium">
+            <p className="text-[10px] text-[#6D5284] capitalize font-medium">
               {role === "admin" ? "Director" : role}
             </p>
           </div>
@@ -253,10 +277,10 @@ export default function Header() {
           <Link
             href="/login"
             onClick={logout}
-            className="p-1 text-[#666666] hover:text-[#734960] rounded-lg hover:bg-[#F5F7FA] transition cursor-pointer"
+            className="p-1.5 text-[#6D5284] hover:text-[#4A355E] rounded-lg hover:bg-[#F7EEF2] transition cursor-pointer"
             title="Switch User / Log Out"
           >
-            <span className="text-xs">🚪</span>
+            <LogOutIcon className="w-4 h-4" />
           </Link>
         </div>
       </div>

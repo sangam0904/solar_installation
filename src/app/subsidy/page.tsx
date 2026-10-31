@@ -1,5 +1,7 @@
 "use client";
 
+import { LandmarkIcon, SearchIcon, IndianRupeeIcon } from "@/components/Icons";
+
 import { useState } from "react";
 import PageShell from "@/components/PageShell";
 import { subsidies as initialSubsidies, Subsidy } from "@/data/mockData";
@@ -83,11 +85,11 @@ export default function SubsidyPage() {
       case "Credited":
         return "bg-[#EBF5EC] text-[#5B965E] border-[#78B77B]/40";
       case "Processing":
-        return "bg-[#FAF4F7] text-[#734960] border-[#8E687F]/30";
+        return "bg-[#F7EEF2] text-[#4A355E] border-[#6D5284]/30";
       case "Applied":
         return "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860]/40";
       case "Not Applied":
-        return "bg-[#F5F7FA] text-[#666666] border-[#E4E7EB]";
+        return "bg-[#F7EEF2] text-[#666666] border-[#EBCED6]";
       case "Rejected":
         return "bg-[#FEF2F2] text-[#DC2626] border-red-200";
     }
@@ -99,7 +101,7 @@ export default function SubsidyPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-[#333333] flex items-center gap-2">
-            <span>🏛️</span> PM Surya Ghar Subsidy Tracker
+            <LandmarkIcon className="w-6 h-6 text-[#4A355E]" /> PM Surya Ghar Subsidy Tracker
           </h1>
           <p className="text-xs sm:text-sm text-[#666666] mt-0.5">
             National Solar Portal tracking, Discom technical feasibility, and DBT bank disbursements
@@ -107,7 +109,7 @@ export default function SubsidyPage() {
         </div>
         <button
           onClick={() => setShowApplyModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#734960] hover:bg-[#5A354A] text-white font-semibold rounded-xl text-xs shadow-xs transition"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#4A355E] hover:bg-[#372447] text-white font-semibold rounded-xl text-xs shadow-xs transition"
         >
           <span>+</span> File Subsidy Application
         </button>
@@ -115,7 +117,7 @@ export default function SubsidyPage() {
 
       {/* Top KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#78B77B] shadow-xs">
+        <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#78B77B] shadow-xs">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold text-[#666666] uppercase tracking-wider">Subsidies Credited</p>
@@ -130,7 +132,7 @@ export default function SubsidyPage() {
           <p className="text-[11px] text-[#5B965E] font-medium mt-3">Transferred directly to customer bank</p>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#F4B860] shadow-xs">
+        <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#F4B860] shadow-xs">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold text-[#666666] uppercase tracking-wider">Disbursement Pipeline</p>
@@ -145,28 +147,28 @@ export default function SubsidyPage() {
           <p className="text-[11px] text-[#666666] mt-3">Discom &amp; MNRE inspection pending</p>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#734960] shadow-xs">
+        <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#4A355E] shadow-xs">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold text-[#666666] uppercase tracking-wider">Total Value Claimed</p>
-              <p className="text-2xl font-extrabold text-[#734960] mt-1">
+              <p className="text-2xl font-extrabold text-[#4A355E] mt-1">
                 ₹{(stats.totalClaimed / 100000).toFixed(1)} Lakhs
               </p>
             </div>
-            <div className="w-11 h-11 bg-[#FAF4F7] text-[#734960] rounded-xl flex items-center justify-center text-xl font-bold">
+            <div className="w-11 h-11 bg-[#F7EEF2] text-[#4A355E] rounded-xl flex items-center justify-center text-xl font-bold">
               📜
             </div>
           </div>
-          <p className="text-[11px] text-[#734960] font-semibold mt-3">{stats.totalCount} active homeowner files</p>
+          <p className="text-[11px] text-[#4A355E] font-semibold mt-3">{stats.totalCount} active homeowner files</p>
         </div>
       </div>
 
       {/* Subsidy Slab Reference Pill Bar */}
-      <div className="bg-white p-3.5 rounded-2xl border border-[#E4E7EB] shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+      <div className="bg-white p-3.5 rounded-2xl border border-[#EBCED6] shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2">
           <span className="font-bold text-[#333333]">PM Surya Ghar Scheme DBT Rates:</span>
           <span className="bg-[#EBF5EC] text-[#5B965E] px-2 py-0.5 rounded-lg border border-[#78B77B]/40 font-bold">1 kW = ₹30,000</span>
-          <span className="bg-[#FAF4F7] text-[#734960] px-2 py-0.5 rounded-lg border border-[#8E687F]/30 font-bold">2 kW = ₹60,000</span>
+          <span className="bg-[#F7EEF2] text-[#4A355E] px-2 py-0.5 rounded-lg border border-[#6D5284]/30 font-bold">2 kW = ₹60,000</span>
           <span className="bg-[#FEF6EB] text-[#DA9B40] px-2 py-0.5 rounded-lg border border-[#F4B860]/40 font-bold">3–5 kW = ₹78,000 (Max)</span>
         </div>
         <span className="text-[#666666]">Direct Benefit Transfer to Customer Account</span>
@@ -180,8 +182,8 @@ export default function SubsidyPage() {
             onClick={() => setFilterStatus(st)}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition border ${
               filterStatus === st
-                ? "bg-[#734960] text-white border-[#734960] shadow-xs"
-                : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
+                ? "bg-[#4A355E] text-white border-[#4A355E] shadow-xs"
+                : "bg-white text-[#666666] border-[#EBCED6] hover:bg-[#F7EEF2]"
             }`}
           >
             {st}
@@ -190,8 +192,8 @@ export default function SubsidyPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-[#E4E7EB] shadow-xs overflow-hidden">
-        <div className="px-5 py-3.5 border-b border-[#E4E7EB] bg-[#F5F7FA] flex items-center justify-between">
+      <div className="bg-white rounded-2xl border border-[#EBCED6] shadow-xs overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-[#EBCED6] bg-[#F7EEF2] flex items-center justify-between">
           <h2 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
             Government Subsidy Applications ({filtered.length})
           </h2>
@@ -199,7 +201,7 @@ export default function SubsidyPage() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F5F7FA] text-[#666666] font-semibold border-b border-[#E4E7EB]">
+            <thead className="bg-[#F7EEF2] text-[#666666] font-semibold border-b border-[#EBCED6]">
               <tr>
                 <th className="px-4 py-2.5">App ID</th>
                 <th className="px-4 py-2.5">Customer &amp; Order</th>
@@ -212,10 +214,10 @@ export default function SubsidyPage() {
                 <th className="px-4 py-2.5 text-center">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E4E7EB]/60">
+            <tbody className="divide-y divide-[#EBCED6]/60">
               {filtered.map((s) => (
-                <tr key={s.id} className="hover:bg-[#F5F7FA] transition-colors">
-                  <td className="px-4 py-3 font-mono text-[11px] text-[#734960] font-bold">{s.id}</td>
+                <tr key={s.id} className="hover:bg-[#F7EEF2] transition-colors">
+                  <td className="px-4 py-3 font-mono text-[11px] text-[#4A355E] font-bold">{s.id}</td>
                   <td className="px-4 py-3">
                     <div className="font-bold text-[#333333]">{s.customerName}</div>
                     <div className="text-[11px] text-[#666666]">Size: {s.capacity} • {s.orderId}</div>
@@ -250,7 +252,7 @@ export default function SubsidyPage() {
                   <td className="px-4 py-3 text-center">
                     <button
                       onClick={() => setSelectedSubsidy(s)}
-                      className="px-2.5 py-1 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#333333] text-[11px] font-semibold rounded-lg border border-[#E4E7EB]"
+                      className="px-2.5 py-1 bg-[#F7EEF2] hover:bg-[#EBCED6] text-[#333333] text-[11px] font-semibold rounded-lg border border-[#EBCED6]"
                     >
                       Update
                     </button>
@@ -265,15 +267,15 @@ export default function SubsidyPage() {
       {/* UPDATE STATUS MODAL */}
       {selectedSubsidy && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-[#E4E7EB] space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#E4E7EB]">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-[#EBCED6] space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#EBCED6]">
               <h3 className="text-base font-bold text-[#333333]">Update Subsidy Milestone</h3>
               <button onClick={() => setSelectedSubsidy(null)} className="text-gray-400 hover:text-[#333333] text-lg font-bold">
                 ✕
               </button>
             </div>
 
-            <div className="bg-[#F5F7FA] p-3 rounded-xl text-xs space-y-1 border border-[#E4E7EB]">
+            <div className="bg-[#F7EEF2] p-3 rounded-xl text-xs space-y-1 border border-[#EBCED6]">
               <div><strong>Customer:</strong> {selectedSubsidy.customerName}</div>
               <div><strong>Application No:</strong> {selectedSubsidy.applicationNumber}</div>
               <div><strong>Subsidy Entitlement:</strong> ₹{selectedSubsidy.subsidyAmount.toLocaleString("en-IN")}</div>
@@ -292,7 +294,7 @@ export default function SubsidyPage() {
                 <button
                   type="button"
                   onClick={() => handleUpdateStatus(selectedSubsidy.id, "Processing")}
-                  className="px-3 py-2 text-xs font-bold rounded-xl border bg-[#FAF4F7] text-[#734960] border-[#8E687F]/30 hover:bg-[#8E687F]/20"
+                  className="px-3 py-2 text-xs font-bold rounded-xl border bg-[#F7EEF2] text-[#4A355E] border-[#6D5284]/30 hover:bg-[#6D5284]/20"
                 >
                   Discom Inspection
                 </button>
@@ -310,7 +312,7 @@ export default function SubsidyPage() {
               <button
                 type="button"
                 onClick={() => setSelectedSubsidy(null)}
-                className="px-4 py-1.5 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#333333] rounded-xl text-xs font-semibold border border-[#E4E7EB]"
+                className="px-4 py-1.5 bg-[#F7EEF2] hover:bg-[#EBCED6] text-[#333333] rounded-xl text-xs font-semibold border border-[#EBCED6]"
               >
                 Close
               </button>
@@ -322,8 +324,8 @@ export default function SubsidyPage() {
       {/* NEW SUBSIDY APPLICATION MODAL */}
       {showApplyModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-[#E4E7EB] space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#E4E7EB]">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-[#EBCED6] space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#EBCED6]">
               <h3 className="text-base font-bold text-[#333333]">National Portal Submission</h3>
               <button onClick={() => setShowApplyModal(false)} className="text-gray-400 hover:text-[#333333] text-lg font-bold">
                 ✕
@@ -338,7 +340,7 @@ export default function SubsidyPage() {
                   placeholder="e.g. Ramesh Sharma"
                   value={newCustName}
                   onChange={(e) => setNewCustName(e.target.value)}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs"
+                  className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs"
                   required
                 />
               </div>
@@ -349,7 +351,7 @@ export default function SubsidyPage() {
                   <select
                     value={newCapacity}
                     onChange={(e) => setNewCapacity(e.target.value)}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-semibold"
                   >
                     <option value="1 kW">1 kW (₹30k subsidy)</option>
                     <option value="2 kW">2 kW (₹60k subsidy)</option>
@@ -363,7 +365,7 @@ export default function SubsidyPage() {
                   <select
                     value={newDiscom}
                     onChange={(e) => setNewDiscom(e.target.value)}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs"
                   >
                     <option value="JVVNL">JVVNL (Jaipur)</option>
                     <option value="AVVNL">AVVNL (Ajmer)</option>
@@ -381,13 +383,13 @@ export default function SubsidyPage() {
                 <button
                   type="button"
                   onClick={() => setShowApplyModal(false)}
-                  className="px-3.5 py-1.5 border border-[#E4E7EB] text-[#666666] rounded-xl text-xs font-semibold hover:bg-[#F5F7FA]"
+                  className="px-3.5 py-1.5 border border-[#EBCED6] text-[#666666] rounded-xl text-xs font-semibold hover:bg-[#F7EEF2]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#734960] hover:bg-[#5A354A] text-white rounded-xl text-xs font-bold shadow-xs"
+                  className="px-4 py-1.5 bg-[#4A355E] hover:bg-[#372447] text-white rounded-xl text-xs font-bold shadow-xs"
                 >
                   Submit Application
                 </button>

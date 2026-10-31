@@ -491,8 +491,8 @@ export default function AdminNotificationFloatingWindow() {
             className="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-gray-200"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-3 bg-[#FAF4F7] border-b border-[#E4E7EB] flex items-center justify-between">
-              <span className="text-xs font-bold text-[#734960] truncate">{selectedPhoto.title}</span>
+            <div className="p-3 bg-[#F7EEF2] border-b border-[#EBCED6] flex items-center justify-between">
+              <span className="text-xs font-bold text-[#4A355E] truncate">{selectedPhoto.title}</span>
               <button
                 onClick={() => setSelectedPhoto(null)}
                 className="text-gray-400 hover:text-gray-700 text-sm font-bold px-2 py-1"
@@ -518,10 +518,10 @@ export default function AdminNotificationFloatingWindow() {
         {isOpen ? (
           <div className="w-[430px] max-w-[calc(100vw-32px)] h-[580px] max-h-[calc(100vh-100px)] flex flex-col bg-white rounded-2xl shadow-2xl border border-[#D8DCE3] overflow-hidden transition-all duration-200 animate-in fade-in zoom-in-95">
             {/* Sleek Gradient Header */}
-            <div className="bg-gradient-to-r from-[#734960] via-[#5A354A] to-[#432435] text-white px-4 py-3 flex items-center justify-between shadow-xs">
+            <div className="bg-gradient-to-r from-[#4A355E] via-[#372447] to-[#261A33] text-white px-4 py-3 flex items-center justify-between shadow-xs">
               <div className="flex items-center gap-2.5">
                 <div className="relative flex items-center justify-center w-8 h-8 rounded-xl bg-white/15 text-sm backdrop-blur-xs">
-                  <span>🔔</span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-[#B39CCB]">Ops</span>
                   {totalUnreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 flex h-3 w-3">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F4B860] opacity-75"></span>
@@ -569,13 +569,13 @@ export default function AdminNotificationFloatingWindow() {
             </div>
 
             {/* Filter Tabs */}
-            <div className="bg-[#FAF4F7] border-b border-[#E4E7EB] px-3 pt-2 pb-1.5 flex items-center gap-1.5 text-xs font-semibold">
+            <div className="bg-[#F7EEF2] border-b border-[#EBCED6] px-3 pt-2 pb-1.5 flex items-center gap-1.5 text-xs font-semibold">
               <button
                 onClick={() => setActiveTab("all")}
                 className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 ${
                   activeTab === "all"
-                    ? "bg-[#734960] text-white shadow-xs"
-                    : "text-[#666666] hover:text-[#734960] hover:bg-white/60"
+                    ? "bg-[#4A355E] text-white shadow-xs"
+                    : "text-[#666666] hover:text-[#4A355E] hover:bg-white/60"
                 }`}
               >
                 <span>All Feeds</span>
@@ -638,7 +638,7 @@ export default function AdminNotificationFloatingWindow() {
             </div>
 
             {/* Search & Status Quick Filter */}
-            <div className="p-2.5 bg-white border-b border-[#E4E7EB] flex items-center gap-2">
+            <div className="p-2.5 bg-white border-b border-[#EBCED6] flex items-center gap-2">
               <div className="relative flex-1">
                 <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs">🔍</span>
                 <input
@@ -646,7 +646,7 @@ export default function AdminNotificationFloatingWindow() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search customer, phone, ticket ID..."
-                  className="w-full pl-7 pr-3 py-1 bg-[#F5F7FA] border border-[#E4E7EB] rounded-lg text-xs text-[#333333] placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#734960] focus:border-[#734960]"
+                  className="w-full pl-7 pr-3 py-1 bg-[#F7EEF2] border border-[#EBCED6] rounded-lg text-xs text-[#333333] placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#4A355E] focus:border-[#4A355E]"
                 />
                 {searchQuery && (
                   <button
@@ -663,7 +663,7 @@ export default function AdminNotificationFloatingWindow() {
                 className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg border transition whitespace-nowrap flex items-center gap-1 ${
                   filterPendingOnly
                     ? "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860]"
-                    : "bg-[#F5F7FA] text-[#666666] border-[#E4E7EB] hover:bg-gray-100"
+                    : "bg-[#F7EEF2] text-[#666666] border-[#EBCED6] hover:bg-gray-100"
                 }`}
               >
                 <span>{filterPendingOnly ? "✓ Action Pending" : "All Status"}</span>
@@ -671,7 +671,7 @@ export default function AdminNotificationFloatingWindow() {
             </div>
 
             {/* Notification Cards List */}
-            <div className="flex-1 overflow-y-auto p-3 space-y-2.5 bg-[#F5F7FA]/70">
+            <div className="flex-1 overflow-y-auto p-3 space-y-2.5 bg-[#F7EEF2]/70">
               {combinedItems.length === 0 ? (
                 <div className="text-center py-12 px-4">
                   <span className="text-3xl">📭</span>
@@ -692,7 +692,7 @@ export default function AdminNotificationFloatingWindow() {
                           ? isReport
                             ? "border-red-300 ring-1 ring-red-200/60 shadow-xs"
                             : "border-amber-300 ring-1 ring-amber-200/60 shadow-xs"
-                          : "border-[#E4E7EB] hover:border-gray-300 shadow-xs"
+                          : "border-[#EBCED6] hover:border-gray-300 shadow-xs"
                       }`}
                     >
                       {/* Top Meta Header */}
@@ -708,10 +708,10 @@ export default function AdminNotificationFloatingWindow() {
                             </span>
                           )}
 
-                          <span className="text-[10px] font-mono text-[#8E687F] font-bold">{item.id}</span>
+                          <span className="text-[10px] font-mono text-[#6D5284] font-bold">{item.id}</span>
 
                           {!isRead && (
-                            <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full bg-[#734960] text-white">
+                            <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded-full bg-[#4A355E] text-white">
                               NEW
                             </span>
                           )}
@@ -723,7 +723,7 @@ export default function AdminNotificationFloatingWindow() {
                           <button
                             onClick={(e) => toggleRead(item.id, e)}
                             title={isRead ? "Mark as unread" : "Mark as read"}
-                            className="p-1 hover:text-[#734960] rounded"
+                            className="p-1 hover:text-[#4A355E] rounded"
                           >
                             {isRead ? "○" : "●"}
                           </button>
@@ -744,7 +744,7 @@ export default function AdminNotificationFloatingWindow() {
                           <p>{item.description}</p>
                         ) : (
                           <div>
-                            <p className="font-bold text-[#734960] mb-0.5">{item.subject}</p>
+                            <p className="font-bold text-[#4A355E] mb-0.5">{item.subject}</p>
                             <p className="text-gray-600">{item.message}</p>
                           </div>
                         )}
@@ -762,7 +762,7 @@ export default function AdminNotificationFloatingWindow() {
                                 title: `${item.customerName} - Photo Attachment`,
                               });
                             }}
-                            className="inline-flex items-center gap-1.5 px-2 py-1 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg text-[10px] font-semibold text-[#734960] transition"
+                            className="inline-flex items-center gap-1.5 px-2 py-1 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg text-[10px] font-semibold text-[#4A355E] transition"
                           >
                             <span>📸</span>
                             <span>View Uploaded Customer Proof</span>
@@ -842,7 +842,7 @@ export default function AdminNotificationFloatingWindow() {
                                       e.stopPropagation();
                                       setQuickAssignTktId(quickAssignTktId === item.id ? null : item.id);
                                     }}
-                                    className="px-2 py-1 bg-[#FAF4F7] hover:bg-[#F4ECF0] text-[#734960] border border-[#8E687F]/30 rounded-lg text-[10px] font-bold transition"
+                                    className="px-2 py-1 bg-[#F7EEF2] hover:bg-[#F4ECF0] text-[#4A355E] border border-[#6D5284]/30 rounded-lg text-[10px] font-bold transition"
                                   >
                                     Assign Tech ▾
                                   </button>
@@ -865,7 +865,7 @@ export default function AdminNotificationFloatingWindow() {
                               <Link
                                 href="/quotations"
                                 onClick={(e) => e.stopPropagation()}
-                                className="px-2 py-1 bg-[#734960] hover:bg-[#5A354A] text-white rounded-lg text-[10px] font-bold transition"
+                                className="px-2 py-1 bg-[#4A355E] hover:bg-[#372447] text-white rounded-lg text-[10px] font-bold transition"
                               >
                                 Build BOM Quote
                               </Link>
@@ -888,11 +888,11 @@ export default function AdminNotificationFloatingWindow() {
                       {/* Quick Assign Dropdown Drawer */}
                       {isReport && quickAssignTktId === item.id && (
                         <div
-                          className="mt-2.5 p-2 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] text-xs space-y-2 animate-in fade-in"
+                          className="mt-2.5 p-2 bg-[#F7EEF2] rounded-xl border border-[#EBCED6] text-xs space-y-2 animate-in fade-in"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-[11px] text-[#734960]">Select Field Engineer:</span>
+                            <span className="font-bold text-[11px] text-[#4A355E]">Select Field Engineer:</span>
                             <button
                               onClick={() => setQuickAssignTktId(null)}
                               className="text-gray-400 hover:text-gray-600 text-[10px]"
@@ -903,7 +903,7 @@ export default function AdminNotificationFloatingWindow() {
                           <select
                             value={assignTechId}
                             onChange={(e) => setAssignTechId(e.target.value)}
-                            className="w-full text-xs p-1.5 bg-white border border-[#E4E7EB] rounded-lg font-medium text-[#333333]"
+                            className="w-full text-xs p-1.5 bg-white border border-[#EBCED6] rounded-lg font-medium text-[#333333]"
                           >
                             {Object.entries(ALL_16_EMPLOYEES).map(([id, emp]) => (
                               <option key={id} value={id}>
@@ -920,7 +920,7 @@ export default function AdminNotificationFloatingWindow() {
                             </button>
                             <button
                               onClick={() => handleAssignTechnician(item.id)}
-                              className="px-3 py-1 bg-[#734960] hover:bg-[#5A354A] text-white rounded-lg text-[10px] font-bold"
+                              className="px-3 py-1 bg-[#4A355E] hover:bg-[#372447] text-white rounded-lg text-[10px] font-bold"
                             >
                               Confirm Dispatch
                             </button>
@@ -934,7 +934,7 @@ export default function AdminNotificationFloatingWindow() {
             </div>
 
             {/* Bottom Actions & Simulation Bar */}
-            <div className="bg-white border-t border-[#E4E7EB] p-2.5 space-y-2">
+            <div className="bg-white border-t border-[#EBCED6] p-2.5 space-y-2">
               <div className="flex items-center justify-between gap-1 text-[10px]">
                 <span className="text-gray-500 font-semibold">Test Live Notification:</span>
                 <div className="flex items-center gap-1">
@@ -958,7 +958,7 @@ export default function AdminNotificationFloatingWindow() {
                 <Link
                   href="/service"
                   onClick={() => setIsOpen(false)}
-                  className="text-[#734960] hover:underline flex items-center gap-1"
+                  className="text-[#4A355E] hover:underline flex items-center gap-1"
                 >
                   <span>Open Full Service Desk</span>
                   <span>→</span>
@@ -966,7 +966,7 @@ export default function AdminNotificationFloatingWindow() {
                 <Link
                   href="/technician"
                   onClick={() => setIsOpen(false)}
-                  className="text-gray-500 hover:text-[#734960] hover:underline flex items-center gap-1"
+                  className="text-gray-500 hover:text-[#4A355E] hover:underline flex items-center gap-1"
                 >
                   <span>Technician Portal</span>
                   <span>↗</span>
@@ -978,7 +978,7 @@ export default function AdminNotificationFloatingWindow() {
           /* Minimized Floating Trigger Button */
           <button
             onClick={() => setIsOpen(true)}
-            className="group relative flex items-center gap-2.5 px-3.5 py-2.5 bg-gradient-to-r from-[#734960] to-[#5A354A] hover:from-[#5A354A] hover:to-[#432435] text-white rounded-full shadow-2xl border-2 border-white cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95"
+            className="group relative flex items-center gap-2.5 px-3.5 py-2.5 bg-gradient-to-r from-[#4A355E] to-[#372447] hover:from-[#372447] hover:to-[#261A33] text-white rounded-full shadow-2xl border-2 border-white cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95"
             aria-label="Open Customer Reports & Enquiries Window"
           >
             {/* Bell & Pulsing Radar */}

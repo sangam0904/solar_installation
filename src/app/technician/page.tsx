@@ -1,5 +1,7 @@
 "use client";
 
+import { HardHatIcon, WrenchIcon, CheckCircleIcon, ClockIcon } from "@/components/Icons";
+
 import { useState, useRef, useEffect, Suspense } from "react";
 import PageShell from "@/components/PageShell";
 import { technicians as initialTechs } from "@/data/mockData";
@@ -360,14 +362,14 @@ function TechnicianFieldContent() {
       {role === "admin" && adminViewMode === "dispatch-center" && (
         <div className="space-y-6">
           {/* Admin Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E4E7EB] pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#EBCED6] pb-4">
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xl">👷</span>
                 <h1 className="text-xl sm:text-2xl font-bold text-[#333333]">
                   Technician Task Assignment &amp; Crew Dispatch
                 </h1>
-                <span className="text-[10px] font-bold bg-[#FAF4F7] text-[#734960] px-2.5 py-0.5 rounded-full border border-[#8E687F]/30 uppercase">
+                <span className="text-[10px] font-bold bg-[#F7EEF2] text-[#4A355E] px-2.5 py-0.5 rounded-full border border-[#6D5284]/30 uppercase">
                   Admin Only
                 </span>
               </div>
@@ -379,14 +381,14 @@ function TechnicianFieldContent() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setAdminViewMode("crew-view")}
-                className="px-3.5 py-2 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#333333] text-xs font-bold rounded-xl border border-[#E4E7EB] transition flex items-center gap-1.5"
+                className="px-3.5 py-2 bg-[#F7EEF2] hover:bg-[#EBCED6] text-[#333333] text-xs font-bold rounded-xl border border-[#EBCED6] transition flex items-center gap-1.5"
               >
                 <span>👁️</span> Preview Technician View
               </button>
 
               <button
                 onClick={() => handleOpenAssignModal()}
-                className="px-4 py-2 bg-[#734960] hover:bg-[#5A354A] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
+                className="px-4 py-2 bg-[#4A355E] hover:bg-[#372447] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
               >
                 <span>+</span> Assign Task to Technician
               </button>
@@ -398,11 +400,11 @@ function TechnicianFieldContent() {
             {techList.map((tech) => (
               <div
                 key={tech.id}
-                className="bg-white rounded-2xl border border-[#E4E7EB] p-5 shadow-xs space-y-4 hover:border-[#734960]/50 transition-all"
+                className="bg-white rounded-2xl border border-[#EBCED6] p-5 shadow-xs space-y-4 hover:border-[#4A355E]/50 transition-all"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-[#FAF4F7] text-[#734960] flex items-center justify-center text-2xl font-bold border border-[#8E687F]/30">
+                    <div className="w-12 h-12 rounded-xl bg-[#F7EEF2] text-[#4A355E] flex items-center justify-center text-2xl font-bold border border-[#6D5284]/30">
                       👷
                     </div>
                     <div>
@@ -425,14 +427,14 @@ function TechnicianFieldContent() {
 
                   <button
                     onClick={() => handleOpenAssignModal(tech.id)}
-                    className="px-3 py-1.5 bg-[#734960] hover:bg-[#5A354A] text-white text-xs font-bold rounded-xl shadow-xs transition"
+                    className="px-3 py-1.5 bg-[#4A355E] hover:bg-[#372447] text-white text-xs font-bold rounded-xl shadow-xs transition"
                   >
                     + Assign Task
                   </button>
                 </div>
 
                 {/* Assigned Tasks for this tech */}
-                <div className="space-y-2 pt-2 border-t border-[#E4E7EB]">
+                <div className="space-y-2 pt-2 border-t border-[#EBCED6]">
                   <div className="flex items-center justify-between text-[11px]">
                     <span className="font-bold text-[#666666] uppercase">
                       Assigned Tasks ({tech.assignedTasks.length})
@@ -442,7 +444,7 @@ function TechnicianFieldContent() {
                         setAdminPreviewTechId(tech.id);
                         setAdminViewMode("crew-view");
                       }}
-                      className="text-[#734960] hover:underline font-bold text-[11px]"
+                      className="text-[#4A355E] hover:underline font-bold text-[11px]"
                     >
                       View Mobile Screen ➔
                     </button>
@@ -453,14 +455,14 @@ function TechnicianFieldContent() {
                       {tech.assignedTasks.map((task) => (
                         <div
                           key={task.orderId}
-                          className="bg-[#F5F7FA] p-3 rounded-xl border border-[#E4E7EB] text-xs space-y-1.5"
+                          className="bg-[#F7EEF2] p-3 rounded-xl border border-[#EBCED6] text-xs space-y-1.5"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <span
                                 className={`px-2 py-0.5 rounded text-[9px] font-bold ${
                                   task.type === "Installation"
-                                    ? "bg-[#FAF4F7] text-[#734960]"
+                                    ? "bg-[#F7EEF2] text-[#4A355E]"
                                     : task.type === "Survey"
                                     ? "bg-[#FEF6EB] text-[#DA9B40]"
                                     : "bg-[#EBF5EC] text-[#5B965E]"
@@ -469,7 +471,7 @@ function TechnicianFieldContent() {
                                 {task.type}
                               </span>
                               <span className="font-bold text-[#333333]">{task.customerName}</span>
-                              <span className="font-mono text-[10px] text-[#734960]">({task.orderId})</span>
+                              <span className="font-mono text-[10px] text-[#4A355E]">({task.orderId})</span>
                             </div>
 
                             <span
@@ -486,12 +488,12 @@ function TechnicianFieldContent() {
                           </div>
 
                           <p className="text-[11px] text-[#666666]">{task.address} • {task.timeSlot}</p>
-                          <p className="text-[10px] text-[#333333] bg-white p-2 rounded-lg border border-[#E4E7EB]">
+                          <p className="text-[10px] text-[#333333] bg-white p-2 rounded-lg border border-[#EBCED6]">
                             <strong>Customer Issue:</strong> {task.customerDetails.reportedIssue}
                           </p>
 
                           <div className="flex items-center justify-between pt-1 text-[10px]">
-                            <span className="text-[#734960] font-semibold">Admin Note: {task.adminInstructions}</span>
+                            <span className="text-[#4A355E] font-semibold">Admin Note: {task.adminInstructions}</span>
                             <button
                               onClick={() => {
                                 const updatedTasks = tech.assignedTasks.filter((t) => t.orderId !== task.orderId);
@@ -515,7 +517,7 @@ function TechnicianFieldContent() {
                       ))}
                     </div>
                   ) : (
-                    <div className="p-3 bg-[#F5F7FA] rounded-xl text-center text-[11px] text-[#666666]">
+                    <div className="p-3 bg-[#F7EEF2] rounded-xl text-center text-[11px] text-[#666666]">
                       No tasks assigned yet. Click &quot;+ Assign Task&quot; above to dispatch.
                     </div>
                   )}
@@ -527,11 +529,11 @@ function TechnicianFieldContent() {
           {/* ── MODAL: ASSIGN TASK TO TECHNICIAN ── */}
           {isAssignModalOpen && (
             <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-              <div className="bg-white rounded-2xl border border-[#E4E7EB] shadow-2xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
-                <div className="flex items-center justify-between border-b border-[#E4E7EB] pb-3">
+              <div className="bg-white rounded-2xl border border-[#EBCED6] shadow-2xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
+                <div className="flex items-center justify-between border-b border-[#EBCED6] pb-3">
                   <div>
                     <h3 className="text-base font-bold text-[#333333] flex items-center gap-2">
-                      <span>👷</span> Assign Task to Technician
+                      <HardHatIcon className="w-6 h-6 text-[#4A355E]" /> Assign Task to Technician
                     </h3>
                     <p className="text-xs text-[#666666]">
                       The assigned technician will only be able to view this task and customer submission details.
@@ -551,7 +553,7 @@ function TechnicianFieldContent() {
                     <select
                       value={assignToTechId}
                       onChange={(e) => setAssignToTechId(e.target.value)}
-                      className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl font-bold text-[#734960] bg-white"
+                      className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl font-bold text-[#4A355E] bg-white"
                     >
                       {techList.map((t) => (
                         <option key={t.id} value={t.id}>
@@ -567,7 +569,7 @@ function TechnicianFieldContent() {
                       <select
                         value={newTaskType}
                         onChange={(e) => setNewTaskType(e.target.value as "Installation" | "Survey" | "Service")}
-                        className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl font-semibold bg-white"
+                        className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl font-semibold bg-white"
                       >
                         <option value="Installation">Rooftop Installation</option>
                         <option value="Survey">Site Survey &amp; Shadow Analysis</option>
@@ -582,7 +584,7 @@ function TechnicianFieldContent() {
                         value={newCapacity}
                         onChange={(e) => setNewCapacity(e.target.value)}
                         placeholder="e.g. 3 kW On-Grid System"
-                        className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl font-semibold"
+                        className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl font-semibold"
                         required
                       />
                     </div>
@@ -596,7 +598,7 @@ function TechnicianFieldContent() {
                         placeholder="e.g. Narendra Verma"
                         value={newCustName}
                         onChange={(e) => setNewCustName(e.target.value)}
-                        className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl font-semibold"
+                        className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl font-semibold"
                         required
                       />
                     </div>
@@ -607,7 +609,7 @@ function TechnicianFieldContent() {
                         placeholder="+91 98765 00000"
                         value={newCustPhone}
                         onChange={(e) => setNewCustPhone(e.target.value)}
-                        className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl font-semibold"
+                        className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl font-semibold"
                       />
                     </div>
                   </div>
@@ -619,7 +621,7 @@ function TechnicianFieldContent() {
                       placeholder="e.g. 19, C-Scheme, Jaipur"
                       value={newAddress}
                       onChange={(e) => setNewAddress(e.target.value)}
-                      className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl font-semibold"
+                      className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl font-semibold"
                       required
                     />
                   </div>
@@ -631,7 +633,7 @@ function TechnicianFieldContent() {
                         type="text"
                         value={newTimeSlot}
                         onChange={(e) => setNewTimeSlot(e.target.value)}
-                        className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl font-semibold"
+                        className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl font-semibold"
                       />
                     </div>
                     <div>
@@ -640,14 +642,14 @@ function TechnicianFieldContent() {
                         type="text"
                         value={newOrderId}
                         onChange={(e) => setNewOrderId(e.target.value)}
-                        className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl font-mono font-semibold"
+                        className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl font-mono font-semibold"
                       />
                     </div>
                   </div>
 
                   {/* Customer Submitted Details */}
-                  <div className="bg-[#F5F7FA] p-3 rounded-xl border border-[#E4E7EB] space-y-2">
-                    <span className="text-[10px] font-bold text-[#734960] uppercase block">
+                  <div className="bg-[#F7EEF2] p-3 rounded-xl border border-[#EBCED6] space-y-2">
+                    <span className="text-[10px] font-bold text-[#4A355E] uppercase block">
                       Customer Submitted Details (Visible to Technician)
                     </span>
                     <div>
@@ -657,7 +659,7 @@ function TechnicianFieldContent() {
                         placeholder="What issue did the customer report..."
                         value={newCustIssue}
                         onChange={(e) => setNewCustIssue(e.target.value)}
-                        className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#E4E7EB] rounded-lg text-xs"
+                        className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#EBCED6] rounded-lg text-xs"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -668,7 +670,7 @@ function TechnicianFieldContent() {
                           value={newCustRoof}
                           onChange={(e) => setNewCustRoof(e.target.value)}
                           placeholder="e.g. RCC Flat 2nd floor"
-                          className="w-full mt-1 px-2.5 py-1 bg-white border border-[#E4E7EB] rounded-lg text-xs"
+                          className="w-full mt-1 px-2.5 py-1 bg-white border border-[#EBCED6] rounded-lg text-xs"
                         />
                       </div>
                       <div>
@@ -678,7 +680,7 @@ function TechnicianFieldContent() {
                           value={newCustNotes}
                           onChange={(e) => setNewCustNotes(e.target.value)}
                           placeholder="e.g. Call 15 mins prior"
-                          className="w-full mt-1 px-2.5 py-1 bg-white border border-[#E4E7EB] rounded-lg text-xs"
+                          className="w-full mt-1 px-2.5 py-1 bg-white border border-[#EBCED6] rounded-lg text-xs"
                         />
                       </div>
                     </div>
@@ -686,7 +688,7 @@ function TechnicianFieldContent() {
 
                   {/* Admin Instructions to Technician */}
                   <div>
-                    <label className="text-[11px] font-bold text-[#734960] uppercase">
+                    <label className="text-[11px] font-bold text-[#4A355E] uppercase">
                       Admin Instructions to Field Technician
                     </label>
                     <textarea
@@ -694,7 +696,7 @@ function TechnicianFieldContent() {
                       placeholder="e.g. Bring 6mm² DC wire, replace Inverter communication cable, verify net-meter..."
                       value={newAdminInstructions}
                       onChange={(e) => setNewAdminInstructions(e.target.value)}
-                      className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-medium"
+                      className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-medium"
                     />
                   </div>
 
@@ -704,17 +706,17 @@ function TechnicianFieldContent() {
                     </div>
                   )}
 
-                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E4E7EB]">
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#EBCED6]">
                     <button
                       type="button"
                       onClick={() => setIsAssignModalOpen(false)}
-                      className="px-4 py-2 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#333333] font-semibold rounded-xl text-xs transition"
+                      className="px-4 py-2 bg-[#F7EEF2] hover:bg-[#EBCED6] text-[#333333] font-semibold rounded-xl text-xs transition"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="px-5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs shadow-xs transition"
+                      className="px-5 py-2 bg-[#4A355E] hover:bg-[#372447] text-white font-bold rounded-xl text-xs shadow-xs transition"
                     >
                       Dispatch Task Now ➔
                     </button>
@@ -733,15 +735,15 @@ function TechnicianFieldContent() {
         <div className="space-y-6">
           {/* Admin Back Toggle (only when Admin is previewing) */}
           {role === "admin" && (
-            <div className="bg-[#FAF4F7] border border-[#8E687F]/30 p-3 rounded-2xl flex items-center justify-between text-xs">
-              <span className="font-bold text-[#734960]">
+            <div className="bg-[#F7EEF2] border border-[#6D5284]/30 p-3 rounded-2xl flex items-center justify-between text-xs">
+              <span className="font-bold text-[#4A355E]">
                 👁️ Previewing Technician Portal as: <strong>{currentViewTech.name}</strong>
               </span>
               <div className="flex items-center gap-2">
                 <select
                   value={adminPreviewTechId}
                   onChange={(e) => setAdminPreviewTechId(e.target.value)}
-                  className="px-2 py-1 bg-white border border-[#E4E7EB] rounded-lg font-bold text-xs"
+                  className="px-2 py-1 bg-white border border-[#EBCED6] rounded-lg font-bold text-xs"
                 >
                   {techList.map((t) => (
                     <option key={t.id} value={t.id}>{t.name}</option>
@@ -749,7 +751,7 @@ function TechnicianFieldContent() {
                 </select>
                 <button
                   onClick={() => setAdminViewMode("dispatch-center")}
-                  className="px-3 py-1 bg-[#734960] text-white rounded-lg font-bold"
+                  className="px-3 py-1 bg-[#4A355E] text-white rounded-lg font-bold"
                 >
                   Back to Dispatch ➔
                 </button>
@@ -758,9 +760,9 @@ function TechnicianFieldContent() {
           )}
 
           {/* Clean Technician Header: strictly assigned tasks only */}
-          <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-[#FAF4F7] text-[#734960] flex items-center justify-center text-2xl font-bold border border-[#8E687F]/30 flex-shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-[#F7EEF2] text-[#4A355E] flex items-center justify-center text-2xl font-bold border border-[#6D5284]/30 flex-shrink-0">
                 👷
               </div>
               <div>
@@ -777,11 +779,11 @@ function TechnicianFieldContent() {
             </div>
 
             <div className="flex items-center gap-2 text-xs">
-              <div className="bg-[#F5F7FA] px-3 py-1.5 rounded-xl border border-[#E4E7EB] text-center">
+              <div className="bg-[#F7EEF2] px-3 py-1.5 rounded-xl border border-[#EBCED6] text-center">
                 <span className="text-[10px] text-[#666666] block uppercase font-bold">Assigned Queue</span>
-                <span className="text-sm font-extrabold text-[#734960]">{currentViewTech.assignedTasks.length} Tasks</span>
+                <span className="text-sm font-extrabold text-[#4A355E]">{currentViewTech.assignedTasks.length} Tasks</span>
               </div>
-              <div className="bg-[#F5F7FA] px-3 py-1.5 rounded-xl border border-[#E4E7EB] text-center">
+              <div className="bg-[#F7EEF2] px-3 py-1.5 rounded-xl border border-[#EBCED6] text-center">
                 <span className="text-[10px] text-[#666666] block uppercase font-bold">Pending</span>
                 <span className="text-sm font-extrabold text-[#DA9B40]">
                   {currentViewTech.assignedTasks.filter((t) => t.status !== "Completed").length} Active
@@ -796,15 +798,15 @@ function TechnicianFieldContent() {
               {currentViewTech.assignedTasks.map((task) => (
                 <div
                   key={task.orderId}
-                  className="bg-white rounded-2xl border border-[#E4E7EB] p-5 sm:p-6 shadow-xs space-y-4 hover:border-[#8E687F]/40 transition-all"
+                  className="bg-white rounded-2xl border border-[#EBCED6] p-5 sm:p-6 shadow-xs space-y-4 hover:border-[#6D5284]/40 transition-all"
                 >
                   {/* Task Top Badges & ID */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E4E7EB] pb-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#EBCED6] pb-3">
                     <div className="flex items-center gap-2">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-bold border ${
                           task.type === "Installation"
-                            ? "bg-[#FAF4F7] text-[#734960] border-[#8E687F]/30"
+                            ? "bg-[#F7EEF2] text-[#4A355E] border-[#6D5284]/30"
                             : task.type === "Survey"
                             ? "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860]/40"
                             : "bg-[#EBF5EC] text-[#5B965E] border-[#78B77B]/40"
@@ -812,7 +814,7 @@ function TechnicianFieldContent() {
                       >
                         {task.type}
                       </span>
-                      <span className="font-mono text-xs font-bold bg-[#F5F7FA] px-2.5 py-1 rounded-lg text-[#734960] border border-[#E4E7EB]">
+                      <span className="font-mono text-xs font-bold bg-[#F7EEF2] px-2.5 py-1 rounded-lg text-[#4A355E] border border-[#EBCED6]">
                         {task.orderId}
                       </span>
                       <span className="text-xs text-[#666666] font-semibold">🕒 {task.timeSlot}</span>
@@ -834,49 +836,49 @@ function TechnicianFieldContent() {
                   </div>
 
                   {/* Customer Information & Quick Action Buttons */}
-                  <div className="bg-[#F5F7FA] p-4 rounded-xl border border-[#E4E7EB] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="bg-[#F7EEF2] p-4 rounded-xl border border-[#EBCED6] flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="space-y-1">
                       <span className="text-[10px] font-bold text-[#666666] uppercase tracking-wider block">Customer Information</span>
                       <h3 className="text-sm font-bold text-[#333333]">{task.customerName}</h3>
                       <p className="text-xs text-[#666666]">📍 {task.address}</p>
-                      <p className="text-xs text-[#734960] font-semibold">⚡ System: {task.capacity}</p>
+                      <p className="text-xs text-[#4A355E] font-semibold">⚡ System: {task.capacity}</p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">
                       <a
                         href={`tel:${task.customerPhone}`}
-                        className="px-3.5 py-2 bg-white hover:bg-[#FAF4F7] text-[#734960] text-xs font-bold rounded-xl border border-[#734960]/30 shadow-xs transition flex items-center gap-1.5"
+                        className="px-3.5 py-2 bg-white hover:bg-[#F7EEF2] text-[#4A355E] text-xs font-bold rounded-xl border border-[#4A355E]/30 shadow-xs transition flex items-center gap-1.5"
                       >
                         <span>📞</span> Call Customer ({task.customerPhone})
                       </a>
 
                       <button
                         onClick={() => alert(`Opening GPS navigation route to: ${task.address}`)}
-                        className="px-3.5 py-2 bg-white hover:bg-[#F5F7FA] text-[#333333] text-xs font-bold rounded-xl border border-[#E4E7EB] shadow-xs transition flex items-center gap-1.5"
+                        className="px-3.5 py-2 bg-white hover:bg-[#F7EEF2] text-[#333333] text-xs font-bold rounded-xl border border-[#EBCED6] shadow-xs transition flex items-center gap-1.5"
                       >
                         <span>📍</span> Navigate
                       </button>
 
                       <button
                         onClick={() => setSelectedTaskForDetails(task)}
-                        className="px-3.5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
+                        className="px-3.5 py-2 bg-[#4A355E] hover:bg-[#372447] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
                       >
-                        <span>📋</span> View Details &amp; Execute
+                        <HardHatIcon className="w-4 h-4 text-[#6D5284]" /> View Details &amp; Execute
                       </button>
                     </div>
                   </div>
 
                   {/* Customer Submitted Details Block */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                    <div className="bg-white p-3.5 rounded-xl border border-[#E4E7EB] space-y-1">
-                      <span className="text-[10px] font-bold text-[#734960] uppercase block">
+                    <div className="bg-white p-3.5 rounded-xl border border-[#EBCED6] space-y-1">
+                      <span className="text-[10px] font-bold text-[#4A355E] uppercase block">
                         Customer Reported Issue / Requirements
                       </span>
                       <p className="text-xs text-[#333333] font-medium leading-relaxed">
                         {task.customerDetails.reportedIssue || "Standard service request."}
                       </p>
                       {task.customerDetails.customerNotes && (
-                        <p className="text-[11px] text-[#666666] pt-1 border-t border-[#E4E7EB]/60">
+                        <p className="text-[11px] text-[#666666] pt-1 border-t border-[#EBCED6]/60">
                           <strong>Note:</strong> {task.customerDetails.customerNotes}
                         </p>
                       )}
@@ -905,7 +907,7 @@ function TechnicianFieldContent() {
                         {task.customerDetails.customerPhotos.map((photo, i) => (
                           <div
                             key={i}
-                            className="bg-[#F5F7FA] px-3 py-2 rounded-lg border border-[#E4E7EB] text-xs font-semibold text-[#333333] flex items-center gap-1.5"
+                            className="bg-[#F7EEF2] px-3 py-2 rounded-lg border border-[#EBCED6] text-xs font-semibold text-[#333333] flex items-center gap-1.5"
                           >
                             <span>📷</span>
                             <span>{photo}</span>
@@ -916,7 +918,7 @@ function TechnicianFieldContent() {
                   )}
 
                   {/* Task Work Status Controls */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#E4E7EB]">
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#EBCED6]">
                     <div className="text-xs text-[#666666]">
                       {task.status === "Completed" ? (
                         <span className="text-[#5B965E] font-bold">
@@ -949,7 +951,7 @@ function TechnicianFieldContent() {
                       {task.status === "Completed" && (
                         <button
                           onClick={() => handleUpdateTaskStatus(task.orderId, "In Progress")}
-                          className="text-xs text-[#734960] hover:underline font-semibold"
+                          className="text-xs text-[#4A355E] hover:underline font-semibold"
                         >
                           Reopen Job ↺
                         </button>
@@ -960,7 +962,7 @@ function TechnicianFieldContent() {
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-2xl border border-[#E4E7EB] p-12 text-center space-y-2">
+            <div className="bg-white rounded-2xl border border-[#EBCED6] p-12 text-center space-y-2">
               <span className="text-4xl block">📋</span>
               <h3 className="text-sm font-bold text-[#333333]">No Tasks Currently Assigned</h3>
               <p className="text-xs text-[#666666] max-w-sm mx-auto">
@@ -972,11 +974,11 @@ function TechnicianFieldContent() {
           {/* ── MODAL: TASK DETAIL & COMPLETION PROOF ── */}
           {selectedTaskForDetails && (
             <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-              <div className="bg-white rounded-2xl border border-[#E4E7EB] shadow-2xl max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
-                <div className="flex items-center justify-between border-b border-[#E4E7EB] pb-3">
+              <div className="bg-white rounded-2xl border border-[#EBCED6] shadow-2xl max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
+                <div className="flex items-center justify-between border-b border-[#EBCED6] pb-3">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-[#734960] bg-[#FAF4F7] px-2 py-0.5 rounded border border-[#8E687F]/30">
+                      <span className="font-mono text-xs font-bold text-[#4A355E] bg-[#F7EEF2] px-2 py-0.5 rounded border border-[#6D5284]/30">
                         {selectedTaskForDetails.orderId}
                       </span>
                       <h3 className="text-base font-bold text-[#333333]">
@@ -994,8 +996,8 @@ function TechnicianFieldContent() {
                 </div>
 
                 {/* Customer Details Box */}
-                <div className="bg-[#F5F7FA] p-4 rounded-xl border border-[#E4E7EB] space-y-2 text-xs">
-                  <h4 className="text-[11px] font-bold text-[#734960] uppercase tracking-wider">
+                <div className="bg-[#F7EEF2] p-4 rounded-xl border border-[#EBCED6] space-y-2 text-xs">
+                  <h4 className="text-[11px] font-bold text-[#4A355E] uppercase tracking-wider">
                     Customer Submitted Details
                   </h4>
                   <div className="space-y-1">
@@ -1033,19 +1035,19 @@ function TechnicianFieldContent() {
                     <button
                       type="button"
                       onClick={() => proofFileInputRef.current?.click()}
-                      className="w-full border-2 border-dashed border-[#8E687F]/40 hover:border-[#734960] rounded-xl p-4 text-center bg-[#F5F7FA] hover:bg-[#FAF4F7] transition flex flex-col items-center justify-center gap-1 text-[#734960] font-bold"
+                      className="w-full border-2 border-dashed border-[#6D5284]/40 hover:border-[#4A355E] rounded-xl p-4 text-center bg-[#F7EEF2] hover:bg-[#F7EEF2] transition flex flex-col items-center justify-center gap-1 text-[#4A355E] font-bold"
                     >
                       <span className="text-2xl">📸</span>
                       <span>Snap or Upload Photo of Completed Work</span>
                       <span className="text-[10px] text-[#666666] font-normal">Takes high-res photo for Admin &amp; Customer records</span>
                     </button>
                   ) : (
-                    <div className="p-3 bg-[#FAF4F7] border border-[#8E687F]/30 rounded-xl flex items-center justify-between">
+                    <div className="p-3 bg-[#F7EEF2] border border-[#6D5284]/30 rounded-xl flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <img
                           src={uploadProofPhoto || selectedTaskForDetails.completionProofPhoto}
                           alt="Proof"
-                          className="w-16 h-16 object-cover rounded-lg border border-[#E4E7EB] bg-white"
+                          className="w-16 h-16 object-cover rounded-lg border border-[#EBCED6] bg-white"
                         />
                         <div>
                           <p className="font-bold text-[#333333]">{uploadProofName || "Completion Proof Attached"}</p>
@@ -1077,16 +1079,16 @@ function TechnicianFieldContent() {
                     placeholder="e.g. Inverter communication cable replaced. Measured AC voltage at 238V. Net-meter sync verified."
                     value={workNotesInput || selectedTaskForDetails.workNotes || ""}
                     onChange={(e) => setWorkNotesInput(e.target.value)}
-                    className="w-full px-3 py-1.5 border border-[#E4E7EB] rounded-xl focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                    className="w-full px-3 py-1.5 border border-[#EBCED6] rounded-xl focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none"
                   />
                 </div>
 
                 {/* Modal Action Buttons */}
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E4E7EB]">
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#EBCED6]">
                   <button
                     type="button"
                     onClick={() => setSelectedTaskForDetails(null)}
-                    className="px-4 py-2 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#333333] font-semibold rounded-xl text-xs transition"
+                    className="px-4 py-2 bg-[#F7EEF2] hover:bg-[#EBCED6] text-[#333333] font-semibold rounded-xl text-xs transition"
                   >
                     Close
                   </button>

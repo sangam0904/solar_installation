@@ -25,7 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#F5F7FA] text-[#333333]">
+      <body className="min-h-full flex flex-col bg-[#F7EEF2] text-[#261C33] font-sans antialiased selection:bg-[#B39CCB]/40 selection:text-[#4A355E]">
         <AuthProvider>
           <NavProvider>{children}</NavProvider>
         </AuthProvider>

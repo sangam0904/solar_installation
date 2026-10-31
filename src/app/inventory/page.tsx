@@ -1,5 +1,7 @@
 "use client";
 
+import { WarehouseIcon, SearchIcon, PlusIcon, PackageIcon } from "@/components/Icons";
+
 import { useState } from "react";
 import PageShell from "@/components/PageShell";
 import { inventory as initialInventory, InventoryItem } from "@/data/mockData";
@@ -97,13 +99,13 @@ export default function InventoryPage() {
       case "Reserved":
         return "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860]/40";
       case "Dispatched":
-        return "bg-[#FAF4F7] text-[#8E687F] border-[#8E687F]/30";
+        return "bg-[#F7EEF2] text-[#6D5284] border-[#6D5284]/30";
       case "Installed":
-        return "bg-[#FAF4F7] text-[#734960] border-[#734960]/30";
+        return "bg-[#F7EEF2] text-[#4A355E] border-[#4A355E]/30";
       case "Defective":
         return "bg-[#FEF2F2] text-[#DC2626] border-red-200";
       default:
-        return "bg-[#F5F7FA] text-[#666666] border-[#E4E7EB]";
+        return "bg-[#F7EEF2] text-[#666666] border-[#EBCED6]";
     }
   };
 
@@ -113,7 +115,7 @@ export default function InventoryPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-[#333333] flex items-center gap-2">
-            <span>🏭</span> Warehouse Inventory & Serial Registry
+            <WarehouseIcon className="w-6 h-6 text-[#4A355E]" /> Warehouse Inventory & Serial Registry
           </h1>
           <p className="text-xs sm:text-sm text-[#666666] mt-0.5">
             Real-time equipment tracking by unique serial numbers, bays, and customer allocations
@@ -122,13 +124,13 @@ export default function InventoryPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setSearchSerial("INV-5K-OG-9921")}
-            className="px-3 py-1.5 bg-white hover:bg-[#F5F7FA] text-[#734960] border border-[#734960]/30 rounded-xl text-xs font-semibold shadow-xs transition"
+            className="px-3 py-1.5 bg-white hover:bg-[#F7EEF2] text-[#4A355E] border border-[#4A355E]/30 rounded-xl text-xs font-semibold shadow-xs transition"
           >
             🔍 Test Scan (Inverter)
           </button>
           <button
             onClick={() => setShowAddModal(true)}
-            className="px-4 py-2 bg-[#734960] hover:bg-[#5A354A] text-white rounded-xl text-xs font-semibold shadow-xs transition"
+            className="px-4 py-2 bg-[#4A355E] hover:bg-[#372447] text-white rounded-xl text-xs font-semibold shadow-xs transition"
           >
             + Add Stock Unit
           </button>
@@ -137,27 +139,27 @@ export default function InventoryPage() {
 
       {/* KPI Stock Counts */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <div className="bg-white p-4 rounded-2xl border border-[#E4E7EB] border-t-4 border-t-[#78B77B] shadow-xs text-center">
+        <div className="bg-white p-4 rounded-2xl border border-[#EBCED6] border-t-4 border-t-[#78B77B] shadow-xs text-center">
           <p className="text-[11px] font-bold text-[#666666] uppercase tracking-wider">In Stock</p>
           <p className="text-2xl font-extrabold text-[#78B77B] mt-1">{stats.inStock}</p>
           <span className="text-[10px] text-[#666666]">Ready to dispatch</span>
         </div>
-        <div className="bg-white p-4 rounded-2xl border border-[#E4E7EB] border-t-4 border-t-[#F4B860] shadow-xs text-center">
+        <div className="bg-white p-4 rounded-2xl border border-[#EBCED6] border-t-4 border-t-[#F4B860] shadow-xs text-center">
           <p className="text-[11px] font-bold text-[#666666] uppercase tracking-wider">Reserved</p>
           <p className="text-2xl font-extrabold text-[#DA9B40] mt-1">{stats.reserved}</p>
           <span className="text-[10px] text-[#666666]">Assigned to orders</span>
         </div>
-        <div className="bg-white p-4 rounded-2xl border border-[#E4E7EB] border-t-4 border-t-[#8E687F] shadow-xs text-center">
+        <div className="bg-white p-4 rounded-2xl border border-[#EBCED6] border-t-4 border-t-[#6D5284] shadow-xs text-center">
           <p className="text-[11px] font-bold text-[#666666] uppercase tracking-wider">Dispatched</p>
-          <p className="text-2xl font-extrabold text-[#8E687F] mt-1">{stats.dispatched}</p>
+          <p className="text-2xl font-extrabold text-[#6D5284] mt-1">{stats.dispatched}</p>
           <span className="text-[10px] text-[#666666]">On delivery truck</span>
         </div>
-        <div className="bg-white p-4 rounded-2xl border border-[#E4E7EB] border-t-4 border-t-[#734960] shadow-xs text-center">
+        <div className="bg-white p-4 rounded-2xl border border-[#EBCED6] border-t-4 border-t-[#4A355E] shadow-xs text-center">
           <p className="text-[11px] font-bold text-[#666666] uppercase tracking-wider">Installed</p>
-          <p className="text-2xl font-extrabold text-[#734960] mt-1">{stats.installed}</p>
+          <p className="text-2xl font-extrabold text-[#4A355E] mt-1">{stats.installed}</p>
           <span className="text-[10px] text-[#666666]">Live at client site</span>
         </div>
-        <div className="bg-white p-4 rounded-2xl border border-[#E4E7EB] border-t-4 border-t-red-400 shadow-xs text-center">
+        <div className="bg-white p-4 rounded-2xl border border-[#EBCED6] border-t-4 border-t-red-400 shadow-xs text-center">
           <p className="text-[11px] font-bold text-[#666666] uppercase tracking-wider">Defective</p>
           <p className="text-2xl font-extrabold text-[#DC2626] mt-1">{stats.defective}</p>
           <span className="text-[10px] text-[#DC2626] font-bold">RMA Bay</span>
@@ -165,7 +167,7 @@ export default function InventoryPage() {
       </div>
 
       {/* Serial Number Lookup Box */}
-      <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] shadow-xs space-y-4">
+      <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] shadow-xs space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div>
             <h3 className="text-sm font-bold text-[#333333] flex items-center gap-1.5">
@@ -181,12 +183,12 @@ export default function InventoryPage() {
               placeholder="Type Serial (e.g. INV-5K-OG-9921)..."
               value={searchSerial}
               onChange={(e) => setSearchSerial(e.target.value)}
-              className="px-3.5 py-1.5 text-xs bg-[#F5F7FA] border border-[#E4E7EB] rounded-xl focus:ring-2 focus:ring-[#734960]/30 focus:outline-none w-64 shadow-xs font-mono"
+              className="px-3.5 py-1.5 text-xs bg-[#F7EEF2] border border-[#EBCED6] rounded-xl focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none w-64 shadow-xs font-mono"
             />
             {searchSerial && (
               <button
                 onClick={() => setSearchSerial("")}
-                className="px-2.5 py-1.5 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#666666] text-xs font-bold rounded-xl border border-[#E4E7EB]"
+                className="px-2.5 py-1.5 bg-[#F7EEF2] hover:bg-[#EBCED6] text-[#666666] text-xs font-bold rounded-xl border border-[#EBCED6]"
               >
                 Clear
               </button>
@@ -196,11 +198,11 @@ export default function InventoryPage() {
 
         {/* If searched item found, show special card */}
         {searchedItem && (
-          <div className="bg-[#FAF4F7] p-4 rounded-xl border-2 border-[#734960] shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-in fade-in">
+          <div className="bg-[#F7EEF2] p-4 rounded-xl border-2 border-[#4A355E] shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-in fade-in">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-[#333333] text-sm">{searchedItem.name}</span>
-                <span className="px-2 py-0.5 text-[10px] rounded-full bg-[#734960] text-white font-bold">
+                <span className="px-2 py-0.5 text-[10px] rounded-full bg-[#4A355E] text-white font-bold">
                   {searchedItem.category}
                 </span>
                 <span className={`px-2 py-0.5 text-[10px] rounded-full border ${getStatusBadge(searchedItem.status)}`}>
@@ -209,7 +211,7 @@ export default function InventoryPage() {
               </div>
               <p className="text-xs font-mono text-[#666666]">Serial: {searchedItem.serialNumber}</p>
               <p className="text-xs text-[#333333]">
-                Customer: <strong className="text-[#734960]">{searchedItem.linkedCustomer || "Not Assigned"}</strong> • Order: {searchedItem.linkedOrder || "N/A"}
+                Customer: <strong className="text-[#4A355E]">{searchedItem.linkedCustomer || "Not Assigned"}</strong> • Order: {searchedItem.linkedOrder || "N/A"}
               </p>
             </div>
 
@@ -232,8 +234,8 @@ export default function InventoryPage() {
             onClick={() => setSelectedCategory(cat)}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition border ${
               selectedCategory === cat
-                ? "bg-[#734960] text-white border-[#734960] shadow-xs"
-                : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
+                ? "bg-[#4A355E] text-white border-[#4A355E] shadow-xs"
+                : "bg-white text-[#666666] border-[#EBCED6] hover:bg-[#F7EEF2]"
             }`}
           >
             {cat === "All" ? "📦 All Items" : cat}
@@ -242,8 +244,8 @@ export default function InventoryPage() {
       </div>
 
       {/* Inventory Table */}
-      <div className="bg-white rounded-2xl border border-[#E4E7EB] shadow-xs overflow-hidden">
-        <div className="px-5 py-3.5 border-b border-[#E4E7EB] bg-[#F5F7FA] flex items-center justify-between">
+      <div className="bg-white rounded-2xl border border-[#EBCED6] shadow-xs overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-[#EBCED6] bg-[#F7EEF2] flex items-center justify-between">
           <h2 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
             Equipment Stock Registry ({filteredItems.length})
           </h2>
@@ -251,7 +253,7 @@ export default function InventoryPage() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F5F7FA] text-[#666666] font-semibold border-b border-[#E4E7EB]">
+            <thead className="bg-[#F7EEF2] text-[#666666] font-semibold border-b border-[#EBCED6]">
               <tr>
                 <th className="px-4 py-2.5">Item ID</th>
                 <th className="px-4 py-2.5">Equipment / Specification</th>
@@ -262,9 +264,9 @@ export default function InventoryPage() {
                 <th className="px-4 py-2.5 text-right">Unit Cost</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E4E7EB]/60">
+            <tbody className="divide-y divide-[#EBCED6]/60">
               {filteredItems.map((item) => (
-                <tr key={item.id} className="hover:bg-[#F5F7FA] transition-colors">
+                <tr key={item.id} className="hover:bg-[#F7EEF2] transition-colors">
                   <td className="px-4 py-3 font-mono text-[11px] text-[#666666]">{item.id}</td>
                   <td className="px-4 py-3">
                     <div className="font-bold text-[#333333]">{item.name}</div>
@@ -272,7 +274,7 @@ export default function InventoryPage() {
                     <div className="text-[10px] text-gray-400">Supplier: {item.supplier}</div>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="inline-flex items-center gap-1.5 bg-[#F5F7FA] border border-[#E4E7EB] px-2 py-0.5 rounded-lg">
+                    <div className="inline-flex items-center gap-1.5 bg-[#F7EEF2] border border-[#EBCED6] px-2 py-0.5 rounded-lg">
                       <span className="font-mono text-[11px] text-[#333333]">{item.serialNumber}</span>
                       <button
                         onClick={() => handleCopy(item.serialNumber, item.id)}
@@ -292,7 +294,7 @@ export default function InventoryPage() {
                   <td className="px-4 py-3">
                     {item.linkedCustomer ? (
                       <div>
-                        <span className="font-bold text-[#734960]">{item.linkedCustomer}</span>
+                        <span className="font-bold text-[#4A355E]">{item.linkedCustomer}</span>
                         <div className="text-[10px] text-[#666666] font-mono">{item.linkedOrder}</div>
                       </div>
                     ) : (
@@ -312,8 +314,8 @@ export default function InventoryPage() {
       {/* ADD STOCK MODAL */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-[#E4E7EB] space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#E4E7EB]">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-[#EBCED6] space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#EBCED6]">
               <h3 className="text-base font-bold text-[#333333]">Receive New Hardware Unit</h3>
               <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-[#333333] text-lg font-bold">
                 ✕
@@ -329,7 +331,7 @@ export default function InventoryPage() {
                     const cat = e.target.value as InventoryItem["category"];
                     setFormData({ ...formData, category: cat });
                   }}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs"
+                  className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs"
                 >
                   <option value="Panel">Panel</option>
                   <option value="Inverter">Inverter</option>
@@ -346,7 +348,7 @@ export default function InventoryPage() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold"
+                  className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-semibold"
                   required
                 />
               </div>
@@ -363,7 +365,7 @@ export default function InventoryPage() {
                         serialNumber: `${prefix}-SN-2026-${Math.floor(1000 + Math.random() * 9000)}`,
                       });
                     }}
-                    className="text-[#734960] hover:underline text-[11px]"
+                    className="text-[#4A355E] hover:underline text-[11px]"
                   >
                     ⚡ Auto-Generate
                   </button>
@@ -373,7 +375,7 @@ export default function InventoryPage() {
                   placeholder="e.g. INV-5K-OG-9988"
                   value={formData.serialNumber}
                   onChange={(e) => setFormData({ ...formData, serialNumber: e.target.value })}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-mono"
+                  className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-mono"
                   required
                 />
               </div>
@@ -385,7 +387,7 @@ export default function InventoryPage() {
                     type="number"
                     value={formData.purchasePrice}
                     onChange={(e) => setFormData({ ...formData, purchasePrice: Number(e.target.value) })}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-semibold"
                     required
                   />
                 </div>
@@ -395,7 +397,7 @@ export default function InventoryPage() {
                     type="text"
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs"
                   />
                 </div>
               </div>
@@ -404,13 +406,13 @@ export default function InventoryPage() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-3.5 py-1.5 border border-[#E4E7EB] text-[#666666] rounded-xl text-xs font-semibold hover:bg-[#F5F7FA]"
+                  className="px-3.5 py-1.5 border border-[#EBCED6] text-[#666666] rounded-xl text-xs font-semibold hover:bg-[#F7EEF2]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#734960] hover:bg-[#5A354A] text-white rounded-xl text-xs font-bold shadow-xs"
+                  className="px-4 py-1.5 bg-[#4A355E] hover:bg-[#372447] text-white rounded-xl text-xs font-bold shadow-xs"
                 >
                   Save to Inventory
                 </button>

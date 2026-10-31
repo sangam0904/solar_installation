@@ -224,13 +224,13 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
       {/* ──────────────────────────────────────────────────────────── */}
       {/* DELIVERY APP HORIZONTAL PROGRESS BAR WITH MOVING STEPPER PIN */}
       {/* ──────────────────────────────────────────────────────────── */}
-      <div className="p-4 sm:p-6 bg-gradient-to-b from-[#FAFDFB] to-white border-b border-[#E4E7EB]">
+      <div className="p-4 sm:p-6 bg-gradient-to-b from-[#FAFDFB] to-white border-b border-[#EBCED6]">
         {/* Step indicator header */}
         <div className="flex items-center justify-between text-xs font-bold text-[#666666] mb-4">
           <span className="flex items-center gap-1 text-[#5B965E]">
             <span>🚚</span> Solar Delivery &amp; Rooftop Commissioning Track
           </span>
-          <span className="text-[11px] text-[#734960] font-semibold">
+          <span className="text-[11px] text-[#4A355E] font-semibold">
             {currentStep === 6 ? "Plant 100% Commissioned" : `Active: Step ${currentStep} (${activeMilestone.shortLabel})`}
           </span>
         </div>
@@ -326,7 +326,7 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
             >
               ◀ Previous Stage
             </button>
-            <span className="px-2 py-1 bg-[#F5F7FA] font-mono font-bold text-[11px] text-[#734960] rounded-lg">
+            <span className="px-2 py-1 bg-[#F7EEF2] font-mono font-bold text-[11px] text-[#4A355E] rounded-lg">
               Stage {currentStep} / 6
             </span>
             <button
@@ -350,15 +350,15 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
       {isExpanded && (
         <div className="p-4 sm:p-6 bg-white space-y-5 animate-in fade-in duration-300">
           {/* Active Stage Live Description Banner */}
-          <div className="bg-[#FAF4F7] border border-[#8E687F]/20 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="bg-[#F7EEF2] border border-[#6D5284]/20 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-start gap-3">
               <span className="text-2xl mt-0.5">{viewedMilestone.icon}</span>
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h4 className="text-sm font-extrabold text-[#734960]">
+                  <h4 className="text-sm font-extrabold text-[#4A355E]">
                     Stage {viewedMilestone.stepNumber}: {viewedMilestone.name}
                   </h4>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-[#734960] border border-[#8E687F]/30">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-[#4A355E] border border-[#6D5284]/30">
                     {viewedMilestone.statusBadge}
                   </span>
                 </div>
@@ -368,9 +368,9 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
               </div>
             </div>
 
-            <div className="flex-shrink-0 text-right sm:border-l sm:border-[#8E687F]/20 sm:pl-4">
-              <span className="text-[10px] font-bold text-[#8E687F] uppercase block">Stage Status</span>
-              <span className="text-xs font-black text-[#734960]">
+            <div className="flex-shrink-0 text-right sm:border-l sm:border-[#6D5284]/20 sm:pl-4">
+              <span className="text-[10px] font-bold text-[#6D5284] uppercase block">Stage Status</span>
+              <span className="text-xs font-black text-[#4A355E]">
                 {viewedMilestone.stepNumber < currentStep
                   ? "✓ Verified Done"
                   : viewedMilestone.stepNumber === currentStep
@@ -400,7 +400,7 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
                     className={`flex items-start gap-3 p-3 rounded-xl border transition ${
                       cp.done
                         ? "bg-[#FAFDFB] border-[#78B77B]/30"
-                        : "bg-[#F5F7FA] border-[#E4E7EB] opacity-75"
+                        : "bg-[#F7EEF2] border-[#EBCED6] opacity-75"
                     }`}
                   >
                     <div

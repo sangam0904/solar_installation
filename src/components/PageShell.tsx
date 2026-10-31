@@ -48,16 +48,16 @@ function PageBreadcrumbBar() {
 
   return (
     <div className="flex items-center justify-between py-1 px-1 -mt-2 mb-2 print:hidden">
-      <div className="text-[11px] font-semibold text-[#8E687F] flex items-center gap-1.5">
-        <Link href="/" className="hover:underline text-[#666666]">
+      <div className="text-[11px] font-semibold text-[#6D5284] flex items-center gap-1.5">
+        <Link href="/" className="hover:underline text-[#8D73A8]">
           Home
         </Link>
-        <span>/</span>
-        <Link href={meta.parentHref} className="hover:underline text-[#666666]">
+        <span className="text-[#B39CCB]">/</span>
+        <Link href={meta.parentHref} className="hover:underline text-[#8D73A8]">
           {meta.parent}
         </Link>
-        <span>/</span>
-        <span className="text-[#734960] font-bold">{meta.title}</span>
+        <span className="text-[#B39CCB]">/</span>
+        <span className="text-[#4A355E] font-bold">{meta.title}</span>
       </div>
     </div>
   );
@@ -67,12 +67,24 @@ export default function PageShell({ children }: PageShellProps) {
   const { isNavOpen } = useNav();
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] text-[#333333] flex">
+    <div className="min-h-screen bg-[#F7EEF2] text-[#261C33] flex relative overflow-x-hidden">
+      {/* Blurry Solar Panel Thematic Background */}
+      <div
+        className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
+        aria-hidden="true"
+      >
+        <div
+          className="w-full h-full bg-cover bg-center opacity-35 filter blur-lg scale-105"
+          style={{ backgroundImage: `url('/solar-panel-bg.svg')` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#F7EEF2]/75 via-[#F7EEF2]/90 to-[#F7EEF2]" />
+      </div>
+
       <Sidebar />
       <div
         className={`flex-1 transition-all duration-300 ${
           isNavOpen ? "ml-[200px]" : "ml-[64px]"
-        } min-w-0 flex flex-col`}
+        } min-w-0 flex flex-col relative z-10`}
       >
         <Header />
         <main className="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-4">

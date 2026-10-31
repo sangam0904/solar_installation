@@ -1,5 +1,7 @@
 "use client";
 
+import { PackageIcon, SearchIcon, PlusIcon } from "@/components/Icons";
+
 import { useState } from "react";
 import PageShell from "@/components/PageShell";
 import { orders as initialOrders, Order } from "@/data/mockData";
@@ -99,7 +101,7 @@ export default function OrdersPage() {
       case "Confirmed":
         return "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860]/40";
       case "Dispatched":
-        return "bg-[#FAF4F7] text-[#734960] border-[#8E687F]/30";
+        return "bg-[#F7EEF2] text-[#4A355E] border-[#6D5284]/30";
       case "Installation Scheduled":
         return "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860]/40";
       case "Installed":
@@ -107,7 +109,7 @@ export default function OrdersPage() {
       case "Completed":
         return "bg-[#EBF5EC] text-[#5B965E] border-[#78B77B]/40";
       default:
-        return "bg-[#F5F7FA] text-[#666666] border-[#E4E7EB]";
+        return "bg-[#F7EEF2] text-[#666666] border-[#EBCED6]";
     }
   };
 
@@ -117,7 +119,7 @@ export default function OrdersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-[#333333] flex items-center gap-2">
-            <span>📦</span> Orders & Warehouse Dispatch
+            <PackageIcon className="w-6 h-6 text-[#4A355E]" /> Orders & Warehouse Dispatch
           </h1>
           <p className="text-xs sm:text-sm text-[#666666] mt-0.5">
             Track payments, scan hardware serial numbers, and schedule installation crews
@@ -125,7 +127,7 @@ export default function OrdersPage() {
         </div>
         <button
           onClick={() => alert("Converting approved quote into an order...")}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#734960] hover:bg-[#5A354A] text-white font-semibold rounded-xl text-xs shadow-xs transition"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#4A355E] hover:bg-[#372447] text-white font-semibold rounded-xl text-xs shadow-xs transition"
         >
           <span>+</span> Create New Order
         </button>
@@ -133,20 +135,20 @@ export default function OrdersPage() {
 
       {/* Top KPI Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#8E687F] shadow-xs">
+        <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#6D5284] shadow-xs">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold text-[#666666] uppercase tracking-wider">Total Active Orders</p>
               <p className="text-2xl font-extrabold text-[#333333] mt-1">{stats.total}</p>
             </div>
-            <div className="w-11 h-11 bg-[#FAF4F7] text-[#8E687F] rounded-xl flex items-center justify-center text-xl font-bold">
+            <div className="w-11 h-11 bg-[#F7EEF2] text-[#6D5284] rounded-xl flex items-center justify-center text-xl font-bold">
               📋
             </div>
           </div>
-          <p className="text-[11px] text-[#734960] mt-3 font-semibold">Synced with Quotations</p>
+          <p className="text-[11px] text-[#4A355E] mt-3 font-semibold">Synced with Quotations</p>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#F4B860] shadow-xs">
+        <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#F4B860] shadow-xs">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold text-[#666666] uppercase tracking-wider">Pending Dispatch</p>
@@ -159,20 +161,20 @@ export default function OrdersPage() {
           <p className="text-[11px] text-[#666666] mt-3">Needs warehouse scan & pick</p>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#8E687F] shadow-xs">
+        <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#6D5284] shadow-xs">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold text-[#666666] uppercase tracking-wider">In Installation</p>
-              <p className="text-2xl font-extrabold text-[#734960] mt-1">{stats.inProgress}</p>
+              <p className="text-2xl font-extrabold text-[#4A355E] mt-1">{stats.inProgress}</p>
             </div>
-            <div className="w-11 h-11 bg-[#FAF4F7] text-[#734960] rounded-xl flex items-center justify-center text-xl font-bold">
+            <div className="w-11 h-11 bg-[#F7EEF2] text-[#4A355E] rounded-xl flex items-center justify-center text-xl font-bold">
               👷
             </div>
           </div>
           <p className="text-[11px] text-[#666666] mt-3">Active technician crews on-site</p>
         </div>
 
-        <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#78B77B] shadow-xs">
+        <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#78B77B] shadow-xs">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold text-[#666666] uppercase tracking-wider">Installed / Done</p>
@@ -187,7 +189,7 @@ export default function OrdersPage() {
       </div>
 
       {/* Interactive Pipeline Step Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-[#E4E7EB] shadow-xs space-y-3">
+      <div className="bg-white p-4 rounded-2xl border border-[#EBCED6] shadow-xs space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
             Order Lifecycle Filter
@@ -200,8 +202,8 @@ export default function OrdersPage() {
             onClick={() => setFilterStatus("All")}
             className={`py-1.5 px-3 text-xs font-bold rounded-xl border text-center transition ${
               filterStatus === "All"
-                ? "bg-[#734960] text-white border-[#734960] shadow-xs"
-                : "bg-[#F5F7FA] text-[#666666] border-[#E4E7EB] hover:bg-gray-100"
+                ? "bg-[#4A355E] text-white border-[#4A355E] shadow-xs"
+                : "bg-[#F7EEF2] text-[#666666] border-[#EBCED6] hover:bg-gray-100"
             }`}
           >
             All ({ordersList.length})
@@ -215,12 +217,12 @@ export default function OrdersPage() {
                 onClick={() => setFilterStatus(stage)}
                 className={`py-1.5 px-2 text-xs font-bold rounded-xl border text-center transition flex items-center justify-center gap-1.5 ${
                   isSelected
-                    ? "bg-[#8E687F] text-white border-[#8E687F] shadow-xs"
-                    : "bg-[#F5F7FA] text-[#666666] border-[#E4E7EB] hover:bg-gray-100"
+                    ? "bg-[#6D5284] text-white border-[#6D5284] shadow-xs"
+                    : "bg-[#F7EEF2] text-[#666666] border-[#EBCED6] hover:bg-gray-100"
                 }`}
               >
                 <span className="truncate">{stage}</span>
-                <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${isSelected ? "bg-white text-[#8E687F]" : "bg-gray-200 text-[#333333]"}`}>
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${isSelected ? "bg-white text-[#6D5284]" : "bg-gray-200 text-[#333333]"}`}>
                   {count}
                 </span>
               </button>
@@ -230,8 +232,8 @@ export default function OrdersPage() {
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white rounded-2xl border border-[#E4E7EB] shadow-xs overflow-hidden">
-        <div className="px-5 py-3.5 border-b border-[#E4E7EB] bg-[#F5F7FA] flex items-center justify-between">
+      <div className="bg-white rounded-2xl border border-[#EBCED6] shadow-xs overflow-hidden">
+        <div className="px-5 py-3.5 border-b border-[#EBCED6] bg-[#F7EEF2] flex items-center justify-between">
           <h2 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
             Active Order Directory ({filteredOrders.length})
           </h2>
@@ -239,7 +241,7 @@ export default function OrdersPage() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F5F7FA] text-[#666666] font-semibold border-b border-[#E4E7EB]">
+            <thead className="bg-[#F7EEF2] text-[#666666] font-semibold border-b border-[#EBCED6]">
               <tr>
                 <th className="px-4 py-2.5">Order ID</th>
                 <th className="px-4 py-2.5">Customer & Location</th>
@@ -251,10 +253,10 @@ export default function OrdersPage() {
                 <th className="px-4 py-2.5 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E4E7EB]/60">
+            <tbody className="divide-y divide-[#EBCED6]/60">
               {filteredOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-[#F5F7FA] transition-colors">
-                  <td className="px-4 py-3 font-mono font-bold text-[#734960]">{order.id}</td>
+                <tr key={order.id} className="hover:bg-[#F7EEF2] transition-colors">
+                  <td className="px-4 py-3 font-mono font-bold text-[#4A355E]">{order.id}</td>
                   <td className="px-4 py-3">
                     <div className="font-bold text-[#333333]">{order.customerName}</div>
                     <div className="text-[11px] text-[#666666]">{order.phone}</div>
@@ -312,7 +314,7 @@ export default function OrdersPage() {
                         setSelectedOrder(order);
                         setShowPaymentModal(true);
                       }}
-                      className="px-2.5 py-1 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#333333] text-[11px] font-semibold rounded-lg border border-[#E4E7EB] transition"
+                      className="px-2.5 py-1 bg-[#F7EEF2] hover:bg-[#EBCED6] text-[#333333] text-[11px] font-semibold rounded-lg border border-[#EBCED6] transition"
                     >
                       💳 Ledger
                     </button>
@@ -327,8 +329,8 @@ export default function OrdersPage() {
       {/* DISPATCH SCANNER MODAL */}
       {showDispatchModal && dispatchOrder && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#E4E7EB] space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#E4E7EB]">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#EBCED6] space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#EBCED6]">
               <div className="flex items-center gap-2.5">
                 <span className="text-xl">📦</span>
                 <div>
@@ -360,12 +362,12 @@ export default function OrdersPage() {
                   placeholder="e.g. INV-5K-OG-9921"
                   value={inverterSerial}
                   onChange={(e) => setInverterSerial(e.target.value)}
-                  className="flex-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-mono focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                  className="flex-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-mono focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => handleSimulateScan("inverter")}
-                  className="px-3 py-1.5 bg-[#734960] hover:bg-[#5A354A] text-white rounded-xl text-xs font-semibold flex items-center gap-1 shadow-xs transition"
+                  className="px-3 py-1.5 bg-[#4A355E] hover:bg-[#372447] text-white rounded-xl text-xs font-semibold flex items-center gap-1 shadow-xs transition"
                 >
                   📷 Scan Barcode
                 </button>
@@ -385,7 +387,7 @@ export default function OrdersPage() {
                     placeholder="e.g. BAT-LFP-48V-3321"
                     value={batterySerial}
                     onChange={(e) => setBatterySerial(e.target.value)}
-                    className="flex-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-mono focus:ring-2 focus:ring-[#F4B860]/30 focus:outline-none"
+                    className="flex-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-mono focus:ring-2 focus:ring-[#F4B860]/30 focus:outline-none"
                   />
                   <button
                     type="button"
@@ -399,7 +401,7 @@ export default function OrdersPage() {
             )}
 
             {scannerActive && (
-              <div className="p-2.5 bg-[#FAF4F7] border border-[#8E687F]/30 rounded-xl text-center text-xs text-[#734960] animate-pulse font-medium">
+              <div className="p-2.5 bg-[#F7EEF2] border border-[#6D5284]/30 rounded-xl text-center text-xs text-[#4A355E] animate-pulse font-medium">
                 Scanning device camera / barcode reader...
               </div>
             )}
@@ -414,7 +416,7 @@ export default function OrdersPage() {
               <button
                 type="button"
                 onClick={() => setShowDispatchModal(false)}
-                className="px-3.5 py-1.5 border border-[#E4E7EB] text-[#666666] rounded-xl text-xs font-semibold hover:bg-[#F5F7FA]"
+                className="px-3.5 py-1.5 border border-[#EBCED6] text-[#666666] rounded-xl text-xs font-semibold hover:bg-[#F7EEF2]"
               >
                 Cancel
               </button>
@@ -434,8 +436,8 @@ export default function OrdersPage() {
       {/* PAYMENT & ORDER DETAILS MODAL */}
       {showPaymentModal && selectedOrder && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-[#E4E7EB] space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[#E4E7EB]">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-[#EBCED6] space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#EBCED6]">
               <div>
                 <h3 className="text-base font-bold text-[#333333]">Order Ledger & Milestone</h3>
                 <p className="text-xs text-[#666666]">{selectedOrder.id} • {selectedOrder.customerName}</p>
@@ -448,16 +450,16 @@ export default function OrdersPage() {
               </button>
             </div>
 
-            <div className="bg-[#F5F7FA] p-3.5 rounded-2xl space-y-2 text-xs border border-[#E4E7EB]">
+            <div className="bg-[#F7EEF2] p-3.5 rounded-2xl space-y-2 text-xs border border-[#EBCED6]">
               <div className="flex justify-between text-[#666666]">
                 <span>System Specs:</span>
                 <span className="font-semibold text-[#333333]">{selectedOrder.capacity} ({selectedOrder.gridType})</span>
               </div>
               <div className="flex justify-between text-[#666666]">
                 <span>Technician:</span>
-                <span className="font-semibold text-[#8E687F]">{selectedOrder.assignedTechnician}</span>
+                <span className="font-semibold text-[#6D5284]">{selectedOrder.assignedTechnician}</span>
               </div>
-              <div className="flex justify-between text-[#666666] border-t border-[#E4E7EB] pt-1.5">
+              <div className="flex justify-between text-[#666666] border-t border-[#EBCED6] pt-1.5">
                 <span>Contract Value:</span>
                 <span className="font-bold text-[#333333]">₹{selectedOrder.totalAmount.toLocaleString("en-IN")}</span>
               </div>
@@ -465,7 +467,7 @@ export default function OrdersPage() {
                 <span>Advance Paid:</span>
                 <span className="font-bold">₹{selectedOrder.advancePaid.toLocaleString("en-IN")}</span>
               </div>
-              <div className="flex justify-between text-[#DA9B40] font-bold border-t border-[#E4E7EB] pt-1 text-sm">
+              <div className="flex justify-between text-[#DA9B40] font-bold border-t border-[#EBCED6] pt-1 text-sm">
                 <span>Balance Due:</span>
                 <span>₹{selectedOrder.balanceDue.toLocaleString("en-IN")}</span>
               </div>
@@ -480,7 +482,7 @@ export default function OrdersPage() {
                     placeholder="Enter amount (₹)"
                     value={paymentAmount}
                     onChange={(e) => setPaymentAmount(e.target.value)}
-                    className="flex-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold focus:ring-2 focus:ring-[#78B77B]/30 focus:outline-none"
+                    className="flex-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-semibold focus:ring-2 focus:ring-[#78B77B]/30 focus:outline-none"
                   />
                   <button
                     onClick={handleRecordPayment}
@@ -495,7 +497,7 @@ export default function OrdersPage() {
             <div className="pt-2 flex justify-end">
               <button
                 onClick={() => setShowPaymentModal(false)}
-                className="px-4 py-1.5 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#333333] rounded-xl text-xs font-semibold border border-[#E4E7EB]"
+                className="px-4 py-1.5 bg-[#F7EEF2] hover:bg-[#EBCED6] text-[#333333] rounded-xl text-xs font-semibold border border-[#EBCED6]"
               >
                 Close
               </button>

@@ -5,22 +5,46 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useNav } from "@/context/NavContext";
 import { useAuth } from "@/context/AuthContext";
+import {
+  SunIcon,
+  DashboardIcon,
+  TrendingUpIcon,
+  HardHatIcon,
+  UsersIcon,
+  FileTextIcon,
+  PackageIcon,
+  WarehouseIcon,
+  ShieldCheckIcon,
+  WrenchIcon,
+  LandmarkIcon,
+  SettingsIcon,
+  LogOutIcon,
+  UserIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  CameraIcon,
+  AlertCircleIcon,
+  MessageSquareIcon,
+  ChartBarIcon,
+} from "@/components/Icons";
 
 const customerPortalSubItems = [
-  { name: "Solar Yield & Passbook", href: "/customer?tab=passbook", icon: "☀️", tab: "passbook" },
-  { name: "Installation Progress Report", href: "/customer?tab=progress", icon: "📊", tab: "progress" },
-  { name: "Upload Roof Photos", href: "/customer?tab=photos", icon: "📸", tab: "photos" },
-  { name: "File Service Complaint", href: "/customer?tab=complaint", icon: "🚨", tab: "complaint" },
-  { name: "Ask for Enquiry / Upgrade", href: "/customer?tab=enquiry", icon: "💬", tab: "enquiry" },
-  { name: "Digital Warranty Cards", href: "/customer?tab=warranty", icon: "🛡️", tab: "warranty" },
+  { name: "Solar Yield & Passbook", href: "/customer?tab=passbook", icon: SunIcon, tab: "passbook" },
+  { name: "Installation Progress Report", href: "/customer?tab=progress", icon: ChartBarIcon, tab: "progress" },
+  { name: "Upload Roof Photos", href: "/customer?tab=photos", icon: CameraIcon, tab: "photos" },
+  { name: "File Service Complaint", href: "/customer?tab=complaint", icon: AlertCircleIcon, tab: "complaint" },
+  { name: "Ask for Enquiry / Upgrade", href: "/customer?tab=enquiry", icon: MessageSquareIcon, tab: "enquiry" },
+  { name: "Digital Warranty Cards", href: "/customer?tab=warranty", icon: ShieldCheckIcon, tab: "warranty" },
 ];
 
 const crmSubItems = [
-  { name: "Leads Overview", href: "/leads", icon: "🎯" },
-  { name: "Quotations", href: "/quotations", icon: "📋" },
-  { name: "Orders", href: "/orders", icon: "📦" },
-  { name: "Inventory", href: "/inventory", icon: "🏭" },
-  { name: "Warranty", href: "/warranty", icon: "🛡️" },
+  { name: "Leads Overview", href: "/leads", icon: UsersIcon },
+  { name: "Quotations", href: "/quotations", icon: FileTextIcon },
+  { name: "Orders", href: "/orders", icon: PackageIcon },
+  { name: "Inventory", href: "/inventory", icon: WarehouseIcon },
+  { name: "Warranty", href: "/warranty", icon: ShieldCheckIcon },
 ];
 
 function SidebarInner() {
@@ -46,23 +70,23 @@ function SidebarInner() {
 
   return (
     <aside
-      className={`fixed top-0 left-0 h-screen bg-[#8E687F] text-white flex flex-col transition-all duration-300 z-50 shadow-md border-r border-[#7A536C] ${
+      className={`fixed top-0 left-0 h-screen bg-[#4A355E] text-white flex flex-col transition-all duration-300 z-50 shadow-md border-r border-[#6D5284] ${
         isNavOpen ? "w-[200px]" : "w-[64px]"
       }`}
     >
       {/* Header / Logo */}
-      <div className="flex items-center justify-between px-3 py-4 border-b border-[#7A536C]/70">
+      <div className="flex items-center justify-between px-3 py-4 border-b border-[#6D5284]/70">
         <Link
           href={role === "technician" ? "/technician" : role === "customer" ? "/customer" : "/"}
           className="flex items-center gap-2 overflow-hidden"
         >
-          <div className="w-8 h-8 rounded-lg bg-[#F4B860] flex items-center justify-center text-base shadow-sm flex-shrink-0">
-            ☀️
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#8D73A8] to-[#6D5284] flex items-center justify-center text-white shadow-sm flex-shrink-0 border border-[#B39CCB]/30">
+            <SunIcon className="w-4 h-4 text-white" />
           </div>
           {isNavOpen && (
             <div className="leading-tight truncate">
               <span className="font-bold text-sm tracking-wide text-white block">SunPower</span>
-              <span className="text-[10px] text-white/70 block uppercase tracking-wider">
+              <span className="text-[10px] text-[#B39CCB] block uppercase tracking-wider font-semibold">
                 {role === "technician" ? "Crew Portal" : role === "customer" ? "Homeowner" : "Admin ERP"}
               </span>
             </div>
@@ -78,13 +102,17 @@ function SidebarInner() {
           title={isNavOpen ? "Collapse Navbar" : "Expand Navbar"}
           aria-label={isNavOpen ? "Collapse Navbar" : "Expand Navbar"}
         >
-          <span className="text-xs font-bold leading-none">{isNavOpen ? "◀" : "▶"}</span>
+          {isNavOpen ? (
+            <ChevronLeftIcon className="w-4 h-4" />
+          ) : (
+            <ChevronRightIcon className="w-4 h-4" />
+          )}
         </button>
       </div>
 
       {/* Role Banner */}
       {isNavOpen && (
-        <div className="px-3 py-2 bg-[#7A536C]/40 border-b border-[#7A536C]/50 flex items-center justify-between text-[11px]">
+        <div className="px-3 py-2 bg-[#3A284B]/70 border-b border-[#6D5284]/50 flex items-center justify-between text-[11px]">
           <div className="flex items-center gap-1.5 truncate">
             {user?.profilePhoto ? (
               <img
@@ -93,15 +121,15 @@ function SidebarInner() {
                 className="w-4 h-4 rounded-full object-cover flex-shrink-0 border border-white/30"
               />
             ) : (
-              <span className="text-xs">{user?.avatar || "👤"}</span>
+              <UserIcon className="w-3.5 h-3.5 text-[#B39CCB] flex-shrink-0" />
             )}
-            <span className="text-white/80 truncate">
+            <span className="text-white/85 truncate font-medium">
               {user?.name.split(" ")[0]} ({role})
             </span>
           </div>
           <Link
             href="/login"
-            className="text-[#F4B860] hover:underline font-bold text-[10px] flex-shrink-0"
+            className="text-[#D7B6C7] hover:text-white hover:underline font-bold text-[10px] flex-shrink-0 ml-1"
             title="Switch User Role"
           >
             Switch ⇄
@@ -120,22 +148,22 @@ function SidebarInner() {
               href="/technician"
               className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-medium transition-all ${
                 pathname === "/technician"
-                  ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                  ? "bg-[#6D5284] text-white font-semibold shadow-xs border border-[#8D73A8]/50"
                   : "text-white/85 hover:bg-white/10 hover:text-white"
               }`}
             >
-              <span className="text-base flex-shrink-0">📋</span>
+              <FileTextIcon className="w-4 h-4 flex-shrink-0 text-[#B39CCB]" />
               {isNavOpen && <span className="truncate">My Assigned Tasks</span>}
             </Link>
             <Link
               href="/settings"
               className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-medium transition-all ${
                 pathname === "/settings"
-                  ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                  ? "bg-[#6D5284] text-white font-semibold shadow-xs border border-[#8D73A8]/50"
                   : "text-white/85 hover:bg-white/10 hover:text-white"
               }`}
             >
-              <span className="text-base flex-shrink-0">⚙️</span>
+              <SettingsIcon className="w-4 h-4 flex-shrink-0 text-[#B39CCB]" />
               {isNavOpen && <span className="truncate">Settings</span>}
             </Link>
           </>
@@ -150,35 +178,40 @@ function SidebarInner() {
               <div
                 className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
                   pathname === "/customer"
-                    ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                    ? "bg-[#6D5284] text-white font-semibold shadow-xs border border-[#8D73A8]/50"
                     : "text-white/85 hover:bg-white/10 hover:text-white"
                 }`}
                 onClick={() => setCustomerSubOpen(!customerSubOpen)}
               >
                 <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                  <span className="text-base flex-shrink-0">☀️</span>
+                  <SunIcon className="w-4 h-4 flex-shrink-0 text-[#B39CCB]" />
                   {isNavOpen && <span className="truncate">My Solar Portal</span>}
                 </div>
                 {isNavOpen && (
-                  <span className="text-[10px] text-white/70">{customerSubOpen ? "▲" : "▼"}</span>
+                  customerSubOpen ? (
+                    <ChevronUpIcon className="w-3.5 h-3.5 text-white/70" />
+                  ) : (
+                    <ChevronDownIcon className="w-3.5 h-3.5 text-white/70" />
+                  )
                 )}
               </div>
 
               {isNavOpen && customerSubOpen && (
-                <div className="ml-4 pl-2 mt-1 space-y-1 border-l-2 border-[#F4B860]/40">
+                <div className="ml-4 pl-2 mt-1 space-y-1 border-l-2 border-[#B39CCB]/40">
                   {customerPortalSubItems.map((sub) => {
                     const isSubActive = pathname === "/customer" && activeTabParam === sub.tab;
+                    const SubIcon = sub.icon;
                     return (
                       <Link
                         key={sub.name}
                         href={sub.href}
                         className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition ${
                           isSubActive
-                            ? "bg-white/20 text-[#F4B860] font-bold"
+                            ? "bg-white/20 text-[#D7B6C7] font-bold"
                             : "text-white/80 hover:bg-white/10 hover:text-white"
                         }`}
                       >
-                        <span className="text-xs">{sub.icon}</span>
+                        <SubIcon className="w-3.5 h-3.5 flex-shrink-0" />
                         <span className="truncate">{sub.name}</span>
                       </Link>
                     );
@@ -191,11 +224,11 @@ function SidebarInner() {
               href="/settings"
               className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-medium transition-all ${
                 pathname === "/settings"
-                  ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                  ? "bg-[#6D5284] text-white font-semibold shadow-xs border border-[#8D73A8]/50"
                   : "text-white/85 hover:bg-white/10 hover:text-white"
               }`}
             >
-              <span className="text-base flex-shrink-0">⚙️</span>
+              <SettingsIcon className="w-4 h-4 flex-shrink-0 text-[#B39CCB]" />
               {isNavOpen && <span className="truncate">Settings</span>}
             </Link>
           </>
@@ -211,9 +244,9 @@ function SidebarInner() {
               <div
                 className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
                   pathname === "/"
-                    ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                    ? "bg-[#6D5284] text-white font-semibold shadow-xs border border-[#8D73A8]/50"
                     : isDashboardArea
-                    ? "bg-[#734960]/60 text-white font-semibold border border-[#5A354A]/50"
+                    ? "bg-[#6D5284]/60 text-white font-semibold border border-[#8D73A8]/30"
                     : "text-white/85 hover:bg-white/10 hover:text-white"
                 }`}
                 onClick={() => {
@@ -224,29 +257,31 @@ function SidebarInner() {
                 title={!isNavOpen ? "Dashboard" : undefined}
               >
                 <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                  <span className="text-base flex-shrink-0">📊</span>
+                  <DashboardIcon className="w-4 h-4 flex-shrink-0 text-[#B39CCB]" />
                   {isNavOpen && <span className="truncate">Dashboard</span>}
                 </div>
 
                 {isNavOpen && (
-                  <span className="text-[10px] text-white/70 block">
-                    {dashboardOpen ? "▲" : "▼"}
-                  </span>
+                  dashboardOpen ? (
+                    <ChevronUpIcon className="w-3.5 h-3.5 text-white/70" />
+                  ) : (
+                    <ChevronDownIcon className="w-3.5 h-3.5 text-white/70" />
+                  )
                 )}
               </div>
 
               {/* Expanded Dropdown Content */}
               {isNavOpen && dashboardOpen && (
-                <div className="ml-3 pl-2 mt-1 space-y-1 border-l-2 border-[#F4B860]/40">
+                <div className="ml-3 pl-2 mt-1 space-y-1 border-l-2 border-[#8D73A8]/50">
                   <Link
                     href="/"
                     className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition ${
                       pathname === "/"
-                        ? "bg-white/20 text-[#F4B860] font-bold"
+                        ? "bg-white/20 text-[#D7B6C7] font-bold"
                         : "text-white/80 hover:bg-white/10 hover:text-white"
                     }`}
                   >
-                    <span className="text-xs">📈</span>
+                    <TrendingUpIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
                     <span className="truncate">Overview</span>
                   </Link>
 
@@ -254,11 +289,11 @@ function SidebarInner() {
                     href="/technician"
                     className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition ${
                       pathname === "/technician"
-                        ? "bg-white/20 text-[#F4B860] font-bold"
+                        ? "bg-white/20 text-[#D7B6C7] font-bold"
                         : "text-white/80 hover:bg-white/10 hover:text-white"
                     }`}
                   >
-                    <span className="text-xs">👷</span>
+                    <HardHatIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
                     <span className="truncate">Technician Portal</span>
                   </Link>
                 </div>
@@ -266,28 +301,31 @@ function SidebarInner() {
 
               {/* Collapsed Navbar Flyout Dropdown */}
               {!isNavOpen && (
-                <div className="absolute left-full top-0 ml-2 w-52 bg-[#734960] rounded-xl shadow-xl border border-[#5A354A] p-2 hidden group-hover:block z-50">
-                  <div className="px-2 py-1 border-b border-[#5A354A] mb-1">
+                <div className="absolute left-full top-0 ml-2 w-52 bg-[#4A355E] rounded-xl shadow-xl border border-[#6D5284] p-2 hidden group-hover:block z-50">
+                  <div className="px-2 py-1 border-b border-[#6D5284] mb-1">
                     <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                      <span>📊</span> Dashboard
+                      <DashboardIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
+                      <span>Dashboard</span>
                     </span>
                   </div>
                   <div className="space-y-0.5 text-xs">
                     <Link
                       href="/"
                       className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition ${
-                        pathname === "/" ? "bg-white/20 text-[#F4B860] font-bold" : "text-white/90 hover:bg-white/10"
+                        pathname === "/" ? "bg-white/20 text-[#D7B6C7] font-bold" : "text-white/90 hover:bg-white/10"
                       }`}
                     >
-                      <span>📈</span> Overview
+                      <TrendingUpIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
+                      <span>Overview</span>
                     </Link>
                     <Link
                       href="/technician"
                       className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition ${
-                        pathname === "/technician" ? "bg-white/20 text-[#F4B860] font-bold" : "text-white/90 hover:bg-white/10"
+                        pathname === "/technician" ? "bg-white/20 text-[#D7B6C7] font-bold" : "text-white/90 hover:bg-white/10"
                       }`}
                     >
-                      <span>👷</span> Technician Portal
+                      <HardHatIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
+                      <span>Technician Portal</span>
                     </Link>
                   </div>
                 </div>
@@ -299,9 +337,9 @@ function SidebarInner() {
               <div
                 className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
                   pathname === "/leads"
-                    ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                    ? "bg-[#6D5284] text-white font-semibold shadow-xs border border-[#8D73A8]/50"
                     : isCrmArea
-                    ? "bg-[#734960]/60 text-white font-semibold border border-[#5A354A]/50"
+                    ? "bg-[#6D5284]/60 text-white font-semibold border border-[#8D73A8]/30"
                     : "text-white/85 hover:bg-white/10 hover:text-white"
                 }`}
                 onClick={() => {
@@ -312,31 +350,36 @@ function SidebarInner() {
                 title={!isNavOpen ? "Lead & CRM" : undefined}
               >
                 <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                  <span className="text-base flex-shrink-0">🎯</span>
+                  <UsersIcon className="w-4 h-4 flex-shrink-0 text-[#B39CCB]" />
                   {isNavOpen && <span className="truncate">Lead &amp; CRM</span>}
                 </div>
 
                 {isNavOpen && (
-                  <span className="text-[10px] text-white/70 block">{crmOpen ? "▲" : "▼"}</span>
+                  crmOpen ? (
+                    <ChevronUpIcon className="w-3.5 h-3.5 text-white/70" />
+                  ) : (
+                    <ChevronDownIcon className="w-3.5 h-3.5 text-white/70" />
+                  )
                 )}
               </div>
 
               {/* Expanded Dropdown Content */}
               {isNavOpen && crmOpen && (
-                <div className="ml-3 pl-2 mt-1 space-y-1 border-l-2 border-[#78B77B]/50">
+                <div className="ml-3 pl-2 mt-1 space-y-1 border-l-2 border-[#8D73A8]/50">
                   {crmSubItems.map((sub) => {
                     const isSubActive = pathname === sub.href;
+                    const SubIcon = sub.icon;
                     return (
                       <Link
                         key={sub.name}
                         href={sub.href}
                         className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition ${
                           isSubActive
-                            ? "bg-white/20 text-[#F4B860] font-bold"
+                            ? "bg-white/20 text-[#D7B6C7] font-bold"
                             : "text-white/80 hover:bg-white/10 hover:text-white"
                         }`}
                       >
-                        <span className="text-xs">{sub.icon}</span>
+                        <SubIcon className="w-3.5 h-3.5 flex-shrink-0 text-[#B39CCB]" />
                         <span className="truncate">{sub.name}</span>
                       </Link>
                     );
@@ -346,26 +389,28 @@ function SidebarInner() {
 
               {/* Collapsed Navbar Flyout Dropdown */}
               {!isNavOpen && (
-                <div className="absolute left-full top-0 ml-2 w-52 bg-[#734960] rounded-xl shadow-xl border border-[#5A354A] p-2 hidden group-hover:block z-50">
-                  <div className="px-2 py-1 border-b border-[#5A354A] mb-1">
+                <div className="absolute left-full top-0 ml-2 w-52 bg-[#4A355E] rounded-xl shadow-xl border border-[#6D5284] p-2 hidden group-hover:block z-50">
+                  <div className="px-2 py-1 border-b border-[#6D5284] mb-1">
                     <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                      <span>🎯</span> Lead &amp; CRM
+                      <UsersIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
+                      <span>Lead &amp; CRM</span>
                     </span>
                   </div>
                   <div className="space-y-0.5">
                     {crmSubItems.map((sub) => {
                       const isSubActive = pathname === sub.href;
+                      const SubIcon = sub.icon;
                       return (
                         <Link
                           key={sub.name}
                           href={sub.href}
                           className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs transition ${
                             isSubActive
-                              ? "bg-white/20 text-[#F4B860] font-bold"
+                              ? "bg-white/20 text-[#D7B6C7] font-bold"
                               : "text-white/90 hover:bg-white/10 hover:text-white"
                           }`}
                         >
-                          <span className="text-sm">{sub.icon}</span>
+                          <SubIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
                           <span className="truncate">{sub.name}</span>
                         </Link>
                       );
@@ -380,21 +425,21 @@ function SidebarInner() {
               href="/service"
               className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-medium transition-all group relative ${
                 pathname === "/service"
-                  ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                  ? "bg-[#6D5284] text-white font-semibold shadow-xs border border-[#8D73A8]/50"
                   : "text-white/85 hover:bg-white/10 hover:text-white"
               }`}
               title={!isNavOpen ? "Service Desk" : undefined}
             >
-              <span className="text-base flex-shrink-0">🔧</span>
+              <WrenchIcon className="w-4 h-4 flex-shrink-0 text-[#B39CCB]" />
               {isNavOpen ? (
                 <span className="truncate">Service Desk</span>
               ) : (
-                <span className="absolute left-full ml-2 px-2 py-1 bg-[#734960] text-white text-[11px] font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-lg border border-[#5A354A]">
+                <span className="absolute left-full ml-2 px-2 py-1 bg-[#4A355E] text-white text-[11px] font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-lg border border-[#6D5284]">
                   Service Desk
                 </span>
               )}
               {pathname === "/service" && isNavOpen && (
-                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#F4B860]"></span>
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#D7B6C7]"></span>
               )}
             </Link>
 
@@ -403,21 +448,21 @@ function SidebarInner() {
               href="/subsidy"
               className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-medium transition-all group relative ${
                 pathname === "/subsidy"
-                  ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                  ? "bg-[#6D5284] text-white font-semibold shadow-xs border border-[#8D73A8]/50"
                   : "text-white/85 hover:bg-white/10 hover:text-white"
               }`}
               title={!isNavOpen ? "Subsidy Tracker" : undefined}
             >
-              <span className="text-base flex-shrink-0">🏛️</span>
+              <LandmarkIcon className="w-4 h-4 flex-shrink-0 text-[#B39CCB]" />
               {isNavOpen ? (
                 <span className="truncate">Subsidy Tracker</span>
               ) : (
-                <span className="absolute left-full ml-2 px-2 py-1 bg-[#734960] text-white text-[11px] font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-lg border border-[#5A354A]">
+                <span className="absolute left-full ml-2 px-2 py-1 bg-[#4A355E] text-white text-[11px] font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-lg border border-[#6D5284]">
                   Subsidy Tracker
                 </span>
               )}
               {pathname === "/subsidy" && isNavOpen && (
-                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#F4B860]"></span>
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#D7B6C7]"></span>
               )}
             </Link>
 
@@ -426,36 +471,36 @@ function SidebarInner() {
               href="/settings"
               className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-medium transition-all group relative ${
                 pathname === "/settings"
-                  ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                  ? "bg-[#6D5284] text-white font-semibold shadow-xs border border-[#8D73A8]/50"
                   : "text-white/85 hover:bg-white/10 hover:text-white"
               }`}
               title={!isNavOpen ? "Settings" : undefined}
             >
-              <span className="text-base flex-shrink-0">⚙️</span>
+              <SettingsIcon className="w-4 h-4 flex-shrink-0 text-[#B39CCB]" />
               {isNavOpen ? (
                 <span className="truncate">Settings</span>
               ) : (
-                <span className="absolute left-full ml-2 px-2 py-1 bg-[#734960] text-white text-[11px] font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-lg border border-[#5A354A]">
+                <span className="absolute left-full ml-2 px-2 py-1 bg-[#4A355E] text-white text-[11px] font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-lg border border-[#6D5284]">
                   Settings
                 </span>
               )}
               {pathname === "/settings" && isNavOpen && (
-                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#F4B860]"></span>
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#D7B6C7]"></span>
               )}
             </Link>
           </>
         )}
       </nav>
 
-      {/* Bottom Action Bar: Only clean Logout / Switch */}
-      <div className="p-2 border-t border-[#7A536C]/70 bg-[#835D74]/50">
+      {/* Bottom Action Bar: Clean Logout / Switch */}
+      <div className="p-2 border-t border-[#6D5284]/70 bg-[#3A284B]/60">
         <Link
           href="/login"
           onClick={logout}
           className="w-full flex items-center justify-center gap-2 py-2 px-2 rounded-xl text-xs font-medium text-white/90 hover:bg-white/10 transition-colors"
           title="Sign out or switch portal"
         >
-          <span className="text-xs">🚪</span>
+          <LogOutIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
           {isNavOpen && <span className="text-[11px] font-semibold">Sign Out / Switch</span>}
         </Link>
       </div>
@@ -465,7 +510,7 @@ function SidebarInner() {
 
 export default function Sidebar() {
   return (
-    <Suspense fallback={<div className="w-[64px] h-screen bg-[#8E687F] fixed top-0 left-0" />}>
+    <Suspense fallback={<div className="w-[64px] h-screen bg-[#4A355E] fixed top-0 left-0" />}>
       <SidebarInner />
     </Suspense>
   );

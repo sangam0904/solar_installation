@@ -1,5 +1,7 @@
 "use client";
 
+import { SunIcon, ShieldCheckIcon, AlertCircleIcon, ChartBarIcon, CameraIcon, MessageSquareIcon } from "@/components/Icons";
+
 import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import PageShell from "@/components/PageShell";
@@ -567,8 +569,8 @@ function CustomerContent() {
   if (mounted && role !== "customer") {
     return (
       <PageShell>
-        <div className="max-w-xl mx-auto my-12 bg-white rounded-3xl border border-[#E4E7EB] p-8 text-center card-floating space-y-4">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-[#FAF4F7] text-[#734960] flex items-center justify-center text-3xl shadow-sm">
+        <div className="max-w-xl mx-auto my-12 bg-white rounded-3xl border border-[#EBCED6] p-8 text-center card-floating space-y-4">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-[#F7EEF2] text-[#4A355E] flex items-center justify-center text-3xl shadow-sm">
             🔒
           </div>
           <h2 className="text-xl font-bold text-[#333333]">Customer Portal Access Restricted</h2>
@@ -578,13 +580,13 @@ function CustomerContent() {
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               href="/login"
-              className="w-full sm:w-auto px-5 py-2.5 bg-[#734960] hover:bg-[#5A354A] text-white rounded-xl text-xs font-bold transition shadow-xs"
+              className="w-full sm:w-auto px-5 py-2.5 bg-[#4A355E] hover:bg-[#372447] text-white rounded-xl text-xs font-bold transition shadow-xs"
             >
               Log in as Customer →
             </Link>
             <Link
               href="/"
-              className="w-full sm:w-auto px-5 py-2.5 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#333333] rounded-xl text-xs font-semibold transition"
+              className="w-full sm:w-auto px-5 py-2.5 bg-[#F7EEF2] hover:bg-[#EBCED6] text-[#333333] rounded-xl text-xs font-semibold transition"
             >
               Return to Admin Dashboard
             </Link>
@@ -600,7 +602,7 @@ function CustomerContent() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xl">☀️</span>
+            <SunIcon className="w-6 h-6 text-[#4A355E]" />
             <h1 className="text-xl sm:text-2xl font-bold text-[#333333]">
               Customer Solar Passbook
             </h1>
@@ -614,21 +616,21 @@ function CustomerContent() {
         </div>
 
         {/* Secured Plant Verification Badge (Profiles accessible only via login) */}
-        <div className="flex items-center gap-2 bg-white px-3.5 py-1.5 rounded-xl border border-[#E4E7EB] card-floating">
+        <div className="flex items-center gap-2 bg-white px-3.5 py-1.5 rounded-xl border border-[#EBCED6] card-floating">
           <span className="w-2 h-2 rounded-full bg-[#78B77B] animate-pulse"></span>
           <span className="text-[11px] font-bold text-[#333333]">
             {current.system}
           </span>
-          <span className="text-[10px] text-[#666666] border-l border-[#E4E7EB] pl-2 font-mono">
+          <span className="text-[10px] text-[#666666] border-l border-[#EBCED6] pl-2 font-mono">
             Plant ID: {current.inverterSerial}
           </span>
         </div>
       </div>
 
       {/* Hero Welcome Banner */}
-      <div className="bg-[#8E687F] rounded-2xl p-5 sm:p-6 text-white card-floating flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-[#6D5284] rounded-2xl p-5 sm:p-6 text-white card-floating flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="space-y-1">
-          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#734960] text-white border border-white/20">
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#4A355E] text-white border border-white/20">
             Plant ID: {current.inverterSerial}
           </span>
           <h2 className="text-lg sm:text-xl font-extrabold">{current.system}</h2>
@@ -638,29 +640,29 @@ function CustomerContent() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => switchTab("complaint")}
-            className="px-3.5 py-2 bg-white hover:bg-[#FAF4F7] text-[#734960] text-xs font-bold rounded-xl card-floating transition cursor-pointer"
+            className="px-3.5 py-2 bg-white hover:bg-[#F7EEF2] text-[#4A355E] text-xs font-bold rounded-xl card-floating transition cursor-pointer"
           >
-            🚨 Report Breakdown
+            Report Breakdown
           </button>
           <button
             onClick={() => switchTab("progress")}
-            className="px-3.5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white text-xs font-bold rounded-xl card-floating transition border border-white/20 cursor-pointer"
+            className="px-3.5 py-2 bg-[#4A355E] hover:bg-[#372447] text-white text-xs font-bold rounded-xl card-floating transition border border-white/20 cursor-pointer"
           >
-            📊 Track Status
+            Track Status
           </button>
         </div>
       </div>
 
       {/* ───────────────── CUSTOMER PORTAL SECTION DROPDOWN BOX ───────────────── */}
-      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-[#E4E7EB] card-floating">
+      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-[#EBCED6] card-floating">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-[#FAF4F7] border border-[#8E687F]/30 flex items-center justify-center text-2xl flex-shrink-0 card-floating">
+            <div className="w-11 h-11 rounded-xl bg-[#F7EEF2] border border-[#6D5284]/30 flex items-center justify-center text-2xl flex-shrink-0 card-floating">
               {currentSection.icon}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold text-[#8E687F] uppercase tracking-wider">
+                <span className="text-[10px] font-bold text-[#6D5284] uppercase tracking-wider">
                   Customer Portal Section
                 </span>
                 {currentSection.badge && (
@@ -685,7 +687,7 @@ function CustomerContent() {
                 id="customer-portal-dropdown-box"
                 value={activeTab}
                 onChange={(e) => switchTab(e.target.value as any)}
-                className="w-full appearance-none bg-[#F5F7FA] hover:bg-[#FAF4F7] text-[#333333] font-bold text-xs sm:text-sm pl-4 pr-10 py-2.5 rounded-xl border border-[#D8DCE3] focus:border-[#734960] focus:ring-2 focus:ring-[#734960]/20 focus:outline-none cursor-pointer transition card-floating"
+                className="w-full appearance-none bg-[#F7EEF2] hover:bg-[#F7EEF2] text-[#333333] font-bold text-xs sm:text-sm pl-4 pr-10 py-2.5 rounded-xl border border-[#D8DCE3] focus:border-[#4A355E] focus:ring-2 focus:ring-[#4A355E]/20 focus:outline-none cursor-pointer transition card-floating"
               >
                 <option value="passbook">☀️ Solar Yield &amp; Passbook</option>
                 <option value="progress">📊 Installation Progress Report</option>
@@ -694,7 +696,7 @@ function CustomerContent() {
                 <option value="enquiry">💬 Ask for Enquiry / Upgrade ({enquiryHistory.length})</option>
                 <option value="warranty">🛡️ Digital Warranty Cards</option>
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-[#734960]">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-[#4A355E]">
                 <span className="text-xs font-bold">▼</span>
               </div>
             </div>
@@ -706,27 +708,27 @@ function CustomerContent() {
       {activeTab === "passbook" && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#F4B860] card-floating">
+            <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#F4B860] card-floating">
               <span className="text-[10px] font-bold text-[#666666] uppercase">Today&apos;s Generation</span>
               <p className="text-2xl font-extrabold text-[#DA9B40] mt-1">{current.todayGen}</p>
               <span className="text-[11px] text-[#5B965E] font-bold">☀️ 5.4 Peak Sun Hours</span>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#8E687F] card-floating">
+            <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#6D5284] card-floating">
               <span className="text-[10px] font-bold text-[#666666] uppercase">This Month</span>
-              <p className="text-2xl font-extrabold text-[#734960] mt-1">{current.monthlyGen}</p>
+              <p className="text-2xl font-extrabold text-[#4A355E] mt-1">{current.monthlyGen}</p>
               <span className="text-[11px] text-[#666666]">Replaced 94% of grid bill</span>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#78B77B] card-floating">
+            <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#78B77B] card-floating">
               <span className="text-[10px] font-bold text-[#666666] uppercase">Cumulative Bill Savings</span>
               <p className="text-2xl font-extrabold text-[#78B77B] mt-1">{current.lifetimeSavings}</p>
               <span className="text-[11px] text-[#5B965E] font-bold">₹7.20 / unit grid tariff saved</span>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#734960] card-floating">
+            <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#4A355E] card-floating">
               <span className="text-[10px] font-bold text-[#666666] uppercase">Govt DBT Subsidy</span>
-              <p className="text-lg font-extrabold text-[#734960] mt-1">{current.subsidyStatus}</p>
+              <p className="text-lg font-extrabold text-[#4A355E] mt-1">{current.subsidyStatus}</p>
               <span className="text-[11px] text-[#666666]">PM-Surya Ghar Scheme</span>
             </div>
           </div>
@@ -735,7 +737,7 @@ function CustomerContent() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div
               onClick={() => switchTab("progress")}
-              className="bg-white p-5 rounded-2xl border border-[#E4E7EB] card-floating hover:border-[#78B77B] cursor-pointer transition space-y-2"
+              className="bg-white p-5 rounded-2xl border border-[#EBCED6] card-floating hover:border-[#78B77B] cursor-pointer transition space-y-2"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xl">📊</span>
@@ -749,7 +751,7 @@ function CustomerContent() {
 
             <div
               onClick={() => switchTab("photos")}
-              className="bg-white p-5 rounded-2xl border border-[#E4E7EB] card-floating hover:border-[#F4B860] cursor-pointer transition space-y-2"
+              className="bg-white p-5 rounded-2xl border border-[#EBCED6] card-floating hover:border-[#F4B860] cursor-pointer transition space-y-2"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xl">📸</span>
@@ -763,7 +765,7 @@ function CustomerContent() {
 
             <div
               onClick={() => switchTab("complaint")}
-              className="bg-white p-5 rounded-2xl border border-[#E4E7EB] card-floating hover:border-[#DC2626] cursor-pointer transition space-y-2"
+              className="bg-white p-5 rounded-2xl border border-[#EBCED6] card-floating hover:border-[#DC2626] cursor-pointer transition space-y-2"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xl">🚨</span>
@@ -777,17 +779,17 @@ function CustomerContent() {
           </div>
 
           {/* Plant Hardware Specs Card */}
-          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 card-floating">
+          <div className="bg-white rounded-2xl border border-[#EBCED6] p-5 card-floating">
             <h4 className="text-xs font-bold text-[#333333] uppercase tracking-wider mb-3">
               Installed Equipment &amp; Serial Tagging
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-3 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] space-y-1">
-                <span className="text-[10px] font-bold text-[#734960] uppercase">Smart Grid Inverter</span>
+              <div className="p-3 bg-[#F7EEF2] rounded-xl border border-[#EBCED6] space-y-1">
+                <span className="text-[10px] font-bold text-[#4A355E] uppercase">Smart Grid Inverter</span>
                 <p className="font-mono font-bold text-[#333333]">{current.inverterSerial}</p>
                 <p className="text-[#5B965E] font-medium">{current.inverterWarranty}</p>
               </div>
-              <div className="p-3 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] space-y-1">
+              <div className="p-3 bg-[#F7EEF2] rounded-xl border border-[#EBCED6] space-y-1">
                 <span className="text-[10px] font-bold text-[#78B77B] uppercase">Solar PV Modules</span>
                 <p className="font-mono font-bold text-[#333333]">{current.panelSerial}</p>
                 <p className="text-[#5B965E] font-medium">{current.panelWarranty}</p>
@@ -802,8 +804,8 @@ function CustomerContent() {
         <div className="space-y-6">
           <CustomerWorkProgressBar customer={current} />
 
-          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 card-floating space-y-6">
-            <div className="flex items-center justify-between border-b border-[#E4E7EB] pb-3">
+          <div className="bg-white rounded-2xl border border-[#EBCED6] p-6 card-floating space-y-6">
+            <div className="flex items-center justify-between border-b border-[#EBCED6] pb-3">
               <div>
                 <span className="text-[10px] font-bold text-[#78B77B] uppercase tracking-wider">Live Status Report</span>
                 <h3 className="text-base font-bold text-[#333333]">Rooftop Plant Implementation Tracker</h3>
@@ -826,13 +828,13 @@ function CustomerContent() {
                           ? "bg-[#78B77B] text-white border-[#78B77B]"
                           : isCurrent
                           ? "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860] animate-pulse"
-                          : "bg-[#F5F7FA] text-gray-400 border-[#E4E7EB]"
+                          : "bg-[#F7EEF2] text-gray-400 border-[#EBCED6]"
                       }`}
                     >
                       {isCompleted ? "✓" : step.num}
                     </div>
 
-                    <div className="flex-1 bg-[#F5F7FA] p-3.5 rounded-xl border border-[#E4E7EB] card-floating">
+                    <div className="flex-1 bg-[#F7EEF2] p-3.5 rounded-xl border border-[#EBCED6] card-floating">
                       <div className="flex items-center justify-between">
                         <h4 className="text-xs font-bold text-[#333333]">{step.title}</h4>
                         <span
@@ -860,7 +862,7 @@ function CustomerContent() {
       {/* ───────────────── SECTION 3: UPLOAD ROOF PHOTOS ───────────────── */}
       {activeTab === "photos" && (
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 card-floating space-y-4">
+          <div className="bg-white rounded-2xl border border-[#EBCED6] p-6 card-floating space-y-4">
             <div>
               <span className="text-[10px] font-bold text-[#DA9B40] uppercase tracking-wider">Site Transparency</span>
               <h3 className="text-base font-bold text-[#333333]">Upload Rooftop &amp; Meter Photos</h3>
@@ -878,7 +880,7 @@ function CustomerContent() {
                     placeholder="e.g. South Rooftop Clear View (Morning)"
                     value={newPhotoTitle}
                     onChange={(e) => setNewPhotoTitle(e.target.value)}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-semibold focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none"
                     required
                   />
                 </div>
@@ -887,7 +889,7 @@ function CustomerContent() {
                   <select
                     value={newPhotoCat}
                     onChange={(e) => setNewPhotoCat(e.target.value)}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-semibold"
                   >
                     <option value="Pre-Installation Roof">Pre-Installation Roof Layout</option>
                     <option value="Electricity Meter">Utility Net-Meter</option>
@@ -909,10 +911,10 @@ function CustomerContent() {
               {!filePreview ? (
                 <div
                   onClick={() => photoInputRef.current?.click()}
-                  className="border-2 border-dashed border-[#8E687F]/40 hover:border-[#734960] rounded-xl p-6 text-center bg-[#F5F7FA] hover:bg-[#FAF4F7] cursor-pointer transition group card-floating"
+                  className="border-2 border-dashed border-[#6D5284]/40 hover:border-[#4A355E] rounded-xl p-6 text-center bg-[#F7EEF2] hover:bg-[#F7EEF2] cursor-pointer transition group card-floating"
                 >
                   <span className="text-3xl block mb-1 group-hover:scale-110 transition-transform">📸</span>
-                  <span className="text-xs font-bold text-[#734960] block">
+                  <span className="text-xs font-bold text-[#4A355E] block">
                     Click to select photo or take picture with camera
                   </span>
                   <p className="text-[10px] text-[#666666] mt-0.5">
@@ -920,8 +922,8 @@ function CustomerContent() {
                   </p>
                 </div>
               ) : (
-                <div className="bg-[#FAF4F7] border border-[#8E687F]/30 rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4 card-floating">
-                  <div className="w-24 h-24 rounded-lg overflow-hidden border border-[#E4E7EB] flex-shrink-0 bg-white">
+                <div className="bg-[#F7EEF2] border border-[#6D5284]/30 rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4 card-floating">
+                  <div className="w-24 h-24 rounded-lg overflow-hidden border border-[#EBCED6] flex-shrink-0 bg-white">
                     <img src={filePreview} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 text-center sm:text-left">
@@ -938,7 +940,7 @@ function CustomerContent() {
                       <button
                         type="button"
                         onClick={() => photoInputRef.current?.click()}
-                        className="text-[11px] font-bold text-[#734960] hover:underline cursor-pointer"
+                        className="text-[11px] font-bold text-[#4A355E] hover:underline cursor-pointer"
                       >
                         Change Photo ⇄
                       </button>
@@ -967,7 +969,7 @@ function CustomerContent() {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs card-floating transition cursor-pointer"
+                  className="px-5 py-2 bg-[#4A355E] hover:bg-[#372447] text-white font-bold rounded-xl text-xs card-floating transition cursor-pointer"
                 >
                   Upload &amp; Tag Photo
                 </button>
@@ -975,15 +977,15 @@ function CustomerContent() {
             </form>
           </div>
 
-          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 card-floating space-y-3">
+          <div className="bg-white rounded-2xl border border-[#EBCED6] p-5 card-floating space-y-3">
             <h4 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
               My Uploaded Photos ({uploadedPhotos.length})
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {uploadedPhotos.map((photo) => (
-                <div key={photo.id} className="p-3 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] card-floating space-y-2">
-                  <div className="h-32 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-[#E4E7EB]">
+                <div key={photo.id} className="p-3 bg-[#F7EEF2] rounded-xl border border-[#EBCED6] card-floating space-y-2">
+                  <div className="h-32 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-[#EBCED6]">
                     {photo.isRealFile || photo.url.startsWith("data:") ? (
                       <img
                         src={photo.url}
@@ -996,7 +998,7 @@ function CustomerContent() {
                     )}
                   </div>
                   <div>
-                    <span className="text-[10px] font-bold text-[#734960] uppercase">{photo.category}</span>
+                    <span className="text-[10px] font-bold text-[#4A355E] uppercase">{photo.category}</span>
                     <h5 className="text-xs font-bold text-[#333333] mt-0.5 truncate">{photo.title}</h5>
                     <p className="text-[10px] text-[#666666]">Uploaded on {photo.date}</p>
                   </div>
@@ -1010,8 +1012,8 @@ function CustomerContent() {
       {/* ───────────────── SECTION 4: FILE COMPLAINT ───────────────── */}
       {activeTab === "complaint" && (
         <div className="space-y-6 max-w-2xl mx-auto">
-          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 card-floating space-y-4">
-            <div className="border-b border-[#E4E7EB] pb-3">
+          <div className="bg-white rounded-2xl border border-[#EBCED6] p-6 card-floating space-y-4">
+            <div className="border-b border-[#EBCED6] pb-3">
               <span className="text-[10px] font-bold text-[#DC2626] uppercase tracking-wider">Helpdesk Dispatch</span>
               <h3 className="text-base font-bold text-[#333333] mt-0.5">Report Plant Issue / Breakdown to Admin</h3>
               <p className="text-xs text-[#666666]">
@@ -1032,7 +1034,7 @@ function CustomerContent() {
                 <select
                   value={complaintType}
                   onChange={(e) => setComplaintType(e.target.value)}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold bg-white"
+                  className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-semibold bg-white"
                 >
                   <option value="Inverter Error (E-01/E-04)">Inverter Error Code (E-01 / E-04)</option>
                   <option value="Zero Power Generation">Zero Power Generation on Grid</option>
@@ -1049,7 +1051,7 @@ function CustomerContent() {
                   placeholder="Describe when the issue started and any error lights visible..."
                   value={complaintDesc}
                   onChange={(e) => setComplaintDesc(e.target.value)}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                  className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none"
                   required
                 />
               </div>
@@ -1069,14 +1071,14 @@ function CustomerContent() {
                   <button
                     type="button"
                     onClick={() => complaintFileRef.current?.click()}
-                    className="mt-1 w-full border border-dashed border-[#E4E7EB] hover:border-[#DC2626] rounded-xl py-3 px-4 text-xs font-semibold text-[#666666] hover:text-[#DC2626] bg-[#F5F7FA] transition flex items-center justify-center gap-2 cursor-pointer card-floating"
+                    className="mt-1 w-full border border-dashed border-[#EBCED6] hover:border-[#DC2626] rounded-xl py-3 px-4 text-xs font-semibold text-[#666666] hover:text-[#DC2626] bg-[#F7EEF2] transition flex items-center justify-center gap-2 cursor-pointer card-floating"
                   >
                     <span>📷</span> Attach Inverter Error Photo / Damage Proof
                   </button>
                 ) : (
-                  <div className="mt-1 p-2 bg-[#FAF4F7] border border-[#8E687F]/30 rounded-xl flex items-center justify-between text-xs card-floating">
+                  <div className="mt-1 p-2 bg-[#F7EEF2] border border-[#6D5284]/30 rounded-xl flex items-center justify-between text-xs card-floating">
                     <div className="flex items-center gap-2">
-                      <img src={complaintPhoto} alt="Proof" className="w-10 h-10 object-cover rounded-lg border border-[#E4E7EB]" />
+                      <img src={complaintPhoto} alt="Proof" className="w-10 h-10 object-cover rounded-lg border border-[#EBCED6]" />
                       <span className="font-semibold text-[#333333] truncate max-w-xs">{complaintPhotoName}</span>
                     </div>
                     <button
@@ -1112,14 +1114,14 @@ function CustomerContent() {
           </div>
 
           {/* Ticket History */}
-          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 card-floating space-y-3">
+          <div className="bg-white rounded-2xl border border-[#EBCED6] p-5 card-floating space-y-3">
             <h4 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
               My Service Ticket History ({myTickets.length})
             </h4>
 
             <div className="space-y-2">
               {myTickets.map((tkt) => (
-                <div key={tkt.id} className="p-3.5 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] card-floating text-xs space-y-1.5">
+                <div key={tkt.id} className="p-3.5 bg-[#F7EEF2] rounded-xl border border-[#EBCED6] card-floating text-xs space-y-1.5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="font-mono font-bold text-[#DA9B40]">{tkt.id}</span>
@@ -1132,8 +1134,8 @@ function CustomerContent() {
                   <p className="text-[11px] text-[#666666]">Filed: {tkt.date} • {tkt.cost}</p>
                   {tkt.photo && (
                     <div className="flex items-center gap-2 pt-1">
-                      <img src={tkt.photo} alt="Attached Proof" className="w-8 h-8 rounded object-cover border border-[#E4E7EB]" />
-                      <span className="text-[10px] text-[#734960] font-semibold">{tkt.photoName || "Photo Proof Filed to Admin"}</span>
+                      <img src={tkt.photo} alt="Attached Proof" className="w-8 h-8 rounded object-cover border border-[#EBCED6]" />
+                      <span className="text-[10px] text-[#4A355E] font-semibold">{tkt.photoName || "Photo Proof Filed to Admin"}</span>
                     </div>
                   )}
                 </div>
@@ -1147,9 +1149,9 @@ function CustomerContent() {
       {activeTab === "enquiry" && (
         <div className="space-y-6 max-w-4xl mx-auto">
           {/* New Enquiry Form Card */}
-          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 card-floating space-y-4">
-            <div className="border-b border-[#E4E7EB] pb-3">
-              <span className="text-[10px] font-bold text-[#734960] uppercase tracking-wider">
+          <div className="bg-white rounded-2xl border border-[#EBCED6] p-6 card-floating space-y-4">
+            <div className="border-b border-[#EBCED6] pb-3">
+              <span className="text-[10px] font-bold text-[#4A355E] uppercase tracking-wider">
                 Client Inquiries &amp; System Upgrades
               </span>
               <h3 className="text-base font-bold text-[#333333] mt-0.5">
@@ -1167,7 +1169,7 @@ function CustomerContent() {
                   <select
                     value={enquirySubject}
                     onChange={(e) => setEnquirySubject(e.target.value)}
-                    className="w-full mt-1 px-3 py-2 border border-[#E4E7EB] rounded-xl text-xs font-semibold bg-white"
+                    className="w-full mt-1 px-3 py-2 border border-[#EBCED6] rounded-xl text-xs font-semibold bg-white"
                   >
                     <option value="Add Battery Backup (Off-Grid Upgrade)">Add Battery Backup (Off-Grid Upgrade)</option>
                     <option value="Capacity Expansion (e.g. 3kW to 5kW)">Expand Capacity (Add more solar panels)</option>
@@ -1183,7 +1185,7 @@ function CustomerContent() {
                     type="text"
                     disabled
                     value={`${current.name} • ${current.system}`}
-                    className="w-full mt-1 px-3 py-2 border border-[#E4E7EB] rounded-xl text-xs font-semibold bg-[#F5F7FA] text-[#666666]"
+                    className="w-full mt-1 px-3 py-2 border border-[#EBCED6] rounded-xl text-xs font-semibold bg-[#F7EEF2] text-[#666666]"
                   />
                 </div>
               </div>
@@ -1195,7 +1197,7 @@ function CustomerContent() {
                   placeholder="Tell us what you need (e.g. want 5kWh lithium battery storage for nighttime backup)..."
                   value={enquiryMessage}
                   onChange={(e) => setEnquiryMessage(e.target.value)}
-                  className="w-full mt-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                  className="w-full mt-1 px-3.5 py-2 border border-[#EBCED6] rounded-xl text-xs focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none"
                   required
                 />
               </div>
@@ -1216,17 +1218,17 @@ function CustomerContent() {
                   <button
                     type="button"
                     onClick={() => enquiryFileRef.current?.click()}
-                    className="mt-1 w-full border border-dashed border-[#E4E7EB] hover:border-[#734960] rounded-xl py-2.5 px-4 text-xs font-semibold text-[#734960] bg-[#F5F7FA] hover:bg-[#FAF4F7] transition flex items-center justify-center gap-2 cursor-pointer card-floating"
+                    className="mt-1 w-full border border-dashed border-[#EBCED6] hover:border-[#4A355E] rounded-xl py-2.5 px-4 text-xs font-semibold text-[#4A355E] bg-[#F7EEF2] hover:bg-[#F7EEF2] transition flex items-center justify-center gap-2 cursor-pointer card-floating"
                   >
                     <span>📎</span> Click to upload file / photo for this inquiry
                   </button>
                 ) : (
-                  <div className="mt-1 p-2.5 bg-[#FAF4F7] border border-[#8E687F]/30 rounded-xl flex items-center justify-between text-xs card-floating">
+                  <div className="mt-1 p-2.5 bg-[#F7EEF2] border border-[#6D5284]/30 rounded-xl flex items-center justify-between text-xs card-floating">
                     <div className="flex items-center gap-3">
                       {enquiryFilePreview.startsWith("data:image") ? (
-                        <img src={enquiryFilePreview} alt="Attached" className="w-12 h-12 object-cover rounded-lg border border-[#E4E7EB]" />
+                        <img src={enquiryFilePreview} alt="Attached" className="w-12 h-12 object-cover rounded-lg border border-[#EBCED6]" />
                       ) : (
-                        <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center text-xl border border-[#E4E7EB]">📄</div>
+                        <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center text-xl border border-[#EBCED6]">📄</div>
                       )}
                       <div>
                         <p className="font-bold text-[#333333] truncate max-w-xs">{enquiryFile?.name || "Attached File"}</p>
@@ -1259,7 +1261,7 @@ function CustomerContent() {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs card-floating transition cursor-pointer flex items-center gap-2"
+                  className="px-5 py-2.5 bg-[#4A355E] hover:bg-[#372447] text-white font-bold rounded-xl text-xs card-floating transition cursor-pointer flex items-center gap-2"
                 >
                   <span>Submit Enquiry &amp; Track</span>
                   <span>➔</span>
@@ -1291,13 +1293,13 @@ function CustomerContent() {
               return (
                 <div
                   key={enq.id}
-                  className="bg-white rounded-2xl border border-[#E4E7EB] card-floating overflow-hidden transition-all"
+                  className="bg-white rounded-2xl border border-[#EBCED6] card-floating overflow-hidden transition-all"
                 >
                   {/* Top Header Card */}
-                  <div className="p-4 sm:p-5 border-b border-[#E4E7EB] bg-[#FAF4F7]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="p-4 sm:p-5 border-b border-[#EBCED6] bg-[#F7EEF2]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-mono font-bold text-xs bg-white text-[#734960] px-2.5 py-0.5 rounded-md border border-[#8E687F]/30 shadow-2xs">
+                        <span className="font-mono font-bold text-xs bg-white text-[#4A355E] px-2.5 py-0.5 rounded-md border border-[#6D5284]/30 shadow-2xs">
                           {enq.id}
                         </span>
                         <h4 className="text-sm font-extrabold text-[#333333]">
@@ -1316,7 +1318,7 @@ function CustomerContent() {
                     <div className="flex items-center gap-2 sm:text-right flex-shrink-0">
                       <button
                         onClick={() => setExpandedEnquiryId(isExpanded ? "" : enq.id)}
-                        className="px-3 py-1.5 bg-white hover:bg-[#FAF4F7] text-[#734960] text-xs font-bold rounded-xl border border-[#8E687F]/30 transition card-floating cursor-pointer flex items-center gap-1.5"
+                        className="px-3 py-1.5 bg-white hover:bg-[#F7EEF2] text-[#4A355E] text-xs font-bold rounded-xl border border-[#6D5284]/30 transition card-floating cursor-pointer flex items-center gap-1.5"
                       >
                         <span>{isExpanded ? "Hide Details" : "Track Details"}</span>
                         <span className="text-[10px]">{isExpanded ? "▲" : "▼"}</span>
@@ -1343,7 +1345,7 @@ function CustomerContent() {
                       {/* Step Icons & Connecting Line Bar */}
                       <div className="relative flex items-center justify-between">
                         {/* Continuous Background Track Line */}
-                        <div className="absolute top-4 left-4 right-4 h-1 bg-[#E4E7EB] -translate-y-1/2 z-0" />
+                        <div className="absolute top-4 left-4 right-4 h-1 bg-[#EBCED6] -translate-y-1/2 z-0" />
 
                         {/* Completed Active Track Line (calculated by currentStep progress) */}
                         <div
@@ -1396,10 +1398,10 @@ function CustomerContent() {
 
                   {/* Expandable Activity Log & Consultant Contact Details (Flipkart 'See all updates') */}
                   {isExpanded && (
-                    <div className="p-4 sm:p-5 bg-[#F5F7FA] border-t border-[#E4E7EB] space-y-4 animate-in fade-in">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-[#E4E7EB] card-floating">
+                    <div className="p-4 sm:p-5 bg-[#F7EEF2] border-t border-[#EBCED6] space-y-4 animate-in fade-in">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-[#EBCED6] card-floating">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-[#FAF4F7] text-[#734960] flex items-center justify-center font-bold text-sm">
+                          <div className="w-9 h-9 rounded-full bg-[#F7EEF2] text-[#4A355E] flex items-center justify-center font-bold text-sm">
                             👷
                           </div>
                           <div>
@@ -1420,7 +1422,7 @@ function CustomerContent() {
                           </a>
                           <button
                             onClick={() => switchTab("complaint")}
-                            className="px-3 py-1.5 bg-white hover:bg-[#FAF4F7] text-[#734960] border border-[#8E687F]/30 text-xs font-bold rounded-xl card-floating transition cursor-pointer"
+                            className="px-3 py-1.5 bg-white hover:bg-[#F7EEF2] text-[#4A355E] border border-[#6D5284]/30 text-xs font-bold rounded-xl card-floating transition cursor-pointer"
                           >
                             💬 Send Message
                           </button>
@@ -1438,10 +1440,10 @@ function CustomerContent() {
                               key={st.stepNumber}
                               className={`p-3 rounded-xl border text-xs flex items-start justify-between gap-3 ${
                                 st.isCompleted
-                                  ? "bg-white border-[#E4E7EB]"
+                                  ? "bg-white border-[#EBCED6]"
                                   : st.isCurrent
                                   ? "bg-[#FEF6EB] border-[#F4B860]/40 font-medium"
-                                  : "bg-[#F5F7FA] border-[#E4E7EB]/60 opacity-60"
+                                  : "bg-[#F7EEF2] border-[#EBCED6]/60 opacity-60"
                               }`}
                             >
                               <div className="flex items-start gap-2.5">
@@ -1459,7 +1461,7 @@ function CustomerContent() {
                                   <p className="text-[11px] text-[#666666] mt-0.5">{st.details}</p>
                                 </div>
                               </div>
-                              <span className="text-[10px] font-mono font-semibold text-[#8E687F] flex-shrink-0">
+                              <span className="text-[10px] font-mono font-semibold text-[#6D5284] flex-shrink-0">
                                 {st.date}
                               </span>
                             </div>
@@ -1469,14 +1471,14 @@ function CustomerContent() {
 
                       {/* Attached File/Photo Preview if any */}
                       {enq.attachedPhoto && (
-                        <div className="p-3 bg-white rounded-xl border border-[#E4E7EB] flex items-center gap-3">
+                        <div className="p-3 bg-white rounded-xl border border-[#EBCED6] flex items-center gap-3">
                           <img
                             src={enq.attachedPhoto}
                             alt="Attachment"
-                            className="w-12 h-12 object-cover rounded-lg border border-[#E4E7EB]"
+                            className="w-12 h-12 object-cover rounded-lg border border-[#EBCED6]"
                           />
                           <div>
-                            <span className="text-[10px] font-bold text-[#734960] uppercase">
+                            <span className="text-[10px] font-bold text-[#4A355E] uppercase">
                               Attached Document / Roof Image
                             </span>
                             <p className="text-xs font-bold text-[#333333]">{enq.fileName || "Uploaded Site File"}</p>
@@ -1484,7 +1486,7 @@ function CustomerContent() {
                               href={enq.attachedPhoto}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-[11px] text-[#734960] font-bold hover:underline"
+                              className="text-[11px] text-[#4A355E] font-bold hover:underline"
                             >
                               View Full Size ↗
                             </a>
@@ -1511,10 +1513,10 @@ function CustomerContent() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] card-floating space-y-3">
+            <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] card-floating space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#734960] bg-[#FAF4F7] px-2 py-0.5 rounded-full border border-[#8E687F]/30">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#4A355E] bg-[#F7EEF2] px-2 py-0.5 rounded-full border border-[#6D5284]/30">
                     5-Year Inverter Warranty
                   </span>
                   <h4 className="text-sm font-bold text-[#333333] mt-1">Smart Solar Grid Inverter</h4>
@@ -1531,14 +1533,14 @@ function CustomerContent() {
                   <span>Status:</span>
                   <span className="font-bold text-[#5B965E]">{current.inverterWarranty}</span>
                 </div>
-                <div className="flex justify-between border-t border-[#E4E7EB] pt-1.5">
+                <div className="flex justify-between border-t border-[#EBCED6] pt-1.5">
                   <span>Customer Replacement Cost:</span>
                   <span className="font-extrabold text-[#5B965E]">₹0 (Free Coverage)</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] card-floating space-y-3">
+            <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] card-floating space-y-3">
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[#5B965E] bg-[#EBF5EC] px-2 py-0.5 rounded-full border border-[#78B77B]/40">
@@ -1558,7 +1560,7 @@ function CustomerContent() {
                   <span>Status:</span>
                   <span className="font-bold text-[#5B965E]">{current.panelWarranty}</span>
                 </div>
-                <div className="flex justify-between border-t border-[#E4E7EB] pt-1.5">
+                <div className="flex justify-between border-t border-[#EBCED6] pt-1.5">
                   <span>Linear Output Degradation:</span>
                   <span className="font-extrabold text-[#78B77B]">&lt; 0.5% / Year</span>
                 </div>

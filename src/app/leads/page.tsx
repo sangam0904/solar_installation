@@ -1,5 +1,7 @@
 "use client";
 
+import { UsersIcon, PlusIcon, SearchIcon } from "@/components/Icons";
+
 import { useState } from "react";
 import PageShell from "@/components/PageShell";
 import { leads as initialLeads, Lead } from "@/data/mockData";
@@ -15,20 +17,20 @@ const stages = [
 ] as const;
 
 const stageColors: Record<string, { bg: string; text: string; border: string; headerBg: string }> = {
-  "New Lead":         { bg: "bg-[#FAF4F7]", text: "text-[#734960]", border: "border-[#734960]", headerBg: "bg-[#734960]" },
-  "Contacted":        { bg: "bg-[#FAF4F7]", text: "text-[#8E687F]", border: "border-[#8E687F]", headerBg: "bg-[#8E687F]" },
+  "New Lead":         { bg: "bg-[#F7EEF2]", text: "text-[#4A355E]", border: "border-[#4A355E]", headerBg: "bg-[#4A355E]" },
+  "Contacted":        { bg: "bg-[#F7EEF2]", text: "text-[#6D5284]", border: "border-[#6D5284]", headerBg: "bg-[#6D5284]" },
   "Survey Scheduled": { bg: "bg-[#FEF6EB]", text: "text-[#DA9B40]", border: "border-[#F4B860]", headerBg: "bg-[#F4B860]" },
   "Survey Done":      { bg: "bg-[#FEF6EB]", text: "text-[#DA9B40]", border: "border-[#DA9B40]", headerBg: "bg-[#DA9B40]" },
-  "Quote Sent":       { bg: "bg-[#FAF4F7]", text: "text-[#734960]", border: "border-[#8E687F]", headerBg: "bg-[#8E687F]" },
+  "Quote Sent":       { bg: "bg-[#F7EEF2]", text: "text-[#4A355E]", border: "border-[#6D5284]", headerBg: "bg-[#6D5284]" },
   "Converted":        { bg: "bg-[#EBF5EC]", text: "text-[#5B965E]", border: "border-[#78B77B]", headerBg: "bg-[#78B77B]" },
   "Lost":             { bg: "bg-red-50",   text: "text-red-700",   border: "border-red-400",   headerBg: "bg-red-400" },
 };
 
 const sourceColors: Record<string, string> = {
-  Website:  "bg-[#FAF4F7] text-[#734960]",
+  Website:  "bg-[#F7EEF2] text-[#4A355E]",
   WhatsApp: "bg-[#EBF5EC] text-[#5B965E]",
   Phone:    "bg-[#FEF6EB] text-[#DA9B40]",
-  Referral: "bg-[#FAF4F7] text-[#8E687F]",
+  Referral: "bg-[#F7EEF2] text-[#6D5284]",
   "Walk-in": "bg-[#FEF6EB] text-[#DA9B40]",
 };
 
@@ -103,7 +105,7 @@ export default function LeadsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-[#333333] flex items-center gap-2">
-            <span>🎯</span> Leads & Customer Inquiry Pipeline
+            <UsersIcon className="w-6 h-6 text-[#4A355E]" /> Leads & Customer Inquiry Pipeline
           </h1>
           <p className="text-xs sm:text-sm text-[#666666] mt-0.5">
             Omnichannel lead capture, roof pre-qualification, and survey dispatching
@@ -112,12 +114,12 @@ export default function LeadsPage() {
 
         <div className="flex items-center gap-2">
           {/* View toggle */}
-          <div className="bg-white border border-[#E4E7EB] rounded-xl p-1 flex items-center shadow-xs">
+          <div className="bg-white border border-[#EBCED6] rounded-xl p-1 flex items-center shadow-xs">
             <button
               onClick={() => setView("kanban")}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
                 view === "kanban"
-                  ? "bg-[#734960] text-white shadow-xs"
+                  ? "bg-[#4A355E] text-white shadow-xs"
                   : "text-[#666666] hover:text-[#333333]"
               }`}
             >
@@ -127,7 +129,7 @@ export default function LeadsPage() {
               onClick={() => setView("table")}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
                 view === "table"
-                  ? "bg-[#734960] text-white shadow-xs"
+                  ? "bg-[#4A355E] text-white shadow-xs"
                   : "text-[#666666] hover:text-[#333333]"
               }`}
             >
@@ -137,7 +139,7 @@ export default function LeadsPage() {
 
           <button
             onClick={() => setShowModal(true)}
-            className="px-4 py-2 bg-[#734960] hover:bg-[#5A354A] text-white rounded-xl text-xs font-semibold shadow-xs transition inline-flex items-center gap-1.5"
+            className="px-4 py-2 bg-[#4A355E] hover:bg-[#372447] text-white rounded-xl text-xs font-semibold shadow-xs transition inline-flex items-center gap-1.5"
           >
             <span>+</span> Add New Lead
           </button>
@@ -153,15 +155,15 @@ export default function LeadsPage() {
             return (
               <div
                 key={stage}
-                className="w-72 flex-shrink-0 bg-white rounded-2xl border border-[#E4E7EB] shadow-xs flex flex-col max-h-[calc(100vh-220px)]"
+                className="w-72 flex-shrink-0 bg-white rounded-2xl border border-[#EBCED6] shadow-xs flex flex-col max-h-[calc(100vh-220px)]"
               >
                 {/* Column Header */}
-                <div className="p-3 border-b border-[#E4E7EB] flex items-center justify-between">
+                <div className="p-3 border-b border-[#EBCED6] flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className={`w-2.5 h-2.5 rounded-full ${style.headerBg}`} />
                     <span className="font-bold text-xs text-[#333333]">{stage}</span>
                   </div>
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#F5F7FA] text-[#666666] border border-[#E4E7EB]">
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#F7EEF2] text-[#666666] border border-[#EBCED6]">
                     {columnLeads.length}
                   </span>
                 </div>
@@ -171,7 +173,7 @@ export default function LeadsPage() {
                   {columnLeads.map((lead) => (
                     <div
                       key={lead.id}
-                      className={`p-3.5 bg-white rounded-xl border border-[#E4E7EB] border-l-4 ${style.border} shadow-xs space-y-2 hover:border-[#8E687F] transition-all`}
+                      className={`p-3.5 bg-white rounded-xl border border-[#EBCED6] border-l-4 ${style.border} shadow-xs space-y-2 hover:border-[#6D5284] transition-all`}
                     >
                       <div className="flex items-start justify-between">
                         <div>
@@ -185,7 +187,7 @@ export default function LeadsPage() {
                         </span>
                       </div>
 
-                      <div className="bg-[#F5F7FA] p-2 rounded-lg text-[11px] space-y-1">
+                      <div className="bg-[#F7EEF2] p-2 rounded-lg text-[11px] space-y-1">
                         <div className="flex justify-between text-[#666666]">
                           <span>System:</span>
                           <span className="font-bold text-[#333333]">
@@ -194,7 +196,7 @@ export default function LeadsPage() {
                         </div>
                         <div className="flex justify-between text-[#666666]">
                           <span>Monthly Bill:</span>
-                          <span className="font-semibold text-[#734960]">
+                          <span className="font-semibold text-[#4A355E]">
                             ₹{lead.monthlyBill.toLocaleString("en-IN")}
                           </span>
                         </div>
@@ -206,13 +208,13 @@ export default function LeadsPage() {
 
                       <div className="flex items-center justify-between text-[10px] text-[#666666] pt-1">
                         <span>📍 {lead.city}</span>
-                        <span className="font-semibold text-[#8E687F]">👤 {lead.assignedTo}</span>
+                        <span className="font-semibold text-[#6D5284]">👤 {lead.assignedTo}</span>
                       </div>
                     </div>
                   ))}
 
                   {columnLeads.length === 0 && (
-                    <div className="py-8 text-center text-xs text-gray-400 border border-dashed border-[#E4E7EB] rounded-xl">
+                    <div className="py-8 text-center text-xs text-gray-400 border border-dashed border-[#EBCED6] rounded-xl">
                       No leads in this stage
                     </div>
                   )}
@@ -223,10 +225,10 @@ export default function LeadsPage() {
         </div>
       ) : (
         /* TABLE VIEW */
-        <div className="bg-white rounded-2xl border border-[#E4E7EB] shadow-xs overflow-hidden">
+        <div className="bg-white rounded-2xl border border-[#EBCED6] shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#F5F7FA] text-[#666666] font-semibold border-b border-[#E4E7EB]">
+              <thead className="bg-[#F7EEF2] text-[#666666] font-semibold border-b border-[#EBCED6]">
                 <tr>
                   <th className="px-4 py-3">Lead ID</th>
                   <th className="px-4 py-3">Customer</th>
@@ -239,10 +241,10 @@ export default function LeadsPage() {
                   <th className="px-4 py-3">Created</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E4E7EB]/60">
+              <tbody className="divide-y divide-[#EBCED6]/60">
                 {leadList.map((l) => (
-                  <tr key={l.id} className="hover:bg-[#F5F7FA] transition-colors">
-                    <td className="px-4 py-3 font-mono font-bold text-[#734960]">{l.id}</td>
+                  <tr key={l.id} className="hover:bg-[#F7EEF2] transition-colors">
+                    <td className="px-4 py-3 font-mono font-bold text-[#4A355E]">{l.id}</td>
                     <td className="px-4 py-3">
                       <div className="font-bold text-[#333333]">{l.name}</div>
                       <div className="text-[11px] text-[#666666]">{l.phone}</div>
@@ -277,8 +279,8 @@ export default function LeadsPage() {
       {/* ADD LEAD MODAL */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#E4E7EB] space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-[#E4E7EB]">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#EBCED6] space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#EBCED6]">
               <div>
                 <h3 className="text-base font-bold text-[#333333]">Capture Rooftop Solar Lead</h3>
                 <p className="text-xs text-[#666666]">Phone / WhatsApp inquiry pre-qualification</p>
@@ -300,7 +302,7 @@ export default function LeadsPage() {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none"
                     required
                   />
                 </div>
@@ -312,7 +314,7 @@ export default function LeadsPage() {
                     placeholder="+91..."
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none"
                     required
                   />
                 </div>
@@ -325,7 +327,7 @@ export default function LeadsPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs"
+                  className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs"
                 />
               </div>
 
@@ -338,7 +340,7 @@ export default function LeadsPage() {
                     placeholder="e.g. 4500"
                     value={formData.monthlyBill}
                     onChange={handleInputChange}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-semibold"
                     required
                   />
                 </div>
@@ -350,7 +352,7 @@ export default function LeadsPage() {
                     placeholder="e.g. 350"
                     value={formData.roofArea}
                     onChange={handleInputChange}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs"
                     required
                   />
                 </div>
@@ -363,7 +365,7 @@ export default function LeadsPage() {
                     name="capacity"
                     value={formData.capacity}
                     onChange={handleInputChange}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs"
                   >
                     <option value="1 kW">1 kW</option>
                     <option value="2 kW">2 kW</option>
@@ -378,7 +380,7 @@ export default function LeadsPage() {
                     name="gridType"
                     value={formData.gridType}
                     onChange={handleInputChange}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs"
                   >
                     <option value="On-Grid">On-Grid (Connected to Grid)</option>
                     <option value="Off-Grid">Off-Grid (With Battery Backup)</option>
@@ -393,7 +395,7 @@ export default function LeadsPage() {
                     name="source"
                     value={formData.source}
                     onChange={handleInputChange}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs"
                   >
                     <option value="Website">Website Form</option>
                     <option value="WhatsApp">WhatsApp Inquiry</option>
@@ -408,7 +410,7 @@ export default function LeadsPage() {
                     name="assignedTo"
                     value={formData.assignedTo}
                     onChange={handleInputChange}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs"
                   >
                     <option value="Amit Kumar">Amit Kumar</option>
                     <option value="Sonia Verma">Sonia Verma</option>
@@ -425,7 +427,7 @@ export default function LeadsPage() {
                   placeholder="Street address, colony..."
                   value={formData.address}
                   onChange={handleInputChange}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs"
+                  className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs"
                   required
                 />
               </div>
@@ -434,13 +436,13 @@ export default function LeadsPage() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border border-[#E4E7EB] text-[#666666] rounded-xl text-xs font-semibold hover:bg-[#F5F7FA]"
+                  className="px-4 py-2 border border-[#EBCED6] text-[#666666] rounded-xl text-xs font-semibold hover:bg-[#F7EEF2]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white rounded-xl text-xs font-bold shadow-xs transition"
+                  className="px-5 py-2 bg-[#4A355E] hover:bg-[#372447] text-white rounded-xl text-xs font-bold shadow-xs transition"
                 >
                   Save Lead to Pipeline
                 </button>

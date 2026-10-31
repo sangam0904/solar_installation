@@ -1,5 +1,7 @@
 "use client";
 
+import { FileTextIcon, PrinterIcon, PlusIcon, SparklesIcon } from "@/components/Icons";
+
 import { useState, useMemo, useEffect } from "react";
 import PageShell from "@/components/PageShell";
 import { bomTemplates, BOMItem } from "@/data/mockData";
@@ -117,7 +119,7 @@ export default function QuotationsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 print:hidden">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-[#333333] flex items-center gap-2">
-            <span>📋</span> Quotation &amp; Automated BOM Builder
+            <FileTextIcon className="w-6 h-6 text-[#4A355E]" /> Quotation &amp; Automated BOM Builder
           </h1>
           <p className="text-xs sm:text-sm text-[#666666] mt-0.5">
             Instant Bill of Materials calculation &amp; formal quote generation for 1 kW to 5 kW systems
@@ -126,17 +128,17 @@ export default function QuotationsPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={handlePrint}
-            className="px-4 py-2 bg-white hover:bg-[#FAF4F7] text-[#734960] border border-[#734960]/30 rounded-xl text-xs font-bold card-floating transition flex items-center gap-2 cursor-pointer"
+            className="px-4 py-2 bg-white hover:bg-[#F7EEF2] text-[#4A355E] border border-[#4A355E]/30 rounded-xl text-xs font-bold card-floating transition flex items-center gap-2 cursor-pointer"
             title="Print clean quotation bill or save as PDF"
           >
-            <span>🖨️</span> Print Quote (Bill Only)
+            <PrinterIcon className="w-4 h-4 text-[#4A355E]" /> Print Quote (Bill Only)
           </button>
           <button
             onClick={() => {
               setQuoteSent(true);
               setTimeout(() => setQuoteSent(false), 2500);
             }}
-            className="px-4 py-2 bg-[#734960] hover:bg-[#5A354A] text-white rounded-xl text-xs font-bold card-floating transition flex items-center gap-2 cursor-pointer"
+            className="px-4 py-2 bg-[#4A355E] hover:bg-[#372447] text-white rounded-xl text-xs font-bold card-floating transition flex items-center gap-2 cursor-pointer"
           >
             <span>✉️</span> Send to Customer
           </button>
@@ -150,7 +152,7 @@ export default function QuotationsPage() {
       )}
 
       {/* ── 2. Configuration Section (Hidden on Print) ── */}
-      <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 card-floating space-y-4 print:hidden">
+      <div className="bg-white rounded-2xl border border-[#EBCED6] p-5 card-floating space-y-4 print:hidden">
         <h2 className="text-sm font-bold text-[#333333] uppercase tracking-wider">
           System Configuration &amp; Spec Selection
         </h2>
@@ -161,7 +163,7 @@ export default function QuotationsPage() {
             type="text"
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
-            className="w-full mt-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs text-[#333333] font-semibold focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+            className="w-full mt-1 px-3.5 py-2 border border-[#EBCED6] rounded-xl text-xs text-[#333333] font-semibold focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none"
             placeholder="Enter customer name..."
           />
         </div>
@@ -180,8 +182,8 @@ export default function QuotationsPage() {
                     onClick={() => setSelectedCapacity(cap)}
                     className={`py-2 px-1 rounded-xl text-xs font-bold transition text-center border cursor-pointer ${
                       selected
-                        ? "bg-[#734960] text-white border-[#734960] card-floating"
-                        : "bg-[#F5F7FA] text-[#333333] border-[#E4E7EB] hover:bg-[#FAF4F7]"
+                        ? "bg-[#4A355E] text-white border-[#4A355E] card-floating"
+                        : "bg-[#F7EEF2] text-[#333333] border-[#EBCED6] hover:bg-[#F7EEF2]"
                     }`}
                   >
                     {cap}
@@ -207,7 +209,7 @@ export default function QuotationsPage() {
                         ? opt.value === "On-Grid"
                           ? "bg-[#78B77B] text-white border-[#78B77B] card-floating"
                           : "bg-[#F4B860] text-[#333333] border-[#F4B860] card-floating"
-                        : "bg-[#F5F7FA] text-[#666666] border-[#E4E7EB] hover:bg-gray-100"
+                        : "bg-[#F7EEF2] text-[#666666] border-[#EBCED6] hover:bg-gray-100"
                     }`}
                   >
                     <span>{opt.value === "On-Grid" ? "🔌" : "🔋"}</span>
@@ -223,17 +225,17 @@ export default function QuotationsPage() {
       {/* ── 3. FORMAL QUOTATION BILL DOCUMENT (The ONLY part printed in PDF) ── */}
       <div
         id="printable-quotation-bill"
-        className="printable-quote-bill bg-white rounded-2xl border-2 border-[#734960]/20 p-6 sm:p-8 card-floating space-y-6"
+        className="printable-quote-bill bg-white rounded-2xl border-2 border-[#4A355E]/20 p-6 sm:p-8 card-floating space-y-6"
       >
         {/* Letterhead Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b-2 border-[#734960]/40 pb-5">
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b-2 border-[#4A355E]/40 pb-5">
           <div>
             <div className="flex items-center gap-2.5">
               <div className="w-10 h-10 bg-[#F4B860] rounded-xl flex items-center justify-center text-xl shadow-xs">
                 ☀️
               </div>
               <div>
-                <h2 className="text-xl font-extrabold text-[#734960] tracking-tight">
+                <h2 className="text-xl font-extrabold text-[#4A355E] tracking-tight">
                   SunPower Solutions Pvt. Ltd.
                 </h2>
                 <p className="text-[10px] font-bold text-[#666666] uppercase tracking-wider">
@@ -253,7 +255,7 @@ export default function QuotationsPage() {
           </div>
 
           <div className="sm:text-right flex flex-col sm:items-end">
-            <span className="px-3 py-1 bg-[#FAF4F7] text-[#734960] font-mono text-xs font-extrabold rounded-lg border border-[#8E687F]/30">
+            <span className="px-3 py-1 bg-[#F7EEF2] text-[#4A355E] font-mono text-xs font-extrabold rounded-lg border border-[#6D5284]/30">
               QUOTE REF: QT-2026-088
             </span>
             <p className="text-xs text-[#333333] font-bold mt-2">
@@ -268,7 +270,7 @@ export default function QuotationsPage() {
 
             <button
               onClick={handlePrint}
-              className="mt-3 px-3 py-1 bg-[#734960] hover:bg-[#5A354A] text-white text-[11px] font-bold rounded-lg print:hidden cursor-pointer"
+              className="mt-3 px-3 py-1 bg-[#4A355E] hover:bg-[#372447] text-white text-[11px] font-bold rounded-lg print:hidden cursor-pointer"
             >
               🖨️ Print / Save as PDF
             </button>
@@ -276,9 +278,9 @@ export default function QuotationsPage() {
         </div>
 
         {/* Bill To & Project Specifications */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#F5F7FA] p-4 rounded-xl border border-[#E4E7EB] text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#F7EEF2] p-4 rounded-xl border border-[#EBCED6] text-xs">
           <div>
-            <span className="text-[10px] font-bold uppercase text-[#734960] tracking-wider block">
+            <span className="text-[10px] font-bold uppercase text-[#4A355E] tracking-wider block">
               QUOTATION TO (CLIENT DETAILS)
             </span>
             <p className="text-base font-extrabold text-[#333333] mt-0.5">{customerName}</p>
@@ -313,8 +315,8 @@ export default function QuotationsPage() {
             </span>
           </div>
 
-          <table className="w-full text-left text-xs border border-[#E4E7EB]">
-            <thead className="bg-[#FAF4F7] text-[#333333] font-bold border-b border-[#E4E7EB]">
+          <table className="w-full text-left text-xs border border-[#EBCED6]">
+            <thead className="bg-[#F7EEF2] text-[#333333] font-bold border-b border-[#EBCED6]">
               <tr>
                 <th className="px-3 py-2.5 w-10 text-center">#</th>
                 <th className="px-3 py-2.5">Component Description</th>
@@ -324,9 +326,9 @@ export default function QuotationsPage() {
                 <th className="px-3 py-2.5 text-right">Amount (₹)</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E4E7EB]">
+            <tbody className="divide-y divide-[#EBCED6]">
               {bomItems?.map((item, idx) => (
-                <tr key={idx} className="hover:bg-[#F5F7FA]">
+                <tr key={idx} className="hover:bg-[#F7EEF2]">
                   <td className="px-3 py-2 text-center text-[#666666] font-mono">{idx + 1}</td>
                   <td className="px-3 py-2 font-bold text-[#333333]">{item.name}</td>
                   <td className="px-3 py-2 text-[#666666]">{item.specification}</td>
@@ -340,7 +342,7 @@ export default function QuotationsPage() {
                 </tr>
               ))}
             </tbody>
-            <tfoot className="bg-[#F5F7FA] font-bold border-t-2 border-[#E4E7EB]">
+            <tfoot className="bg-[#F7EEF2] font-bold border-t-2 border-[#EBCED6]">
               <tr>
                 <td colSpan={5} className="px-3 py-2 text-right text-[#666666]">
                   Hardware Subtotal:
@@ -353,11 +355,11 @@ export default function QuotationsPage() {
                 </td>
                 <td className="px-3 py-2 text-right text-[#666666]">₹{fmt(gst)}</td>
               </tr>
-              <tr className="border-t border-[#734960]/30 bg-[#FAF4F7]">
-                <td colSpan={5} className="px-3 py-2.5 text-right font-bold text-[#734960]">
+              <tr className="border-t border-[#4A355E]/30 bg-[#F7EEF2]">
+                <td colSpan={5} className="px-3 py-2.5 text-right font-bold text-[#4A355E]">
                   Gross Project Turnkey Cost (All Inclusive):
                 </td>
-                <td className="px-3 py-2.5 text-right font-extrabold text-[#734960]">
+                <td className="px-3 py-2.5 text-right font-extrabold text-[#4A355E]">
                   ₹{fmt(grandTotal)}
                 </td>
               </tr>
@@ -371,7 +373,7 @@ export default function QuotationsPage() {
                   </td>
                 </tr>
               )}
-              <tr className="bg-[#734960] text-white text-sm">
+              <tr className="bg-[#4A355E] text-white text-sm">
                 <td colSpan={5} className="px-3 py-3 text-right font-extrabold uppercase tracking-wide">
                   Net Customer Out-of-Pocket Cost (Final Payable):
                 </td>
@@ -384,7 +386,7 @@ export default function QuotationsPage() {
         </div>
 
         {/* Commercial Terms & Warranties */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-[#E4E7EB] pt-4 text-xs text-[#555555]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-[#EBCED6] pt-4 text-xs text-[#555555]">
           <div>
             <h5 className="font-bold text-[#333333] uppercase text-[11px] mb-1">
               Warranty Guarantees
@@ -411,11 +413,11 @@ export default function QuotationsPage() {
         </div>
 
         {/* Signature & Acceptance Block */}
-        <div className="grid grid-cols-2 gap-8 border-t-2 border-[#E4E7EB] pt-6 mt-4 text-xs">
+        <div className="grid grid-cols-2 gap-8 border-t-2 border-[#EBCED6] pt-6 mt-4 text-xs">
           <div>
             <p className="font-bold text-[#333333]">For SunPower Solutions Pvt. Ltd.</p>
             <div className="h-14 flex items-end">
-              <span className="text-[10px] text-[#734960] font-mono font-bold italic">
+              <span className="text-[10px] text-[#4A355E] font-mono font-bold italic">
                 [Digitally Signed by Sales Director]
               </span>
             </div>
@@ -437,15 +439,15 @@ export default function QuotationsPage() {
       </div>
 
       {/* ── 4. Saved Quotations Table (Hidden on Print) ── */}
-      <div className="bg-white rounded-2xl border border-[#E4E7EB] card-floating overflow-hidden print:hidden">
-        <div className="px-5 py-3.5 border-b border-[#E4E7EB] bg-[#F5F7FA]">
+      <div className="bg-white rounded-2xl border border-[#EBCED6] card-floating overflow-hidden print:hidden">
+        <div className="px-5 py-3.5 border-b border-[#EBCED6] bg-[#F7EEF2]">
           <h3 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
             Recent Client Quotations
           </h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F5F7FA] text-[#666666] font-semibold border-b border-[#E4E7EB]">
+            <thead className="bg-[#F7EEF2] text-[#666666] font-semibold border-b border-[#EBCED6]">
               <tr>
                 <th className="px-4 py-2.5">Quote ID</th>
                 <th className="px-4 py-2.5">Customer</th>
@@ -456,10 +458,10 @@ export default function QuotationsPage() {
                 <th className="px-4 py-2.5 text-center">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E4E7EB]/60">
+            <tbody className="divide-y divide-[#EBCED6]/60">
               {savedQuotations.map((q) => (
-                <tr key={q.id} className="hover:bg-[#F5F7FA] transition-colors">
-                  <td className="px-4 py-3 font-mono font-bold text-[#734960]">{q.id}</td>
+                <tr key={q.id} className="hover:bg-[#F7EEF2] transition-colors">
+                  <td className="px-4 py-3 font-mono font-bold text-[#4A355E]">{q.id}</td>
                   <td className="px-4 py-3 font-semibold text-[#333333]">{q.customer}</td>
                   <td className="px-4 py-3 text-[#333333]">{q.capacity}</td>
                   <td className="px-4 py-3 text-[#666666]">{q.gridType}</td>

@@ -1,46 +1,69 @@
 @import "tailwindcss";
 
 :root {
-  --color-plum: #734960;
-  --color-plum-dark: #5A354A;
-  --color-plum-light: #F4ECF0;
-  --color-mauve: #8E687F;
-  --color-mauve-dark: #7A536C;
-  --color-mauve-light: #FAF4F7;
+  /* New Theme Swatch Palette */
+  --theme-deep-purple: #4A355E;
+  --theme-slate-purple: #6D5284;
+  --theme-dusty-lavender: #8D73A8;
+  --theme-soft-lilac: #B39CCB;
+  --theme-muted-rose: #D7B6C7;
+  --theme-soft-blush: #EBCED6;
+  --theme-canvas: #F7EEF2;
+
+  /* Standard Website Typography System */
+  --font-standard: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  
+  --color-plum: #4A355E;
+  --color-plum-dark: #372447;
+  --color-plum-light: #F2E8EE;
+  --color-mauve: #6D5284;
+  --color-mauve-dark: #583F6E;
+  --color-mauve-light: #EBCED6;
   --color-solar-green: #78B77B;
   --color-solar-green-light: #EBF5EC;
   --color-solar-green-dark: #5B965E;
-  --color-soft-orange: #F4B860;
-  --color-soft-orange-light: #FEF6EB;
-  --color-soft-orange-dark: #DA9B40;
-  --color-light-grey: #F5F7FA;
-  --color-border-grey: #E4E7EB;
-  --color-text-grey: #333333;
-  --color-text-muted: #666666;
+  --color-soft-orange: #8D73A8;
+  --color-soft-orange-light: #F7EEF2;
+  --color-soft-orange-dark: #6D5284;
+  --color-light-grey: #F7EEF2;
+  --color-border-grey: #EBCED6;
+  --color-text-grey: #261C33;
+  --color-text-muted: #6D5284;
   --color-white: #FFFFFF;
 }
 
 body {
-  background-color: #F5F7FA;
-  color: #333333;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #F7EEF2;
+  color: #261C33;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   margin: 0;
   padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
+  line-height: 1.5;
 }
 
-/* Subtle, elegant shadow under floating cards ("less use" / soft modern elevation) */
+/* Headings Typography */
+h1, h2, h3, h4, h5, h6 {
+  color: #261C33;
+  letter-spacing: -0.022em;
+  font-weight: 700;
+}
+
+/* Subtle, elegant shadow under floating cards */
 .shadow-xs,
 .shadow-card,
 .card-floating,
 .floating-card {
-  box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.05), 0 1px 3px -1px rgba(0, 0, 0, 0.03) !important;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 2px 10px -2px rgba(74, 53, 94, 0.06), 0 1px 4px -1px rgba(74, 53, 94, 0.04) !important;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
 }
 
 .shadow-xs:hover,
 .card-floating:hover,
 .floating-card:hover {
-  box-shadow: 0 4px 12px -2px rgba(115, 73, 96, 0.07), 0 2px 5px -1px rgba(0, 0, 0, 0.04) !important;
+  box-shadow: 0 6px 16px -3px rgba(74, 53, 94, 0.1), 0 3px 6px -2px rgba(74, 53, 94, 0.05) !important;
 }
 
 /* Custom scrollbars */
@@ -49,21 +72,20 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F5F7FA;
+  background: #F7EEF2;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D8DCE3;
+  background: #D7B6C7;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #8E687F;
+  background: #8D73A8;
 }
 
 /* ======================================================== */
 /* PRINT MEDIA RULES - Clean Quotation Bill & PDF Export     */
 /* ======================================================== */
 @media print {
-  /* Hide all non-bill desktop elements: navbar, sidebar, header, web buttons, page headers */
   aside,
   header,
   nav,
@@ -73,7 +95,6 @@ body {
     display: none !important;
   }
 
-  /* Reset document canvas for standard A4 printing */
   html,
   body {
     background: #ffffff !important;
@@ -88,7 +109,6 @@ body {
     print-color-adjust: exact !important;
   }
 
-  /* Neutralize layout wrapper margins */
   div[class*="min-h-screen"] {
     min-height: auto !important;
     background: #ffffff !important;
@@ -107,7 +127,6 @@ body {
     width: 100% !important;
   }
 
-  /* Display only the official printable quotation bill */
   .printable-quote-bill {
     display: block !important;
     width: 100% !important;
@@ -121,7 +140,6 @@ body {
     page-break-inside: avoid;
   }
 
-  /* Ensure print tables have solid borders and clean print typography */
   .printable-quote-bill table {
     width: 100% !important;
     border-collapse: collapse !important;
