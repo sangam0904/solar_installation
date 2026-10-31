@@ -80,8 +80,8 @@ function SidebarInner() {
           href={role === "technician" ? "/technician" : role === "customer" ? "/customer" : "/"}
           className="flex items-center gap-2 overflow-hidden"
         >
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#8D73A8] to-[#6D5284] flex items-center justify-center text-white shadow-sm flex-shrink-0 border border-[#B39CCB]/30">
-            <SunIcon className="w-4 h-4 text-white" />
+          <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-white shadow-sm flex-shrink-0 border border-[#B39CCB]/30 overflow-hidden">
+            <img src="/icon.png" alt="SunPower Logo" className="w-full h-full object-contain p-0.5" />
           </div>
           {isNavOpen && (
             <div className="leading-tight truncate">
@@ -127,13 +127,15 @@ function SidebarInner() {
               {user?.name.split(" ")[0]} ({role})
             </span>
           </div>
-          <Link
-            href="/login"
-            className="text-[#D7B6C7] hover:text-white hover:underline font-bold text-[10px] flex-shrink-0 ml-1"
-            title="Switch User Role"
-          >
-            Switch ⇄
-          </Link>
+          {role !== "admin" && (
+            <Link
+              href="/login"
+              className="text-[#D7B6C7] hover:text-white hover:underline font-bold text-[10px] flex-shrink-0 ml-1"
+              title="Switch User Role"
+            >
+              Switch ⇄
+            </Link>
+          )}
         </div>
       )}
 
