@@ -16,6 +16,7 @@ import {
   ChevronRightIcon,
   FileTextIcon,
   ClockIcon,
+  MapPinIcon,
 } from "@/components/Icons";
 
 import { useState, useEffect, useRef, Suspense } from "react";
@@ -490,6 +491,97 @@ function CustomerContent() {
     }, 4000);
   };
 
+  // Solar Panel Order / Expansion Form State (Solar Yield & Passbook Section)
+  const [panelOrderName, setPanelOrderName] = useState(current.name);
+  const [panelOrderPhone, setPanelOrderPhone] = useState(current.phone);
+  const [panelOrderAddress, setPanelOrderAddress] = useState(current.address);
+  const [panelQuantity, setPanelQuantity] = useState<number>(4);
+  const [panelModel, setPanelModel] = useState("540W Mono PERC Half-Cut");
+  const [panelOrderNotes, setPanelOrderNotes] = useState("");
+  const [panelOrderSuccess, setPanelOrderSuccess] = useState(false);
+  const [panelOrderHistory, setPanelOrderHistory] = useState<
+    Array<{
+      id: string;
+      name: string;
+      phone: string;
+      address: string;
+      quantity: number;
+      model: string;
+      notes: string;
+      date: string;
+      status: string;
+    }>
+  >(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("sunpower_panel_orders");
+        if (saved) return JSON.parse(saved);
+      } catch {}
+    }
+    return [
+      {
+        id: "ORD-PANEL-104",
+        name: current.name,
+        phone: current.phone,
+        address: current.address,
+        quantity: 4,
+        model: "540W Mono PERC Half-Cut",
+        notes: "Want additional panels for 2nd floor terrace extension",
+        date: "25 Oct 2026",
+        status: "Site Feasibility Approved",
+      },
+    ];
+  });
+
+  useEffect(() => {
+    setPanelOrderName(current.name);
+    setPanelOrderPhone(current.phone);
+    setPanelOrderAddress(current.address);
+  }, [current.name, current.phone, current.address]);
+
+  const handlePanelOrderSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!panelOrderName || !panelOrderPhone || !panelOrderAddress || !panelQuantity) return;
+
+    const newOrder = {
+      id: `ORD-PANEL-${Math.floor(100 + Math.random() * 900)}`,
+      name: panelOrderName,
+      phone: panelOrderPhone,
+      address: panelOrderAddress,
+      quantity: Number(panelQuantity),
+      model: panelModel,
+      notes: panelOrderNotes,
+      date: "Today, Just now",
+      status: "Submitted (Under Engineering Review)",
+    };
+
+    const updated = [newOrder, ...panelOrderHistory];
+    setPanelOrderHistory(updated);
+    try {
+      localStorage.setItem("sunpower_panel_orders", JSON.stringify(updated));
+    } catch {}
+
+    try {
+      const savedNotifs = JSON.parse(localStorage.getItem("sunpower_notifications") || "[]");
+      const adminNotif = {
+        id: `notif-${Date.now()}`,
+        recipientRole: "admin" as const,
+        text: `New Panel Order: ${panelQuantity}x ${panelModel} panels requested by ${panelOrderName} (${newOrder.id})`,
+        time: "Just now",
+        type: "order" as const,
+      };
+      localStorage.setItem("sunpower_notifications", JSON.stringify([adminNotif, ...savedNotifs]));
+      window.dispatchEvent(new Event("storage"));
+    } catch {}
+
+    setPanelOrderSuccess(true);
+    setPanelOrderNotes("");
+
+    setTimeout(() => {
+      setPanelOrderSuccess(false);
+    }, 5000);
+  };
+
   const progressSteps = [
     { num: 1, title: "Inquiry & Roof Pre-Qualification", desc: "Form filled & subsidy verified" },
     { num: 2, title: "Site Survey & Shading Check", desc: "Technician measured tilt & orientation" },
@@ -776,6 +868,185 @@ function CustomerContent() {
                 <p className="text-emerald-600 font-medium">{current.panelWarranty}</p>
               </div>
             </div>
+          </div>
+
+          {/* ── SOLAR PANEL EXPANSION & ORDER FORM (YIELD & PASSBOOK SECTION BOTTOM) ── */}
+          <div className="bg-white rounded-2xl border border-[#DEDCDC] p-5 sm:p-6 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#DEDCDC] pb-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-[#F7F8F9] border border-[#DEDCDC] flex items-center justify-center text-[#57707A]">
+                    <SunIcon className="w-4 h-4 text-[#57707A]" />
+                  </div>
+                  <h4 className="text-base font-bold text-[#191D23]">
+                    Order Additional Solar Panels / Capacity Expansion
+                  </h4>
+                </div>
+                <p className="text-xs text-[#57707A] mt-1">
+                  Want to expand your plant capacity? Fill in your details below to order extra solar panels with zero hassle.
+                </p>
+              </div>
+              <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#F7F8F9] text-[#191D23] border border-[#DEDCDC] uppercase tracking-wide self-start sm:self-auto">
+                Direct Homeowner Booking
+              </span>
+            </div>
+
+            <form onSubmit={handlePanelOrderSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="text-[11px] font-bold text-[#7B919C] uppercase tracking-wide">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={panelOrderName}
+                    onChange={(e) => setPanelOrderName(e.target.value)}
+                    placeholder="e.g. Rajesh Gupta"
+                    className="w-full mt-1 px-3 py-2 border border-[#DEDCDC] rounded-xl text-xs font-semibold bg-[#F7F8F9] text-[#191D23] focus:bg-white focus:border-[#57707A] focus:ring-2 focus:ring-[#57707A]/20 focus:outline-none transition"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-bold text-[#7B919C] uppercase tracking-wide">
+                    Phone Number *
+                  </label>
+                  <input
+                    type="tel"
+                    value={panelOrderPhone}
+                    onChange={(e) => setPanelOrderPhone(e.target.value)}
+                    placeholder="e.g. +91 99887 76655"
+                    className="w-full mt-1 px-3 py-2 border border-[#DEDCDC] rounded-xl text-xs font-semibold bg-[#F7F8F9] text-[#191D23] focus:bg-white focus:border-[#57707A] focus:ring-2 focus:ring-[#57707A]/20 focus:outline-none transition"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-bold text-[#7B919C] uppercase tracking-wide">
+                    Quantity of Solar Panels *
+                  </label>
+                  <div className="relative mt-1">
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={panelQuantity}
+                      onChange={(e) => setPanelQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                      placeholder="e.g. 4"
+                      className="w-full px-3 py-2 border border-[#DEDCDC] rounded-xl text-xs font-semibold bg-[#F7F8F9] text-[#191D23] focus:bg-white focus:border-[#57707A] focus:ring-2 focus:ring-[#57707A]/20 focus:outline-none transition pr-16"
+                      required
+                    />
+                    <span className="absolute right-3 top-2 text-xs font-bold text-[#7B919C] pointer-events-none">
+                      Panels
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-bold text-[#7B919C] uppercase tracking-wide flex items-center gap-1">
+                    <MapPinIcon className="w-3.5 h-3.5 text-[#57707A]" />
+                    <span>Installation / Site Address *</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={panelOrderAddress}
+                    onChange={(e) => setPanelOrderAddress(e.target.value)}
+                    placeholder="e.g. 12, Vaishali Nagar, Jaipur"
+                    className="w-full mt-1 px-3 py-2 border border-[#DEDCDC] rounded-xl text-xs font-semibold bg-[#F7F8F9] text-[#191D23] focus:bg-white focus:border-[#57707A] focus:ring-2 focus:ring-[#57707A]/20 focus:outline-none transition"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-bold text-[#7B919C] uppercase tracking-wide">
+                    Panel Technology / Wattage
+                  </label>
+                  <select
+                    value={panelModel}
+                    onChange={(e) => setPanelModel(e.target.value)}
+                    className="w-full mt-1 px-3 py-2 border border-[#DEDCDC] rounded-xl text-xs font-semibold bg-[#F7F8F9] text-[#191D23] focus:bg-white focus:border-[#57707A] focus:ring-2 focus:ring-[#57707A]/20 focus:outline-none transition"
+                  >
+                    <option value="540W Mono PERC Half-Cut">540W Mono PERC Half-Cut (High Efficiency)</option>
+                    <option value="550W Bi-Facial Dual Glass">550W Bi-Facial Dual Glass (+25% Rear Yield)</option>
+                    <option value="400W All-Black Architectural">400W All-Black Architectural Sleek Panels</option>
+                    <option value="580W TOPCon N-Type Next-Gen">580W TOPCon N-Type Next-Gen High Output</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold text-[#7B919C] uppercase tracking-wide">
+                  Additional Rooftop / Site Notes (Optional)
+                </label>
+                <textarea
+                  rows={2}
+                  value={panelOrderNotes}
+                  onChange={(e) => setPanelOrderNotes(e.target.value)}
+                  placeholder="e.g. Please check inverter capacity compatibility and roof shading..."
+                  className="w-full mt-1 px-3 py-2 border border-[#DEDCDC] rounded-xl text-xs font-semibold bg-[#F7F8F9] text-[#191D23] focus:bg-white focus:border-[#57707A] focus:ring-2 focus:ring-[#57707A]/20 focus:outline-none transition"
+                />
+              </div>
+
+              {panelOrderSuccess && (
+                <div className="p-3 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-300 text-center animate-in fade-in flex items-center justify-center gap-1.5">
+                  <CheckCircleIcon className="w-4 h-4 text-emerald-700" />
+                  <span>Request for {panelQuantity} solar panels submitted! SunPower team will review your roof layout and contact you at {panelOrderPhone}.</span>
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-[#DEDCDC]">
+                <div className="text-[11px] text-[#7B919C]">
+                  Estimated added generation: <strong className="text-[#191D23]">~{(panelQuantity * 2.2).toFixed(1)} kWh / day</strong>
+                </div>
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 bg-[#191D23] hover:bg-[#57707A] text-white font-bold rounded-xl text-xs shadow-xs transition flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <PackageIcon className="w-3.5 h-3.5" />
+                  <span>Submit Solar Panel Request</span>
+                  <ChevronRightIcon className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </form>
+
+            {/* Recent Orders List if any */}
+            {panelOrderHistory.length > 0 && (
+              <div className="pt-3 border-t border-[#DEDCDC] space-y-2">
+                <span className="text-[10px] font-bold text-[#7B919C] uppercase tracking-wider block">
+                  My Panel Requests History ({panelOrderHistory.length})
+                </span>
+                <div className="space-y-1.5">
+                  {panelOrderHistory.map((item) => (
+                    <div
+                      key={item.id}
+                      className="p-3 bg-[#F7F8F9] rounded-xl border border-[#DEDCDC] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="font-mono font-bold text-[#57707A] bg-white px-2 py-0.5 rounded border border-[#DEDCDC]">
+                          {item.id}
+                        </span>
+                        <div>
+                          <p className="font-bold text-[#191D23]">
+                            {item.quantity}x {item.model}
+                          </p>
+                          <p className="text-[11px] text-[#7B919C]">
+                            Deliver to: {item.address} • Contact: {item.phone}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-semibold text-[#7B919C]">{item.date}</span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                          {item.status}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
