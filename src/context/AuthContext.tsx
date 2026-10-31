@@ -25,6 +25,9 @@ interface AuthContextType {
   loginAsAdmin: (email?: string) => void;
   loginAsTechnician: (techId: string, customEmail?: string) => void;
   loginAsCustomer: (identifier: string, customEmail?: string) => void;
+  loginWithOtp: (email: string, role: UserRole, customName?: string) => void;
+  resetPassword: (email: string, newPassword: string) => void;
+  getUserPassword: (email: string) => string;
   loginWithGoogle: () => void;
   logout: () => void;
   updateProfilePhoto: (photo: string) => void;
@@ -44,6 +47,9 @@ const AuthContext = createContext<AuthContextType>({
   loginAsAdmin: () => {},
   loginAsTechnician: () => {},
   loginAsCustomer: () => {},
+  loginWithOtp: () => {},
+  resetPassword: () => {},
+  getUserPassword: () => "••••••••",
   loginWithGoogle: () => {},
   logout: () => {},
   updateProfilePhoto: () => {},
@@ -66,8 +72,19 @@ export const ALL_16_EMPLOYEES: Record<string, { name: string; email: string; pho
   "TECH-014": { name: "Neha Khandelwal", email: "neha.k@sunpower.com", phone: "+91 98765 15151", specialization: "Inverter Telemetry & Firmware Diagnostics" },
   "TECH-015": { name: "Harish Jangid", email: "harish.j@sunpower.com", phone: "+91 98765 16161", specialization: "Emergency Breakdown Fast Response" },
   "TECH-016": { name: "Vikas Shekhawat", email: "vikas.s@sunpower.com", phone: "+91 98765 17171", specialization: "Final Grid Testing & Handover Lead" },
+  "TECH-017": { name: "Manish Rawat", email: "manish.r@sunpower.com", phone: "+91 98765 18181", specialization: "Rooftop Anchor & Waterproofing Specialist" },
+  "TECH-018": { name: "Kavita Gurjar", email: "kavita.g@sunpower.com", phone: "+91 98765 19191", specialization: "Solar PV Performance Auditor" },
+  "TECH-019": { name: "Dharmendra Yadav", email: "dharmendra.y@sunpower.com", phone: "+91 98765 20202", specialization: "Battery Storage Integration Engineer" },
+  "TECH-020": { name: "Priyanka Meena", email: "priyanka.m@sunpower.com", phone: "+91 98765 21212", specialization: "Net-Metering Liaison & Substation Officer" },
+  "TECH-021": { name: "Sandeep Verma", email: "sandeep.v@sunpower.com", phone: "+91 98765 23232", specialization: "Micro-Grid & Hybrid System Expert" },
+  "TECH-022": { name: "Govind Kumawat", email: "govind.k@sunpower.com", phone: "+91 98765 24242", specialization: "High-Voltage AC Combiner Tech" },
+  "TECH-023": { name: "Asha Pareek", email: "asha.p@sunpower.com", phone: "+91 98765 25252", specialization: "Drone Roof Profiling & Shading Analyst" },
+  "TECH-024": { name: "Sunil Chauhan", email: "sunil.c@sunpower.com", phone: "+91 98765 26262", specialization: "Inverter PCB & Capacitor Repair Tech" },
+  "TECH-025": { name: "Lokesh Bairwa", email: "lokesh.b@sunpower.com", phone: "+91 98765 27272", specialization: "Lightning Surge & SPD Protection Lead" },
+  "TECH-026": { name: "Rekha Sen", email: "rekha.s@sunpower.com", phone: "+91 98765 28282", specialization: "Commercial Rooftop Safety Lead" },
+  "TECH-027": { name: "Bharat Singh", email: "bharat.s@sunpower.com", phone: "+91 98765 29292", specialization: "Industrial HT Substation Engineer" },
+  "TECH-028": { name: "Devendra Joshi", email: "devendra.j@sunpower.com", phone: "+91 98765 30303", specialization: "Rapid Response Breakdown Engineer" },
 };
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(defaultAdmin);
 
@@ -215,6 +232,116 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  const loginWithOtp = (email: string, targetRole: UserRole, customName?: string) => {
+    let name = customName;
+    let userId = "";
+    let customerOrder: string | undefined;
+    let systemDetails: string | undefined;
+    let isNewUser = false;
+
+    if (targetRole === "admin") {
+      name = name || "Rajendra Rathore (Director)";
+      userId = "ADM-001";
+    } else if (targetRole === "technician") {
+      const match = Object.entries(ALL_16_EMPLOYEES).find(
+        ([, tech]) => tech.email.toLowerCase() === email.toLowerCase()
+      );
+      if (match) {
+        userId = match[0];
+        name = match[1].name;
+      } else {
+        userId = "TECH-001";
+        name = name || "Field Operations Technician";
+      }
+    } else {
+      // Customer lookup
+      const customerDirectory: Record<string, { name: string; email: string; phone: string; order: string; system: string }> = {
+        "rajesh": {
+          name: "Rajesh Gupta",
+          email: "rajesh.gupta@email.com",
+          phone: "+91 99887 76655",
+          order: "ORD-003",
+          system: "5 kW On-Grid System",
+        },
+        "mohan": {
+          name: "Mohan Lal",
+          email: "mohan.lal@email.com",
+          phone: "+91 77665 54433",
+          order: "ORD-005",
+          system: "3 kW On-Grid System",
+        },
+        "kavita": {
+          name: "Kavita Joshi",
+          email: "kavita.j@email.com",
+          phone: "+91 43210 98765",
+          order: "ORD-001",
+          system: "3 kW Off-Grid System",
+        },
+        "arjun": {
+          name: "Arjun Mehta",
+          email: "arjun.m@email.com",
+          phone: "+91 54321 09876",
+          order: "ORD-002",
+          system: "4 kW On-Grid System",
+        },
+      };
+
+      const match = Object.entries(customerDirectory).find(
+        ([, cust]) => cust.email.toLowerCase() === email.toLowerCase()
+      );
+
+      if (match) {
+        userId = `CUST-${match[0].toUpperCase()}`;
+        name = match[1].name;
+        customerOrder = match[1].order;
+        systemDetails = match[1].system;
+      } else {
+        // Brand new registered user!
+        isNewUser = true;
+        const parsedName = email.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+        userId = `CUST-NEW-${Math.floor(100 + Math.random() * 900)}`;
+        name = parsedName || "Solar Customer";
+        customerOrder = "ORD-NEW";
+        systemDetails = "3 kW Residential Solar";
+      }
+    }
+
+    const authUser: User = {
+      id: userId,
+      name: name || "Authorized User",
+      email,
+      role: targetRole,
+      avatar: targetRole,
+      customerOrder,
+      systemDetails,
+    };
+
+    saveUser(authUser);
+    recordUserLogin({
+      name: authUser.name,
+      email: authUser.email,
+      role: targetRole,
+      loginMethod: isNewUser ? "New User Email OTP Registration" : "Email OTP Sign-In",
+    });
+  };
+
+  const resetPassword = (email: string, newPassword: string) => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("sunpower_user_passwords") || "{}");
+      saved[email.toLowerCase().trim()] = newPassword;
+      localStorage.setItem("sunpower_user_passwords", JSON.stringify(saved));
+    } catch {}
+  };
+
+  const getUserPassword = (email: string) => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("sunpower_user_passwords") || "{}");
+      return saved[email.toLowerCase().trim()] || "••••••••";
+    } catch {
+      return "••••••••";
+    }
+  };
+
   const logout = () => {
     saveUser(null);
   };
@@ -227,6 +354,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loginAsAdmin,
         loginAsTechnician,
         loginAsCustomer,
+        loginWithOtp,
+        resetPassword,
+        getUserPassword,
         loginWithGoogle,
         logout,
         updateProfilePhoto,

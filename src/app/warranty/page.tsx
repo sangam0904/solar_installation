@@ -4,10 +4,11 @@ import { ShieldCheckIcon, SearchIcon } from "@/components/Icons";
 
 import { useState } from "react";
 import PageShell from "@/components/PageShell";
-import { warranties as initialWarranties, Warranty } from "@/data/mockData";
+import { Warranty } from "@/data/mockData";
+import { useSolarData } from "@/hooks/useSolarData";
 
 export default function WarrantyPage() {
-  const [warrantyList, setWarrantyList] = useState<Warranty[]>(initialWarranties);
+  const { data: warrantyList, setData: setWarrantyList, loading } = useSolarData<Warranty>("warranties");
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [selectedWarranty, setSelectedWarranty] = useState<Warranty | null>(null);

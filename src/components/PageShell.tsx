@@ -39,6 +39,8 @@ function PageBreadcrumbBar() {
         return { title: "Customer Solar Passbook", parent: "Dashboard", parentHref: "/" };
       case "/settings":
         return { title: "Settings & Profile", parent: "System", parentHref: "/" };
+      case "/database":
+        return { title: "PostgreSQL Database Engine", parent: "System", parentHref: "/" };
       default:
         return { title: path.replace("/", "").toUpperCase(), parent: "Home", parentHref: "/" };
     }

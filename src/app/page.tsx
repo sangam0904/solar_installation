@@ -2,7 +2,8 @@
 
 import PageShell from "@/components/PageShell";
 import AdminUserLoginLogsSection from "@/components/AdminUserLoginLogsSection";
-import { leads, orders, serviceTickets, dashboardStats } from "@/data/mockData";
+import { useState, useEffect } from "react";
+import { dashboardStats } from "@/data/mockData";
 import Link from "next/link";
 import {
   DashboardIcon,
@@ -72,18 +73,33 @@ const leadStages = [
   { stage: "Lost", color: "bg-red-300" },
 ];
 
-const leadStageCounts = leadStages.map((s) => ({
-  ...s,
-  count: leads.filter((l) => l.stage === s.stage).length,
-}));
-const totalLeads = leads.length;
-
-// ---------- Active tickets ----------
-const activeTickets = serviceTickets.filter(
-  (t) => t.status === "Open" || t.status === "Assigned" || t.status === "In Progress"
-);
+// Computed inside component
 
 export default function DashboardPage() {
+  const [liveLeads, setLiveLeads] = useState<any[]>([]);
+  const [liveOrders, setLiveOrders] = useState<any[]>([]);
+  const [liveTickets, setLiveTickets] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/solar/data")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.leads) setLiveLeads(data.leads);
+        if (data.orders) setLiveOrders(data.orders);
+        if (data.tickets) setLiveTickets(data.tickets);
+      })
+      .catch((e) => console.warn(e));
+  }, []);
+  const leadStageCounts = leadStages.map((s) => ({
+    ...s,
+    count: liveLeads.filter((l) => l.stage === s.stage).length,
+  }));
+  const totalLeads = liveLeads.length;
+
+  const activeTickets = liveTickets.filter(
+    (t) => t.status === "Open" || t.status === "Assigned" || t.status === "In Progress"
+  );
+
   const maxRevenue = Math.max(...dashboardStats.monthlyData.map((d) => d.revenue));
 
   return (
@@ -94,6 +110,9 @@ export default function DashboardPage() {
           <h1 className="text-xl sm:text-2xl font-bold text-[#261C33] flex items-center gap-2">
             <DashboardIcon className="w-6 h-6 text-[#4A355E]" />
             <span>Executive Performance Dashboard</span>
+            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-300">
+              🐘 PostgreSQL Live ({totalLeads} Leads • {liveOrders.length} Orders)
+            </span>
           </h1>
           <p className="text-xs sm:text-sm text-[#6D5284] mt-0.5">
             SunPower Solutions — Month-end operations, hardware costs, and profit overview
@@ -386,7 +405,7 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#EBCED6]/60">
-                {orders.slice(0, 5).map((o) => (
+                {liveOrders.slice(0, 5).map((o) => (
                   <tr key={o.id} className="hover:bg-[#F7EEF2]/60 transition-colors">
                     <td className="px-4 py-3 font-mono font-bold text-[#4A355E]">{o.id}</td>
                     <td className="px-4 py-3 font-semibold text-[#261C33]">{o.customerName}</td>

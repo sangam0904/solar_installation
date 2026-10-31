@@ -4,7 +4,8 @@ import { UsersIcon, PlusIcon, SearchIcon } from "@/components/Icons";
 
 import { useState } from "react";
 import PageShell from "@/components/PageShell";
-import { leads as initialLeads, Lead } from "@/data/mockData";
+import { Lead } from "@/data/mockData";
+import { useSolarData } from "@/hooks/useSolarData";
 
 const stages = [
   "New Lead",
@@ -35,7 +36,7 @@ const sourceColors: Record<string, string> = {
 };
 
 export default function LeadsPage() {
-  const [leadList, setLeadList] = useState<Lead[]>(initialLeads);
+  const { data: leadList, setData: setLeadList, loading } = useSolarData<Lead>("leads");
   const [view, setView] = useState<"kanban" | "table">("kanban");
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -80,7 +81,18 @@ export default function LeadsPage() {
       createdAt: "2026-10-31",
       subsidyEligible: true,
     };
-    setLeadList([newLead, ...leadList]);
+    // Save to PostgreSQL backend
+    fetch("/api/solar/data", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ resource: "leads", data: newLead }),
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.lead) setLeadList((prev) => [json.lead, ...prev]);
+        else setLeadList((prev) => [newLead, ...prev]);
+      })
+      .catch(() => setLeadList((prev) => [newLead, ...prev]));
     setShowModal(false);
     setFormData({
       name: "",
@@ -106,6 +118,9 @@ export default function LeadsPage() {
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-[#333333] flex items-center gap-2">
             <UsersIcon className="w-6 h-6 text-[#4A355E]" /> Leads & Customer Inquiry Pipeline
+            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-300">
+              🐘 PostgreSQL: {leadList.length} Live
+            </span>
           </h1>
           <p className="text-xs sm:text-sm text-[#666666] mt-0.5">
             Omnichannel lead capture, roof pre-qualification, and survey dispatching

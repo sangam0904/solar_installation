@@ -4,7 +4,8 @@ import { WrenchIcon, AlertCircleIcon, SearchIcon, PlusIcon } from "@/components/
 
 import { useState, useEffect } from "react";
 import PageShell from "@/components/PageShell";
-import { serviceTickets as initialTickets, ServiceTicket, warranties } from "@/data/mockData";
+import { serviceTickets, ServiceTicket, warranties, Warranty } from "@/data/mockData";
+import { useSolarData } from "@/hooks/useSolarData";
 import { ALL_16_EMPLOYEES } from "@/context/AuthContext";
 
 export default function ServiceDeskPage() {
@@ -18,10 +19,16 @@ export default function ServiceDeskPage() {
         // Ignore
       }
     }
-    return initialTickets;
+    return serviceTickets;
   });
 
   const [filterStatus, setFilterStatus] = useState("All");
+  const { data: dbTickets } = useSolarData<ServiceTicket>("service_tickets");
+  useEffect(() => {
+    if (dbTickets.length > 0) {
+      setTickets(dbTickets);
+    }
+  }, [dbTickets]);
   const [showNewModal, setShowNewModal] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<ServiceTicket | null>(null);
 

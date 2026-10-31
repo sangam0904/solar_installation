@@ -4,10 +4,11 @@ import { PackageIcon, SearchIcon, PlusIcon } from "@/components/Icons";
 
 import { useState } from "react";
 import PageShell from "@/components/PageShell";
-import { orders as initialOrders, Order } from "@/data/mockData";
+import { Order } from "@/data/mockData";
+import { useSolarData } from "@/hooks/useSolarData";
 
 export default function OrdersPage() {
-  const [ordersList, setOrdersList] = useState<Order[]>(initialOrders);
+  const { data: ordersList, setData: setOrdersList, loading } = useSolarData<Order>("orders");
   const [filterStatus, setFilterStatus] = useState<string>("All");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showDispatchModal, setShowDispatchModal] = useState(false);
@@ -120,6 +121,9 @@ export default function OrdersPage() {
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-[#333333] flex items-center gap-2">
             <PackageIcon className="w-6 h-6 text-[#4A355E]" /> Orders & Warehouse Dispatch
+            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-300">
+              🐘 PostgreSQL: {ordersList.length} Live
+            </span>
           </h1>
           <p className="text-xs sm:text-sm text-[#666666] mt-0.5">
             Track payments, scan hardware serial numbers, and schedule installation crews

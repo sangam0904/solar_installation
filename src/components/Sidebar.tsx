@@ -504,6 +504,29 @@ function SidebarInner() {
                 <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#D7B6C7]"></span>
               )}
             </Link>
+
+            {/* ── 6. POSTGRESQL DATABASE ── */}
+            <Link
+              href="/database"
+              className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-medium transition-all group relative ${
+                pathname === "/database"
+                  ? "bg-[#6D5284] text-white font-semibold shadow-xs border border-[#8D73A8]/50"
+                  : "text-white/85 hover:bg-white/10 hover:text-white"
+              }`}
+              title={!isNavOpen ? "PostgreSQL Database" : undefined}
+            >
+              <span className="text-base leading-none">🐘</span>
+              {isNavOpen ? (
+                <span className="truncate">PostgreSQL DB</span>
+              ) : (
+                <span className="absolute left-full ml-2 px-2 py-1 bg-[#4A355E] text-white text-[11px] font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-lg border border-[#6D5284]">
+                  PostgreSQL Database
+                </span>
+              )}
+              {pathname === "/database" && isNavOpen && (
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#D7B6C7]"></span>
+              )}
+            </Link>
           </>
         )}
       </nav>

@@ -4,10 +4,11 @@ import { WarehouseIcon, SearchIcon, PlusIcon, PackageIcon } from "@/components/I
 
 import { useState } from "react";
 import PageShell from "@/components/PageShell";
-import { inventory as initialInventory, InventoryItem } from "@/data/mockData";
+import { InventoryItem } from "@/data/mockData";
+import { useSolarData } from "@/hooks/useSolarData";
 
 export default function InventoryPage() {
-  const [items, setItems] = useState<InventoryItem[]>(initialInventory);
+  const { data: items, setData: setItems, loading } = useSolarData<InventoryItem>("inventory");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchSerial, setSearchSerial] = useState<string>("");
   const [showAddModal, setShowAddModal] = useState(false);
@@ -116,6 +117,9 @@ export default function InventoryPage() {
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-[#333333] flex items-center gap-2">
             <WarehouseIcon className="w-6 h-6 text-[#4A355E]" /> Warehouse Inventory & Serial Registry
+            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-300">
+              🐘 PostgreSQL: {items.length} In Stock
+            </span>
           </h1>
           <p className="text-xs sm:text-sm text-[#666666] mt-0.5">
             Real-time equipment tracking by unique serial numbers, bays, and customer allocations

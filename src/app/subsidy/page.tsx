@@ -4,10 +4,11 @@ import { LandmarkIcon, SearchIcon, IndianRupeeIcon } from "@/components/Icons";
 
 import { useState } from "react";
 import PageShell from "@/components/PageShell";
-import { subsidies as initialSubsidies, Subsidy } from "@/data/mockData";
+import { Subsidy } from "@/data/mockData";
+import { useSolarData } from "@/hooks/useSolarData";
 
 export default function SubsidyPage() {
-  const [subsidiesList, setSubsidiesList] = useState<Subsidy[]>(initialSubsidies);
+  const { data: subsidiesList, setData: setSubsidiesList, loading } = useSolarData<Subsidy>("subsidies");
   const [filterStatus, setFilterStatus] = useState("All");
   const [selectedSubsidy, setSelectedSubsidy] = useState<Subsidy | null>(null);
 

@@ -148,26 +148,56 @@ function TechnicianFieldContent() {
   const { user, role } = useAuth();
 
   // Load technician list and their assigned tasks from localStorage
-  const [techList, setTechList] = useState<TechnicianWithTasks[]>(() => {
-    const defaultList = initialTechs.map((t) => ({
-      ...t,
-      assignedTasks: defaultTechTasks[t.id] || [],
-    }));
-    if (typeof window !== "undefined") {
-      try {
-        const saved = localStorage.getItem("sunpower_tech_assigned_tasks");
-        if (saved) {
-          const parsed: TechnicianWithTasks[] = JSON.parse(saved);
-          const existingIds = new Set(parsed.map((p) => p.id));
-          const missing = defaultList.filter((d) => !existingIds.has(d.id));
-          return [...parsed, ...missing];
+  
+  // Load technician list from PostgreSQL
+  const [techList, setTechList] = useState<TechnicianWithTasks[]>([]);
+
+  useEffect(() => {
+    fetch('/api/solar/data?resource=technicians')
+      .then((r) => r.json())
+      .then((json) => {
+        if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+          const list = json.data.map((t: any) => {
+            const todaysJobs = typeof t.todaysJobs === 'string' ? JSON.parse(t.todaysJobs) : (t.todaysJobs || []);
+            const assignedTasks = (defaultTechTasks[t.id] && defaultTechTasks[t.id].length > 0)
+              ? defaultTechTasks[t.id]
+              : todaysJobs.map((j: any, jIdx: number) => ({
+                  orderId: j.orderId || ('ORD-00' + (jIdx + 1)),
+                  customerName: j.customerName || 'Customer',
+                  customerPhone: '+91 98765 00000',
+                  address: j.address || 'Jaipur, Rajasthan',
+                  capacity: j.capacity || '5 kW',
+                  type: j.type || 'Service',
+                  timeSlot: j.timeSlot || '10:00 AM - 01:00 PM',
+                  status: j.status || 'Pending',
+                  customerDetails: {
+                    systemDetails: (j.capacity || '5 kW') + ' Rooftop Solar System',
+                    reportedIssue: 'Scheduled maintenance and string voltage inspection.',
+                    roofType: 'RCC Flat Rooftop',
+                    customerNotes: 'Customer on site.',
+                    customerPhotos: ['Inverter Unit', 'AC DB Box'],
+                  },
+                  adminInstructions: 'Inspect string fuses, test inverter grounding resistance, and log meter output.',
+                }));
+
+            return {
+              id: t.id,
+              name: t.name,
+              phone: t.phone,
+              specialization: t.specialization,
+              status: t.status || 'On Job',
+              rating: Number(t.rating) || 4.8,
+              completedJobs: Number(t.completedJobs) || 50,
+              assignedTasks,
+            };
+          });
+
+          setTechList(list);
         }
-      } catch {
-        // Ignore
-      }
-    }
-    return defaultList;
-  });
+      })
+      .catch((err) => console.warn('Failed to fetch technicians from DB:', err));
+  }, []);
+
 
   // Re-sync with localStorage when window focuses or storage event fires
   useEffect(() => {
@@ -208,7 +238,17 @@ function TechnicianFieldContent() {
 
   // Active technician (from auth user, or default to TECH-001)
   const myTechId = user?.techId || "TECH-001";
-  const myTech = techList.find((t) => t.id === myTechId) || techList[0];
+  const fallbackTech: TechnicianWithTasks = {
+    id: "TECH-001",
+    name: "Rohit Meena",
+    phone: "+91 98765 11111",
+    specialization: "Lead Installation & Commissioning Engineer",
+    status: "On Job",
+    rating: 4.9,
+    completedJobs: 178,
+    assignedTasks: defaultTechTasks["TECH-001"] || [],
+  };
+  const myTech = techList.find((t) => t.id === myTechId) || techList[0] || fallbackTech;
 
   // For Admin preview toggle
   const [adminPreviewTechId, setAdminPreviewTechId] = useState<string>("TECH-001");
@@ -798,7 +838,7 @@ function TechnicianFieldContent() {
                 <div className="flex items-center gap-2 flex-wrap">
                   <h2 className="text-lg font-bold text-white !text-white tracking-tight" style={{ color: "#ffffff" }}>My Assigned Field Tasks</h2>
                   <span className="text-[10px] font-bold bg-[#FFBB94] text-[#4C1D3D] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-2xs">
-                    Logged in as {currentViewTech.name}
+                    Logged in as {currentViewTech?.name || "Technician"}
                   </span>
                 </div>
                 <p className="text-xs text-[#FFBB94]/90 mt-0.5">
