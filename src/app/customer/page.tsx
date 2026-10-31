@@ -879,7 +879,7 @@ function CustomerContent() {
                     <SunIcon className="w-4 h-4 text-[#57707A]" />
                   </div>
                   <h4 className="text-base font-bold text-[#191D23]">
-                    Order Additional Solar Panels / Capacity Expansion
+                    Order solar panels at your house
                   </h4>
                 </div>
                 <p className="text-xs text-[#57707A] mt-1">
