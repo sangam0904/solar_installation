@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, Suspense } from "react";
+import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import CustomerWorkProgressBar from "@/components/CustomerWorkProgressBar";
 import { useAuth } from "@/context/AuthContext";
@@ -52,7 +53,12 @@ interface CustomerComplaintTicket {
 }
 
 function CustomerContent() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const searchParams = useSearchParams();
 
   // Tab state: 'passbook' | 'progress' | 'photos' | 'complaint' | 'enquiry' | 'warranty'
@@ -557,6 +563,36 @@ function CustomerContent() {
   ];
 
   const currentSection = portalSections.find((s) => s.id === activeTab) || portalSections[0];
+
+  if (mounted && role !== "customer") {
+    return (
+      <PageShell>
+        <div className="max-w-xl mx-auto my-12 bg-white rounded-3xl border border-[#E4E7EB] p-8 text-center card-floating space-y-4">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-[#FAF4F7] text-[#734960] flex items-center justify-center text-3xl shadow-sm">
+            🔒
+          </div>
+          <h2 className="text-xl font-bold text-[#333333]">Customer Portal Access Restricted</h2>
+          <p className="text-xs sm:text-sm text-[#666666] leading-relaxed">
+            Customer solar passbooks, generation history, and digital warranty records can only be accessed by logging in directly with a Customer account.
+          </p>
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href="/login"
+              className="w-full sm:w-auto px-5 py-2.5 bg-[#734960] hover:bg-[#5A354A] text-white rounded-xl text-xs font-bold transition shadow-xs"
+            >
+              Log in as Customer →
+            </Link>
+            <Link
+              href="/"
+              className="w-full sm:w-auto px-5 py-2.5 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#333333] rounded-xl text-xs font-semibold transition"
+            >
+              Return to Admin Dashboard
+            </Link>
+          </div>
+        </div>
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell>

@@ -964,11 +964,11 @@ export default function AdminNotificationFloatingWindow() {
                   <span>→</span>
                 </Link>
                 <Link
-                  href="/customer"
+                  href="/technician"
                   onClick={() => setIsOpen(false)}
                   className="text-gray-500 hover:text-[#734960] hover:underline flex items-center gap-1"
                 >
-                  <span>Customer Passbook</span>
+                  <span>Technician Portal</span>
                   <span>↗</span>
                 </Link>
               </div>

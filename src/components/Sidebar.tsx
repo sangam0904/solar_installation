@@ -31,7 +31,7 @@ function SidebarInner() {
   const { role, user, logout } = useAuth();
 
   // Auto-open dropdowns depending on active path
-  const isDashboardArea = pathname === "/" || pathname === "/technician" || pathname === "/customer";
+  const isDashboardArea = pathname === "/" || pathname === "/technician";
   const isCrmArea = ["/leads", "/quotations", "/orders", "/inventory", "/warranty"].includes(pathname);
 
   const [dashboardOpen, setDashboardOpen] = useState(isDashboardArea);
@@ -261,56 +261,15 @@ function SidebarInner() {
                     <span className="text-xs">👷</span>
                     <span className="truncate">Technician Portal</span>
                   </Link>
-
-                  <div className="space-y-0.5 pt-0.5">
-                    <div
-                      className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-[11px] transition cursor-pointer ${
-                        pathname === "/customer"
-                          ? "bg-white/20 text-[#F4B860] font-bold"
-                          : "text-white/80 hover:bg-white/10 hover:text-white"
-                      }`}
-                      onClick={() => setCustomerSubOpen(!customerSubOpen)}
-                    >
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <span className="text-xs">👤</span>
-                        <span className="truncate">Customer Portal</span>
-                      </div>
-                      <span className="text-[9px] text-white/60">
-                        {customerSubOpen ? "▲" : "▼"}
-                      </span>
-                    </div>
-
-                    {customerSubOpen && (
-                      <div className="ml-3 pl-2 space-y-0.5 border-l border-white/20">
-                        {customerPortalSubItems.map((sub) => {
-                          const isSubActive = pathname === "/customer" && activeTabParam === sub.tab;
-                          return (
-                            <Link
-                              key={sub.name}
-                              href={sub.href}
-                              className={`flex items-center gap-1.5 px-2 py-1 rounded text-[10px] transition ${
-                                isSubActive
-                                  ? "bg-white/25 text-[#F4B860] font-bold"
-                                  : "text-white/70 hover:bg-white/10 hover:text-white"
-                              }`}
-                            >
-                              <span className="text-[11px]">{sub.icon}</span>
-                              <span className="truncate">{sub.name}</span>
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
                 </div>
               )}
 
               {/* Collapsed Navbar Flyout Dropdown */}
               {!isNavOpen && (
-                <div className="absolute left-full top-0 ml-2 w-56 bg-[#734960] rounded-xl shadow-xl border border-[#5A354A] p-2 hidden group-hover:block z-50">
+                <div className="absolute left-full top-0 ml-2 w-52 bg-[#734960] rounded-xl shadow-xl border border-[#5A354A] p-2 hidden group-hover:block z-50">
                   <div className="px-2 py-1 border-b border-[#5A354A] mb-1">
                     <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                      <span>📊</span> Dashboard Portals
+                      <span>📊</span> Dashboard
                     </span>
                   </div>
                   <div className="space-y-0.5 text-xs">
@@ -330,28 +289,6 @@ function SidebarInner() {
                     >
                       <span>👷</span> Technician Portal
                     </Link>
-                    <div className="pt-1 border-t border-[#5A354A]/80">
-                      <Link
-                        href="/customer"
-                        className={`flex items-center gap-2 px-2.5 py-1 rounded-lg font-bold text-xs ${
-                          pathname === "/customer" ? "text-[#F4B860]" : "text-white"
-                        }`}
-                      >
-                        <span>👤</span> Customer Portal
-                      </Link>
-                      <div className="pl-3 space-y-0.5 pt-0.5">
-                        {customerPortalSubItems.map((sub) => (
-                          <Link
-                            key={sub.name}
-                            href={sub.href}
-                            className="flex items-center gap-1.5 px-2 py-1 rounded text-[11px] text-white/80 hover:bg-white/10"
-                          >
-                            <span>{sub.icon}</span>
-                            <span className="truncate">{sub.name}</span>
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
                   </div>
                 </div>
               )}
