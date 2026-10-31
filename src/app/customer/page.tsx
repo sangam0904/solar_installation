@@ -51,7 +51,7 @@ interface CustomerComplaintTicket {
 }
 
 function CustomerContent() {
-  const { user, loginAsCustomer } = useAuth();
+  const { user } = useAuth();
   const searchParams = useSearchParams();
 
   // Tab state: 'passbook' | 'progress' | 'photos' | 'complaint' | 'enquiry' | 'warranty'
@@ -129,11 +129,8 @@ function CustomerContent() {
     },
   ];
 
-  // Pick customer based on logged in user or default to Rajesh
-  const activeCustomerKey = user?.name ? (customers.find(c => user.name.includes(c.name.split(" ")[0]))?.key || "rajesh") : "rajesh";
-  const [selectedCustKey, setSelectedCustKey] = useState(activeCustomerKey);
-
-  const current = customers.find((c) => c.key === selectedCustKey) || customers[0];
+  // Profile strictly matched to logged-in customer account
+  const current = customers.find(c => user?.name && user.name.toLowerCase().includes(c.name.split(" ")[0].toLowerCase())) || customers[0];
 
   // Photo upload states
   const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([
@@ -540,23 +537,15 @@ function CustomerContent() {
           </p>
         </div>
 
-        {/* Demo Switcher */}
+        {/* Secured Plant Verification Badge (Profiles accessible only via login) */}
         <div className="flex items-center gap-2 bg-white px-3.5 py-1.5 rounded-xl border border-[#E4E7EB] card-floating">
-          <span className="text-[11px] font-bold text-[#666666] uppercase">Account:</span>
-          <select
-            value={selectedCustKey}
-            onChange={(e) => {
-              setSelectedCustKey(e.target.value);
-              loginAsCustomer(e.target.value);
-            }}
-            className="text-xs font-bold text-[#734960] bg-transparent focus:outline-none cursor-pointer"
-          >
-            {customers.map((c) => (
-              <option key={c.key} value={c.key}>
-                {c.name} ({c.system})
-              </option>
-            ))}
-          </select>
+          <span className="w-2 h-2 rounded-full bg-[#78B77B] animate-pulse"></span>
+          <span className="text-[11px] font-bold text-[#333333]">
+            {current.system}
+          </span>
+          <span className="text-[10px] text-[#666666] border-l border-[#E4E7EB] pl-2 font-mono">
+            Plant ID: {current.inverterSerial}
+          </span>
         </div>
       </div>
 
