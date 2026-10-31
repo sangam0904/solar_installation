@@ -6,13 +6,6 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useNav } from "@/context/NavContext";
 import { useAuth } from "@/context/AuthContext";
 
-interface MenuItem {
-  name: string;
-  href: string;
-  icon: string;
-  isDropdown?: boolean;
-}
-
 const customerPortalSubItems = [
   { name: "Solar Yield & Passbook", href: "/customer?tab=passbook", icon: "☀️", tab: "passbook" },
   { name: "Installation Progress Report", href: "/customer?tab=progress", icon: "📊", tab: "progress" },
@@ -22,28 +15,12 @@ const customerPortalSubItems = [
   { name: "Digital Warranty Cards", href: "/customer?tab=warranty", icon: "🛡️", tab: "warranty" },
 ];
 
-const adminMenuItems: MenuItem[] = [
-  { name: "Dashboard", href: "/", icon: "📊" },
-  { name: "Leads & CRM", href: "/leads", icon: "🎯" },
+const crmSubItems = [
+  { name: "Leads Overview", href: "/leads", icon: "🎯" },
   { name: "Quotations", href: "/quotations", icon: "📋" },
   { name: "Orders", href: "/orders", icon: "📦" },
   { name: "Inventory", href: "/inventory", icon: "🏭" },
   { name: "Warranty", href: "/warranty", icon: "🛡️" },
-  { name: "Service Desk", href: "/service", icon: "🔧" },
-  { name: "Subsidy Tracker", href: "/subsidy", icon: "🏛️" },
-  { name: "Technicians", href: "/technician", icon: "👷" },
-  { name: "Customer Portal", href: "/customer", icon: "👤", isDropdown: true },
-  { name: "Settings", href: "/settings", icon: "⚙️" },
-];
-
-const technicianMenuItems: MenuItem[] = [
-  { name: "My Assigned Tasks", href: "/technician", icon: "📋" },
-  { name: "Settings", href: "/settings", icon: "⚙️" },
-];
-
-const customerMenuItems: MenuItem[] = [
-  { name: "My Solar Portal", href: "/customer", icon: "☀️", isDropdown: true },
-  { name: "Settings", href: "/settings", icon: "⚙️" },
 ];
 
 function SidebarInner() {
@@ -53,20 +30,19 @@ function SidebarInner() {
   const { isNavOpen, toggleNav } = useNav();
   const { role, user, logout } = useAuth();
 
-  const [customerDropdownOpen, setCustomerDropdownOpen] = useState(pathname === "/customer");
+  // Auto-open dropdowns depending on active path
+  const isDashboardArea = pathname === "/" || pathname === "/technician" || pathname === "/customer";
+  const isCrmArea = ["/leads", "/quotations", "/orders", "/inventory", "/warranty"].includes(pathname);
+
+  const [dashboardOpen, setDashboardOpen] = useState(isDashboardArea);
+  const [customerSubOpen, setCustomerSubOpen] = useState(pathname === "/customer");
+  const [crmOpen, setCrmOpen] = useState(isCrmArea);
 
   useEffect(() => {
-    if (pathname === "/customer") {
-      setCustomerDropdownOpen(true);
-    }
-  }, [pathname]);
-
-  const menuItems =
-    role === "technician"
-      ? technicianMenuItems
-      : role === "customer"
-      ? customerMenuItems
-      : adminMenuItems;
+    if (isDashboardArea) setDashboardOpen(true);
+    if (pathname === "/customer") setCustomerSubOpen(true);
+    if (isCrmArea) setCrmOpen(true);
+  }, [pathname, isDashboardArea, isCrmArea]);
 
   return (
     <aside
@@ -76,7 +52,10 @@ function SidebarInner() {
     >
       {/* Header / Logo */}
       <div className="flex items-center justify-between px-3 py-4 border-b border-[#7A536C]/70">
-        <Link href={role === "technician" ? "/technician" : role === "customer" ? "/customer" : "/"} className="flex items-center gap-2 overflow-hidden">
+        <Link
+          href={role === "technician" ? "/technician" : role === "customer" ? "/customer" : "/"}
+          className="flex items-center gap-2 overflow-hidden"
+        >
           <div className="w-8 h-8 rounded-lg bg-[#F4B860] flex items-center justify-center text-base shadow-sm flex-shrink-0">
             ☀️
           </div>
@@ -90,7 +69,7 @@ function SidebarInner() {
           )}
         </Link>
 
-        {/* Close/Open Toggle Button inside header */}
+        {/* Close/Open Toggle Button */}
         <button
           onClick={toggleNav}
           className={`p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center ${
@@ -107,7 +86,7 @@ function SidebarInner() {
         </button>
       </div>
 
-      {/* Role Banner inside sidebar */}
+      {/* Role Banner */}
       {isNavOpen && (
         <div className="px-3 py-2 bg-[#7A536C]/40 border-b border-[#7A536C]/50 flex items-center justify-between text-[11px]">
           <div className="flex items-center gap-1.5 truncate">
@@ -135,146 +114,458 @@ function SidebarInner() {
       )}
 
       {/* Navigation Links */}
-      <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto">
-        {menuItems.map((item) => {
-          const isActive = pathname === item.href.split("?")[0];
+      <nav className="flex-1 px-2 py-3 space-y-1.5 overflow-y-auto">
+        {/* ======================================================== */}
+        {/* ROLE: TECHNICIAN */}
+        {/* ======================================================== */}
+        {role === "technician" && (
+          <>
+            <Link
+              href="/technician"
+              className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-medium transition-all ${
+                pathname === "/technician"
+                  ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                  : "text-white/85 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <span className="text-base flex-shrink-0">📋</span>
+              {isNavOpen && <span className="truncate">My Assigned Tasks</span>}
+            </Link>
+            <Link
+              href="/settings"
+              className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-medium transition-all ${
+                pathname === "/settings"
+                  ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                  : "text-white/85 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <span className="text-base flex-shrink-0">⚙️</span>
+              {isNavOpen && <span className="truncate">Settings</span>}
+            </Link>
+          </>
+        )}
 
-          // Customer Portal Dropdown Menu
-          if (item.isDropdown) {
-            return (
-              <div key={item.name} className="relative group">
-                {/* Main Customer Portal Row */}
-                <div
-                  className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium transition-all duration-200 cursor-pointer ${
-                    isActive
-                      ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
-                      : "text-white/85 hover:bg-white/10 hover:text-white"
-                  }`}
-                  onClick={() => {
+        {/* ======================================================== */}
+        {/* ROLE: CUSTOMER */}
+        {/* ======================================================== */}
+        {role === "customer" && (
+          <>
+            <div className="relative group">
+              <div
+                className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
+                  pathname === "/customer"
+                    ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                    : "text-white/85 hover:bg-white/10 hover:text-white"
+                }`}
+                onClick={() => setCustomerSubOpen(!customerSubOpen)}
+              >
+                <Link href="/customer" className="flex items-center gap-2.5 flex-1 min-w-0">
+                  <span className="text-base flex-shrink-0">☀️</span>
+                  {isNavOpen && <span className="truncate">My Solar Portal</span>}
+                </Link>
+                {isNavOpen && (
+                  <span className="text-[10px] text-white/70">{customerSubOpen ? "▲" : "▼"}</span>
+                )}
+              </div>
+
+              {isNavOpen && customerSubOpen && (
+                <div className="ml-4 pl-2 mt-1 space-y-1 border-l-2 border-[#F4B860]/40">
+                  {customerPortalSubItems.map((sub) => {
+                    const isSubActive = pathname === "/customer" && activeTabParam === sub.tab;
+                    return (
+                      <Link
+                        key={sub.name}
+                        href={sub.href}
+                        className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition ${
+                          isSubActive
+                            ? "bg-white/20 text-[#F4B860] font-bold"
+                            : "text-white/80 hover:bg-white/10 hover:text-white"
+                        }`}
+                      >
+                        <span className="text-xs">{sub.icon}</span>
+                        <span className="truncate">{sub.name}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <Link
+              href="/settings"
+              className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-medium transition-all ${
+                pathname === "/settings"
+                  ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                  : "text-white/85 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <span className="text-base flex-shrink-0">⚙️</span>
+              {isNavOpen && <span className="truncate">Settings</span>}
+            </Link>
+          </>
+        )}
+
+        {/* ======================================================== */}
+        {/* ROLE: ADMIN (Exact format requested by user)              */}
+        {/* 1. dashboard {TECHNICIAN PORTAL AND CUSTOMER PORTAL}    */}
+        {/* 2. lead and CRM {QUOTATIONS, ORDERS, INVENTARY, WARRANTY}*/}
+        {/* 3. SERVICE DESK                                         */}
+        {/* 4. SUBSIDY TRACKER                                      */}
+        {/* 5. SETTINGS                                             */}
+        {/* ======================================================== */}
+        {role !== "technician" && role !== "customer" && (
+          <>
+            {/* ── 1. DASHBOARD DROPDOWN ── */}
+            <div className="relative group">
+              <div
+                className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
+                  pathname === "/"
+                    ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                    : isDashboardArea
+                    ? "bg-[#734960]/60 text-white font-semibold border border-[#5A354A]/50"
+                    : "text-white/85 hover:bg-white/10 hover:text-white"
+                }`}
+                onClick={() => {
+                  if (isNavOpen) {
+                    setDashboardOpen(!dashboardOpen);
+                  }
+                }}
+                title={!isNavOpen ? "Dashboard (Click for Portals)" : undefined}
+              >
+                <Link
+                  href="/"
+                  onClick={(e) => {
                     if (isNavOpen) {
-                      setCustomerDropdownOpen(!customerDropdownOpen);
+                      e.stopPropagation();
+                      setDashboardOpen(true);
                     }
                   }}
-                  title={!isNavOpen ? `${item.name} (Click for sections)` : undefined}
+                  className="flex items-center gap-2.5 flex-1 min-w-0"
                 >
-                  <Link
-                    href={item.href}
+                  <span className="text-base flex-shrink-0">📊</span>
+                  {isNavOpen && <span className="truncate">Dashboard</span>}
+                </Link>
+
+                {isNavOpen && (
+                  <button
+                    type="button"
                     onClick={(e) => {
-                      if (isNavOpen) {
-                        e.stopPropagation();
-                        setCustomerDropdownOpen(true);
-                      }
+                      e.stopPropagation();
+                      setDashboardOpen(!dashboardOpen);
                     }}
-                    className="flex items-center gap-2.5 min-w-0 flex-1"
+                    className="p-1 text-white/70 hover:text-white focus:outline-none"
+                    aria-label="Toggle Dashboard Dropdown"
                   >
-                    <span className="text-base flex-shrink-0">{item.icon}</span>
-                    {isNavOpen && <span className="truncate">{item.name}</span>}
+                    <span className="text-[10px] block">
+                      {dashboardOpen ? "▲" : "▼"}
+                    </span>
+                  </button>
+                )}
+              </div>
+
+              {/* Expanded Dropdown Content (when navbar open) */}
+              {isNavOpen && dashboardOpen && (
+                <div className="ml-3 pl-2 mt-1 space-y-1 border-l-2 border-[#F4B860]/40">
+                  {/* Dashboard Main Link */}
+                  <Link
+                    href="/"
+                    className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition ${
+                      pathname === "/"
+                        ? "bg-white/20 text-[#F4B860] font-bold"
+                        : "text-white/80 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    <span className="text-xs">📈</span>
+                    <span className="truncate">Overview</span>
                   </Link>
 
-                  {/* Dropdown chevron when navbar is open */}
-                  {isNavOpen && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setCustomerDropdownOpen(!customerDropdownOpen);
-                      }}
-                      className="p-1 text-white/70 hover:text-white focus:outline-none transition-transform"
-                      aria-label="Toggle Customer Portal Submenu"
-                    >
-                      <span className="text-[10px] block">
-                        {customerDropdownOpen ? "▲" : "▼"}
-                      </span>
-                    </button>
-                  )}
-                </div>
+                  {/* Technician Portal Sub-item */}
+                  <Link
+                    href="/technician"
+                    className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition ${
+                      pathname === "/technician"
+                        ? "bg-white/20 text-[#F4B860] font-bold"
+                        : "text-white/80 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    <span className="text-xs">👷</span>
+                    <span className="truncate">Technician Portal</span>
+                  </Link>
 
-                {/* Expanded Sub-items (when navbar is open) */}
-                {isNavOpen && customerDropdownOpen && (
-                  <div className="ml-4 pl-2 mt-1 space-y-1 border-l-2 border-[#F4B860]/40">
-                    {customerPortalSubItems.map((sub) => {
-                      const isSubActive = pathname === "/customer" && activeTabParam === sub.tab;
+                  {/* Customer Portal Sub-item with its nested dropdown list */}
+                  <div className="space-y-0.5 pt-0.5">
+                    <div
+                      className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-[11px] transition cursor-pointer ${
+                        pathname === "/customer"
+                          ? "bg-white/20 text-[#F4B860] font-bold"
+                          : "text-white/80 hover:bg-white/10 hover:text-white"
+                      }`}
+                      onClick={() => setCustomerSubOpen(!customerSubOpen)}
+                    >
+                      <Link
+                        href="/customer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCustomerSubOpen(true);
+                        }}
+                        className="flex items-center gap-2 flex-1 min-w-0"
+                      >
+                        <span className="text-xs">👤</span>
+                        <span className="truncate">Customer Portal</span>
+                      </Link>
+                      <span className="text-[9px] text-white/60">
+                        {customerSubOpen ? "▲" : "▼"}
+                      </span>
+                    </div>
+
+                    {/* Customer Portal Sub-items List */}
+                    {customerSubOpen && (
+                      <div className="ml-3 pl-2 space-y-0.5 border-l border-white/20">
+                        {customerPortalSubItems.map((sub) => {
+                          const isSubActive = pathname === "/customer" && activeTabParam === sub.tab;
+                          return (
+                            <Link
+                              key={sub.name}
+                              href={sub.href}
+                              className={`flex items-center gap-1.5 px-2 py-1 rounded text-[10px] transition ${
+                                isSubActive
+                                  ? "bg-white/25 text-[#F4B860] font-bold"
+                                  : "text-white/70 hover:bg-white/10 hover:text-white"
+                              }`}
+                            >
+                              <span className="text-[11px]">{sub.icon}</span>
+                              <span className="truncate">{sub.name}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Collapsed Navbar Flyout Dropdown */}
+              {!isNavOpen && (
+                <div className="absolute left-full top-0 ml-2 w-56 bg-[#734960] rounded-xl shadow-xl border border-[#5A354A] p-2 hidden group-hover:block z-50">
+                  <div className="px-2 py-1 border-b border-[#5A354A] mb-1">
+                    <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span>📊</span> Dashboard Portals
+                    </span>
+                  </div>
+                  <div className="space-y-0.5 text-xs">
+                    <Link
+                      href="/"
+                      className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition ${
+                        pathname === "/" ? "bg-white/20 text-[#F4B860] font-bold" : "text-white/90 hover:bg-white/10"
+                      }`}
+                    >
+                      <span>📈</span> Overview
+                    </Link>
+                    <Link
+                      href="/technician"
+                      className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition ${
+                        pathname === "/technician" ? "bg-white/20 text-[#F4B860] font-bold" : "text-white/90 hover:bg-white/10"
+                      }`}
+                    >
+                      <span>👷</span> Technician Portal
+                    </Link>
+                    <div className="pt-1 border-t border-[#5A354A]/80">
+                      <Link
+                        href="/customer"
+                        className={`flex items-center gap-2 px-2.5 py-1 rounded-lg font-bold text-xs ${
+                          pathname === "/customer" ? "text-[#F4B860]" : "text-white"
+                        }`}
+                      >
+                        <span>👤</span> Customer Portal
+                      </Link>
+                      <div className="pl-3 space-y-0.5 pt-0.5">
+                        {customerPortalSubItems.map((sub) => (
+                          <Link
+                            key={sub.name}
+                            href={sub.href}
+                            className="flex items-center gap-1.5 px-2 py-1 rounded text-[11px] text-white/80 hover:bg-white/10"
+                          >
+                            <span>{sub.icon}</span>
+                            <span className="truncate">{sub.name}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ── 2. LEAD AND CRM DROPDOWN { QUOTATIONS, ORDERS, INVENTORY, WARRANTY } ── */}
+            <div className="relative group">
+              <div
+                className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
+                  pathname === "/leads"
+                    ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                    : isCrmArea
+                    ? "bg-[#734960]/60 text-white font-semibold border border-[#5A354A]/50"
+                    : "text-white/85 hover:bg-white/10 hover:text-white"
+                }`}
+                onClick={() => {
+                  if (isNavOpen) {
+                    setCrmOpen(!crmOpen);
+                  }
+                }}
+                title={!isNavOpen ? "Lead & CRM (Quotations, Orders, Inventory, Warranty)" : undefined}
+              >
+                <Link
+                  href="/leads"
+                  onClick={(e) => {
+                    if (isNavOpen) {
+                      e.stopPropagation();
+                      setCrmOpen(true);
+                    }
+                  }}
+                  className="flex items-center gap-2.5 flex-1 min-w-0"
+                >
+                  <span className="text-base flex-shrink-0">🎯</span>
+                  {isNavOpen && <span className="truncate">Lead &amp; CRM</span>}
+                </Link>
+
+                {isNavOpen && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCrmOpen(!crmOpen);
+                    }}
+                    className="p-1 text-white/70 hover:text-white focus:outline-none"
+                    aria-label="Toggle CRM Dropdown"
+                  >
+                    <span className="text-[10px] block">{crmOpen ? "▲" : "▼"}</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Expanded Dropdown Content (when navbar open) */}
+              {isNavOpen && crmOpen && (
+                <div className="ml-3 pl-2 mt-1 space-y-1 border-l-2 border-[#78B77B]/50">
+                  {crmSubItems.map((sub) => {
+                    const isSubActive = pathname === sub.href;
+                    return (
+                      <Link
+                        key={sub.name}
+                        href={sub.href}
+                        className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition ${
+                          isSubActive
+                            ? "bg-white/20 text-[#F4B860] font-bold"
+                            : "text-white/80 hover:bg-white/10 hover:text-white"
+                        }`}
+                      >
+                        <span className="text-xs">{sub.icon}</span>
+                        <span className="truncate">{sub.name}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Collapsed Navbar Flyout Dropdown */}
+              {!isNavOpen && (
+                <div className="absolute left-full top-0 ml-2 w-52 bg-[#734960] rounded-xl shadow-xl border border-[#5A354A] p-2 hidden group-hover:block z-50">
+                  <div className="px-2 py-1 border-b border-[#5A354A] mb-1">
+                    <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <span>🎯</span> Lead &amp; CRM
+                    </span>
+                  </div>
+                  <div className="space-y-0.5">
+                    {crmSubItems.map((sub) => {
+                      const isSubActive = pathname === sub.href;
                       return (
                         <Link
                           key={sub.name}
                           href={sub.href}
-                          className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition-colors ${
+                          className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs transition ${
                             isSubActive
                               ? "bg-white/20 text-[#F4B860] font-bold"
-                              : "text-white/80 hover:bg-white/10 hover:text-white"
+                              : "text-white/90 hover:bg-white/10 hover:text-white"
                           }`}
                         >
-                          <span className="text-xs flex-shrink-0">{sub.icon}</span>
+                          <span className="text-sm">{sub.icon}</span>
                           <span className="truncate">{sub.name}</span>
                         </Link>
                       );
                     })}
                   </div>
-                )}
+                </div>
+              )}
+            </div>
 
-                {/* Collapsed Navbar Flyout Dropdown (when navbar is collapsed) */}
-                {!isNavOpen && (
-                  <div className="absolute left-full top-0 ml-2 w-56 bg-[#734960] rounded-xl shadow-xl border border-[#5A354A] p-2 hidden group-hover:block z-50">
-                    <div className="px-2 py-1 border-b border-[#5A354A] mb-1 flex items-center justify-between">
-                      <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                        <span>👤</span> Customer Portal
-                      </span>
-                      <span className="text-[9px] bg-[#F4B860] text-[#333333] px-1.5 py-0.5 rounded font-extrabold uppercase">
-                        Dropdown
-                      </span>
-                    </div>
-                    <div className="space-y-0.5">
-                      {customerPortalSubItems.map((sub) => {
-                        const isSubActive = pathname === "/customer" && activeTabParam === sub.tab;
-                        return (
-                          <Link
-                            key={sub.name}
-                            href={sub.href}
-                            className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs transition ${
-                              isSubActive
-                                ? "bg-white/20 text-[#F4B860] font-bold"
-                                : "text-white/90 hover:bg-white/10 hover:text-white"
-                            }`}
-                          >
-                            <span className="text-sm">{sub.icon}</span>
-                            <span className="truncate">{sub.name}</span>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          }
-
-          return (
+            {/* ── 3. SERVICE DESK ── */}
             <Link
-              key={item.name}
-              href={item.href}
-              className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-medium transition-all duration-200 group relative ${
-                isActive
+              href="/service"
+              className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-medium transition-all group relative ${
+                pathname === "/service"
                   ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
                   : "text-white/85 hover:bg-white/10 hover:text-white"
               }`}
-              title={!isNavOpen ? item.name : undefined}
+              title={!isNavOpen ? "Service Desk" : undefined}
             >
-              <span className="text-base flex-shrink-0">{item.icon}</span>
-
+              <span className="text-base flex-shrink-0">🔧</span>
               {isNavOpen ? (
-                <span className="truncate">{item.name}</span>
+                <span className="truncate">Service Desk</span>
               ) : (
                 <span className="absolute left-full ml-2 px-2 py-1 bg-[#734960] text-white text-[11px] font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-lg border border-[#5A354A]">
-                  {item.name}
+                  Service Desk
                 </span>
               )}
-
-              {isActive && isNavOpen && (
+              {pathname === "/service" && isNavOpen && (
                 <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#F4B860]"></span>
               )}
             </Link>
-          );
-        })}
+
+            {/* ── 4. SUBSIDY TRACKER ── */}
+            <Link
+              href="/subsidy"
+              className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-medium transition-all group relative ${
+                pathname === "/subsidy"
+                  ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                  : "text-white/85 hover:bg-white/10 hover:text-white"
+              }`}
+              title={!isNavOpen ? "Subsidy Tracker" : undefined}
+            >
+              <span className="text-base flex-shrink-0">🏛️</span>
+              {isNavOpen ? (
+                <span className="truncate">Subsidy Tracker</span>
+              ) : (
+                <span className="absolute left-full ml-2 px-2 py-1 bg-[#734960] text-white text-[11px] font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-lg border border-[#5A354A]">
+                  Subsidy Tracker
+                </span>
+              )}
+              {pathname === "/subsidy" && isNavOpen && (
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#F4B860]"></span>
+              )}
+            </Link>
+
+            {/* ── 5. SETTINGS ── */}
+            <Link
+              href="/settings"
+              className={`flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-medium transition-all group relative ${
+                pathname === "/settings"
+                  ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                  : "text-white/85 hover:bg-white/10 hover:text-white"
+              }`}
+              title={!isNavOpen ? "Settings" : undefined}
+            >
+              <span className="text-base flex-shrink-0">⚙️</span>
+              {isNavOpen ? (
+                <span className="truncate">Settings</span>
+              ) : (
+                <span className="absolute left-full ml-2 px-2 py-1 bg-[#734960] text-white text-[11px] font-medium rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-lg border border-[#5A354A]">
+                  Settings
+                </span>
+              )}
+              {pathname === "/settings" && isNavOpen && (
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#F4B860]"></span>
+              )}
+            </Link>
+          </>
+        )}
       </nav>
 
       {/* Bottom Action Bar with Logout / Switch */}
