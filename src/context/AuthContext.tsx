@@ -11,6 +11,7 @@ export interface User {
   phone?: string;
   role: UserRole;
   avatar?: string;
+  profilePhoto?: string;
   techId?: string;
   customerId?: string;
   customerOrder?: string;
@@ -25,6 +26,7 @@ interface AuthContextType {
   loginAsCustomer: (identifier: string) => void;
   loginWithGoogle: () => void;
   logout: () => void;
+  updateProfilePhoto: (photo: string) => void;
 }
 
 const defaultAdmin: User = {
@@ -43,7 +45,27 @@ const AuthContext = createContext<AuthContextType>({
   loginAsCustomer: () => {},
   loginWithGoogle: () => {},
   logout: () => {},
+  updateProfilePhoto: () => {},
 });
+
+export const ALL_16_EMPLOYEES: Record<string, { name: string; email: string; phone: string; specialization: string }> = {
+  "TECH-001": { name: "Rohit Meena", email: "rohit.m@sunpower.com", phone: "+91 98765 11111", specialization: "Lead Installation & Commissioning Engineer" },
+  "TECH-002": { name: "Amit Kumar", email: "amit.k@sunpower.com", phone: "+91 98765 22222", specialization: "Rooftop Survey & Tilt Analysis Specialist" },
+  "TECH-003": { name: "Suresh Yadav", email: "suresh.y@sunpower.com", phone: "+91 98765 33333", specialization: "Off-Grid & Lithium Battery Specialist" },
+  "TECH-004": { name: "Sonia Verma", email: "sonia.v@sunpower.com", phone: "+91 98765 44444", specialization: "Electrical Quality & Pre-Sales Inspector" },
+  "TECH-005": { name: "Vikram Rathore", email: "vikram.r@sunpower.com", phone: "+91 98765 55555", specialization: "High-Voltage String Inverter Specialist" },
+  "TECH-006": { name: "Manoj Sharma", email: "manoj.s@sunpower.com", phone: "+91 98765 66666", specialization: "Earthing Pit & Lightning Arrestor Tech" },
+  "TECH-007": { name: "Deepak Saini", email: "deepak.s@sunpower.com", phone: "+91 98765 77777", specialization: "Galvanized Structure Mounting Lead" },
+  "TECH-008": { name: "Pooja Choudhary", email: "pooja.c@sunpower.com", phone: "+91 98765 88888", specialization: "Discom Net-Metering & Grid Sync Engineer" },
+  "TECH-009": { name: "Rajesh Gurjar", email: "rajesh.g@sunpower.com", phone: "+91 98765 99999", specialization: "Solar DC Cabling & Combiner Box Tech" },
+  "TECH-010": { name: "Ankit Tiwari", email: "ankit.t@sunpower.com", phone: "+91 98765 10101", specialization: "Micro-Inverter & AC DB Wiring Tech" },
+  "TECH-011": { name: "Sunita Meena", email: "sunita.m@sunpower.com", phone: "+91 98765 12121", specialization: "Safety Compliance & Quality Assurance" },
+  "TECH-012": { name: "Rakesh Prajapat", email: "rakesh.p@sunpower.com", phone: "+91 98765 13131", specialization: "Commercial & Industrial Plant Crew" },
+  "TECH-013": { name: "Tarun Bhati", email: "tarun.b@sunpower.com", phone: "+91 98765 14141", specialization: "Preventive Maintenance & Deep Cleaning" },
+  "TECH-014": { name: "Neha Khandelwal", email: "neha.k@sunpower.com", phone: "+91 98765 15151", specialization: "Inverter Telemetry & Firmware Diagnostics" },
+  "TECH-015": { name: "Harish Jangid", email: "harish.j@sunpower.com", phone: "+91 98765 16161", specialization: "Emergency Breakdown Fast Response" },
+  "TECH-016": { name: "Vikas Shekhawat", email: "vikas.s@sunpower.com", phone: "+91 98765 17171", specialization: "Final Grid Testing & Handover Lead" },
+};
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(defaultAdmin);
@@ -73,6 +95,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateProfilePhoto = (photo: string) => {
+    if (!user) return;
+    const updated = { ...user, profilePhoto: photo };
+    saveUser(updated);
+  };
+
   const loginAsAdmin = (email = "admin@sunpower.com") => {
     const adminUser: User = {
       id: "ADM-001",
@@ -96,14 +124,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const loginAsTechnician = (techId: string) => {
-    const techDirectory: Record<string, { name: string; email: string; phone: string }> = {
-      "TECH-001": { name: "Rohit Meena", email: "rohit.m@sunpower.com", phone: "+91 98765 11111" },
-      "TECH-002": { name: "Amit Kumar", email: "amit.k@sunpower.com", phone: "+91 98765 22222" },
-      "TECH-003": { name: "Suresh Yadav", email: "suresh.y@sunpower.com", phone: "+91 98765 33333" },
-      "TECH-004": { name: "Sonia Verma", email: "sonia.v@sunpower.com", phone: "+91 98765 44444" },
-    };
-
-    const techInfo = techDirectory[techId] || techDirectory["TECH-001"];
+    const techInfo = ALL_16_EMPLOYEES[techId] || ALL_16_EMPLOYEES["TECH-001"];
     const techUser: User = {
       id: techId,
       techId,
@@ -181,6 +202,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loginAsCustomer,
         loginWithGoogle,
         logout,
+        updateProfilePhoto,
       }}
     >
       {children}

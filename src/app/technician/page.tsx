@@ -2,617 +2,1110 @@
 
 import { useState, useRef, useEffect, Suspense } from "react";
 import PageShell from "@/components/PageShell";
-import { technicians as initialTechs, serviceTickets } from "@/data/mockData";
+import { technicians as initialTechs } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
-import { useSearchParams } from "next/navigation";
+
+export interface CustomerSubmission {
+  systemDetails?: string;
+  reportedIssue?: string;
+  roofType?: string;
+  customerNotes?: string;
+  customerPhotos?: string[];
+}
+
+export interface AssignedTask {
+  orderId: string;
+  customerName: string;
+  customerPhone: string;
+  address: string;
+  capacity: string;
+  type: "Installation" | "Survey" | "Service";
+  timeSlot: string;
+  status: "Pending" | "In Progress" | "Completed";
+  customerDetails: CustomerSubmission;
+  adminInstructions: string;
+  completionProofPhoto?: string;
+  workNotes?: string;
+  completedAt?: string;
+}
+
+export interface TechnicianWithTasks {
+  id: string;
+  name: string;
+  phone: string;
+  specialization: string;
+  status: "Available" | "On Job" | "On Leave";
+  rating: number;
+  completedJobs: number;
+  assignedTasks: AssignedTask[];
+}
+
+// Initial demo assigned tasks with realistic customer submissions
+const defaultTechTasks: Record<string, AssignedTask[]> = {
+  "TECH-001": [
+    {
+      orderId: "TKT-001",
+      customerName: "Sanjay Tiwari",
+      customerPhone: "+91 66554 43322",
+      address: "88, Tonk Road, Jaipur",
+      capacity: "3 kW On-Grid System",
+      type: "Service",
+      timeSlot: "02:00 PM - 04:00 PM",
+      status: "In Progress",
+      customerDetails: {
+        systemDetails: "Growatt 3 kW Inverter + 6x 540W Mono PERC Panels",
+        reportedIssue: "Inverter red alarm light blinking. System output dropped to 0 kWh since morning. Display showing E-04 communication failure.",
+        roofType: "RCC Flat Rooftop (2nd Floor)",
+        customerNotes: "Main electric panel is in the garage. Gate code: 4421. Customer available on phone.",
+        customerPhotos: ["☀️ Inverter Error E-04", "🔌 Main Breaker Panel"],
+      },
+      adminInstructions: "Carry replacement RS485 communication cable and 1000V DC multimeter. Inspect DC surge protector and check inverter grounding resistance.",
+    },
+    {
+      orderId: "ORD-003",
+      customerName: "Rajesh Gupta",
+      customerPhone: "+91 99887 76655",
+      address: "12, Vaishali Nagar, Jaipur",
+      capacity: "5 kW On-Grid System",
+      type: "Service",
+      timeSlot: "10:00 AM - 12:00 PM",
+      status: "Completed",
+      customerDetails: {
+        systemDetails: "5 kW On-Grid Bi-Facial Plant with JVVNL Net-Meter",
+        reportedIssue: "Routine post-installation commissioning check and net-meter synchronization verification.",
+        roofType: "RCC Flat Rooftop, South Facing",
+        customerNotes: "Customer requested physical copy of 5-year inverter warranty handbook.",
+        customerPhotos: ["☀️ Rooftop Array", "⚡ Discom Net-Meter"],
+      },
+      adminInstructions: "Verify grid sync on Discom meter. Take photo of active yield reading (>2,800W) and get customer sign-off.",
+      completionProofPhoto: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%2378B77B'/><text x='50' y='55' font-size='12' fill='white' text-anchor='middle'>Verified Yield</text></svg>",
+      workNotes: "Voltage verified at 238V. Net-meter export functioning properly. Customer signed handover.",
+      completedAt: "Today, 11:30 AM",
+    },
+  ],
+  "TECH-002": [
+    {
+      orderId: "ORD-002",
+      customerName: "Arjun Mehta",
+      customerPhone: "+91 54321 09876",
+      address: "55, Lake View Colony, Jaipur",
+      capacity: "4 kW On-Grid System",
+      type: "Installation",
+      timeSlot: "09:00 AM - 05:00 PM",
+      status: "Pending",
+      customerDetails: {
+        systemDetails: "4 kW On-Grid System with 8 Tier-1 Mono PERC Panels",
+        reportedIssue: "New Installation. Hardware delivered from central warehouse yesterday.",
+        roofType: "Flat Terrace (450 sq. ft.), Zero Shading between 9am-5pm",
+        customerNotes: "Customer requested routing DC cables through internal duct rather than facade.",
+        customerPhotos: ["📸 Roof Terrace Layout", "📐 Meter Location"],
+      },
+      adminInstructions: "Anchor structure with M10 hot-dip galvanized fasteners. Maintain 26° tilt angle. Earthing pit chemical compound must be packed properly.",
+    },
+  ],
+  "TECH-003": [
+    {
+      orderId: "TKT-002",
+      customerName: "Pooja Sharma",
+      customerPhone: "+91 55443 32211",
+      address: "5, Bani Park, Jaipur",
+      capacity: "3 kW Off-Grid System",
+      type: "Service",
+      timeSlot: "11:00 AM - 01:00 PM",
+      status: "In Progress",
+      customerDetails: {
+        systemDetails: "3.5 kVA Hybrid Inverter + 5.12 kWh LiFePO4 Lithium Battery",
+        reportedIssue: "Battery backup time decreased to 1 hour during evening load cut. Battery state of charge (SoC) indicator jumping erratically.",
+        roofType: "Single Storey Bungalow",
+        customerNotes: "Elderly residents at home. Please knock gently.",
+        customerPhotos: ["🔋 Battery BMS Screen"],
+      },
+      adminInstructions: "Perform cell balancing check on Okaya 48V 100Ah battery pack. Check BMS error log using Bluetooth scanner.",
+    },
+  ],
+  "TECH-004": [],
+};
 
 function TechnicianFieldContent() {
-  const { user, role, loginAsTechnician } = useAuth();
-  const searchParams = useSearchParams();
+  const { user, role } = useAuth();
 
-  // Find active technician based on logged in user or default to TECH-001
-  const activeTechId = user?.techId || "TECH-001";
-  const [currentTechId, setCurrentTechId] = useState(activeTechId);
-
-  useEffect(() => {
-    if (user?.techId) {
-      setCurrentTechId(user.techId);
+  // Load technician list and their assigned tasks from localStorage
+  const [techList, setTechList] = useState<TechnicianWithTasks[]>(() => {
+    const defaultList = initialTechs.map((t) => ({
+      ...t,
+      assignedTasks: defaultTechTasks[t.id] || [],
+    }));
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("sunpower_tech_assigned_tasks");
+        if (saved) {
+          const parsed: TechnicianWithTasks[] = JSON.parse(saved);
+          const existingIds = new Set(parsed.map((p) => p.id));
+          const missing = defaultList.filter((d) => !existingIds.has(d.id));
+          return [...parsed, ...missing];
+        }
+      } catch {
+        // Ignore
+      }
     }
-  }, [user]);
+    return defaultList;
+  });
 
-  const currentTech = initialTechs.find((t) => t.id === currentTechId) || initialTechs[0];
-
-  // Tab navigation: 'jobs' | 'survey' | 'handover' | 'repairs'
-  const initialTab = (searchParams.get("tab") as "jobs" | "survey" | "handover" | "repairs") || "jobs";
-  const [activeTab, setActiveTab] = useState<"jobs" | "survey" | "handover" | "repairs">(initialTab);
-
+  // Re-sync with localStorage when window focuses or storage event fires
   useEffect(() => {
-    const tabParam = searchParams.get("tab") as "jobs" | "survey" | "handover" | "repairs" | null;
-    if (tabParam) {
-      setActiveTab(tabParam);
+    const refreshTechs = () => {
+      try {
+        const saved = localStorage.getItem("sunpower_tech_assigned_tasks");
+        if (saved) {
+          const defaultList = initialTechs.map((t) => ({
+            ...t,
+            assignedTasks: defaultTechTasks[t.id] || [],
+          }));
+          const parsed: TechnicianWithTasks[] = JSON.parse(saved);
+          const existingIds = new Set(parsed.map((p) => p.id));
+          const missing = defaultList.filter((d) => !existingIds.has(d.id));
+          setTechList([...parsed, ...missing]);
+        }
+      } catch {
+        // Ignore
+      }
+    };
+
+    window.addEventListener("focus", refreshTechs);
+    window.addEventListener("storage", refreshTechs);
+    return () => {
+      window.removeEventListener("focus", refreshTechs);
+      window.removeEventListener("storage", refreshTechs);
+    };
+  }, []);
+
+  const saveTechList = (updated: TechnicianWithTasks[]) => {
+    setTechList(updated);
+    try {
+      localStorage.setItem("sunpower_tech_assigned_tasks", JSON.stringify(updated));
+    } catch {
+      // Ignore
     }
-  }, [searchParams]);
-
-  // Roof Survey Form state
-  const [surveyCustomer, setSurveyCustomer] = useState("Vikram Singh (LD-003)");
-  const [roofTilt, setRoofTilt] = useState(26);
-  const [roofDirection, setRoofDirection] = useState("South (Optimal)");
-  const [cableDistance, setCableDistance] = useState(18);
-  const [shadowObstacles, setShadowObstacles] = useState("No obstacles, shadow-free from 9am to 4pm");
-  const [surveySubmitted, setSurveySubmitted] = useState(false);
-
-  // Handover & Commissioning form
-  const [jobSize, setJobSize] = useState("3 kW On-Grid");
-  const [measuredVolts, setMeasuredVolts] = useState("238 V");
-  const [measuredWatts, setMeasuredWatts] = useState("2,850 W");
-  const [startTime, setStartTime] = useState("09:30 AM");
-  const [endTime, setEndTime] = useState("04:15 PM");
-  const [photoUploaded, setPhotoUploaded] = useState(true);
-  const [handoverComplete, setHandoverComplete] = useState(false);
-
-  // Canvas signature
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [isDrawing, setIsDrawing] = useState(false);
-
-  // Filter repair tickets assigned specifically to this technician
-  const assignedTickets = serviceTickets.filter(
-    (t) => t.assignedTechnician === currentTech.name
-  );
-
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    setIsDrawing(true);
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = "touches" in e ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
-    const y = "touches" in e ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.strokeStyle = "#734960";
-    ctx.lineWidth = 2.5;
-    ctx.lineCap = "round";
   };
 
-  const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isDrawing) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = "touches" in e ? e.touches[0].clientX - rect.left : e.clientX - rect.left;
-    const y = "touches" in e ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
-    ctx.lineTo(x, y);
-    ctx.stroke();
+  // Active technician (from auth user, or default to TECH-001)
+  const myTechId = user?.techId || "TECH-001";
+  const myTech = techList.find((t) => t.id === myTechId) || techList[0];
+
+  // For Admin preview toggle
+  const [adminPreviewTechId, setAdminPreviewTechId] = useState<string>("TECH-001");
+  const [adminViewMode, setAdminViewMode] = useState<"dispatch-center" | "crew-view">("dispatch-center");
+
+  // Selected task detail view modal for Technician
+  const [selectedTaskForDetails, setSelectedTaskForDetails] = useState<AssignedTask | null>(null);
+
+  // Task work completion photo & notes state
+  const [uploadProofPhoto, setUploadProofPhoto] = useState<string>("");
+  const [uploadProofName, setUploadProofName] = useState<string>("");
+  const [workNotesInput, setWorkNotesInput] = useState<string>("");
+  const proofFileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Admin Assign Task Modal state
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [assignToTechId, setAssignToTechId] = useState<string>("TECH-001");
+  const [newTaskType, setNewTaskType] = useState<"Installation" | "Survey" | "Service">("Installation");
+  const [newCustName, setNewCustName] = useState("");
+  const [newCustPhone, setNewCustPhone] = useState("");
+  const [newAddress, setNewAddress] = useState("");
+  const [newCapacity, setNewCapacity] = useState("3 kW On-Grid");
+  const [newTimeSlot, setNewTimeSlot] = useState("10:00 AM - 02:00 PM");
+  const [newOrderId, setNewOrderId] = useState(`ORD-${Math.floor(100 + Math.random() * 900)}`);
+  const [newCustIssue, setNewCustIssue] = useState("");
+  const [newCustRoof, setNewCustRoof] = useState("RCC Flat Roof (2nd Floor)");
+  const [newCustNotes, setNewCustNotes] = useState("");
+  const [newAdminInstructions, setNewAdminInstructions] = useState("");
+  const [assignSuccessAlert, setAssignSuccessAlert] = useState("");
+
+  const handleOpenAssignModal = (techId?: string) => {
+    if (techId) setAssignToTechId(techId);
+    setNewOrderId(`ORD-${Math.floor(100 + Math.random() * 900)}`);
+    setIsAssignModalOpen(true);
   };
 
-  const stopDrawing = () => {
-    setIsDrawing(false);
+  const handleAdminAssignSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCustName || !newAddress) return;
+
+    const task: AssignedTask = {
+      orderId: newOrderId,
+      customerName: newCustName,
+      customerPhone: newCustPhone || "+91 98765 00000",
+      address: newAddress,
+      capacity: newCapacity,
+      type: newTaskType,
+      timeSlot: newTimeSlot,
+      status: "Pending",
+      customerDetails: {
+        systemDetails: newCapacity,
+        reportedIssue: newCustIssue || "Standard customer request scheduled by operations desk.",
+        roofType: newCustRoof,
+        customerNotes: newCustNotes || "Customer available at site address.",
+        customerPhotos: ["📸 Roof Layout Submitted by Customer"],
+      },
+      adminInstructions: newAdminInstructions || "Complete job according to MNRE safety standards. Upload photo of final work.",
+    };
+
+    const updated = techList.map((t) => {
+      if (t.id === assignToTechId) {
+        return {
+          ...t,
+          status: "On Job" as const,
+          assignedTasks: [task, ...t.assignedTasks],
+        };
+      }
+      return t;
+    });
+
+    saveTechList(updated);
+
+    // Push notification to the specific assigned technician
+    try {
+      const savedNotifs = JSON.parse(localStorage.getItem("sunpower_notifications") || "[]");
+      const techNotif = {
+        id: `notif-${Date.now()}`,
+        recipientRole: "technician" as const,
+        recipientId: assignToTechId,
+        text: `🚨 New Site Job Assigned: ${newTaskType} for ${newCustName} (${task.orderId})`,
+        time: "Just now",
+        type: "task" as const,
+      };
+      localStorage.setItem("sunpower_notifications", JSON.stringify([techNotif, ...savedNotifs]));
+      window.dispatchEvent(new Event("storage"));
+    } catch {
+      // Ignore
+    }
+
+    setAssignSuccessAlert(`✓ Task ${task.orderId} successfully assigned to ${techList.find((t) => t.id === assignToTechId)?.name}! Notification sent.`);
+
+    // Reset
+    setNewCustName("");
+    setNewCustPhone("");
+    setNewAddress("");
+    setNewCustIssue("");
+    setNewCustNotes("");
+    setNewAdminInstructions("");
+
+    setTimeout(() => {
+      setAssignSuccessAlert("");
+      setIsAssignModalOpen(false);
+    }, 2000);
   };
 
-  const clearSignature = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const handleUpdateTaskStatus = (orderId: string, newStatus: "Pending" | "In Progress" | "Completed") => {
+    const activeTech = role === "admin" ? techList.find((t) => t.id === adminPreviewTechId) || myTech : myTech;
+
+    const updated = techList.map((t) => {
+      if (t.id === activeTech.id) {
+        return {
+          ...t,
+          assignedTasks: t.assignedTasks.map((task) => {
+            if (task.orderId === orderId) {
+              return {
+                ...task,
+                status: newStatus,
+                completionProofPhoto: uploadProofPhoto || task.completionProofPhoto,
+                workNotes: workNotesInput || task.workNotes,
+                completedAt: newStatus === "Completed" ? "Just now" : task.completedAt,
+              };
+            }
+            return task;
+          }),
+        };
+      }
+      return t;
+    });
+
+    saveTechList(updated);
+    if (selectedTaskForDetails && selectedTaskForDetails.orderId === orderId) {
+      setSelectedTaskForDetails({
+        ...selectedTaskForDetails,
+        status: newStatus,
+        completionProofPhoto: uploadProofPhoto || selectedTaskForDetails.completionProofPhoto,
+        workNotes: workNotesInput || selectedTaskForDetails.workNotes,
+        completedAt: newStatus === "Completed" ? "Just now" : selectedTaskForDetails.completedAt,
+      });
+    }
+
+    setUploadProofPhoto("");
+    setUploadProofName("");
+    setWorkNotesInput("");
   };
+
+  const handleProofPhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadProofName(file.name);
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setUploadProofPhoto(ev.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Determine which technician tasks to render
+  const currentViewTech = role === "admin" && adminViewMode === "crew-view"
+    ? techList.find((t) => t.id === adminPreviewTechId) || myTech
+    : myTech;
 
   return (
     <PageShell>
-      {/* Technician Portal Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xl">👷</span>
-            <h1 className="text-xl sm:text-2xl font-bold text-[#333333]">
-              Technician Field Portal
-            </h1>
-            <span className="text-[10px] font-bold bg-[#FAF4F7] text-[#734960] px-2.5 py-0.5 rounded-full border border-[#8E687F]/30">
-              Assigned Field Queue Only
-            </span>
-          </div>
-          <p className="text-xs sm:text-sm text-[#666666] mt-0.5">
-            Logged in as <strong>{currentTech.name}</strong> • {currentTech.specialization}
-          </p>
-        </div>
-
-        {/* Quick Tech Switcher (For Demo & Admin) */}
-        <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-[#E4E7EB] shadow-xs">
-          <span className="text-[11px] font-bold text-[#666666] uppercase">Active Crew:</span>
-          <select
-            value={currentTechId}
-            onChange={(e) => {
-              setCurrentTechId(e.target.value);
-              loginAsTechnician(e.target.value);
-            }}
-            className="text-xs font-bold text-[#734960] bg-transparent focus:outline-none cursor-pointer"
-          >
-            {initialTechs.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name} ({t.specialization})
-              </option>
-            ))}
-          </select>
-          <span className="text-[10px] text-[#5B965E] font-bold bg-[#EBF5EC] px-2 py-0.5 rounded-full border border-[#78B77B]/40">
-            ⭐ {currentTech.rating}
-          </span>
-        </div>
-      </div>
-
-      {/* Technician Quick Stats Banner */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white p-3.5 rounded-xl border border-[#E4E7EB] border-l-4 border-l-[#734960] shadow-xs">
-          <span className="text-[10px] font-bold text-[#666666] uppercase">Assigned Today</span>
-          <p className="text-xl font-extrabold text-[#333333] mt-0.5">
-            {currentTech.todaysJobs.length} Jobs
-          </p>
-          <span className="text-[10px] text-[#5B965E]">1 Survey • 1 Installation</span>
-        </div>
-
-        <div className="bg-white p-3.5 rounded-xl border border-[#E4E7EB] border-l-4 border-l-[#F4B860] shadow-xs">
-          <span className="text-[10px] font-bold text-[#666666] uppercase">Active Repairs</span>
-          <p className="text-xl font-extrabold text-[#DA9B40] mt-0.5">
-            {assignedTickets.length} Breakdown Tickets
-          </p>
-          <span className="text-[10px] text-[#DA9B40]">Under Warranty (Free)</span>
-        </div>
-
-        <div className="bg-white p-3.5 rounded-xl border border-[#E4E7EB] border-l-4 border-l-[#78B77B] shadow-xs">
-          <span className="text-[10px] font-bold text-[#666666] uppercase">Completed Plants</span>
-          <p className="text-xl font-extrabold text-[#78B77B] mt-0.5">
-            {currentTech.completedJobs}
-          </p>
-          <span className="text-[10px] text-[#5B965E]">100% Commissioned</span>
-        </div>
-
-        <div className="bg-white p-3.5 rounded-xl border border-[#E4E7EB] border-l-4 border-l-[#8E687F] shadow-xs">
-          <span className="text-[10px] font-bold text-[#666666] uppercase">Quality Rating</span>
-          <p className="text-xl font-extrabold text-[#8E687F] mt-0.5">
-            {currentTech.rating} / 5.0
-          </p>
-          <span className="text-[10px] text-[#DA9B40]">★★★★★ Verified</span>
-        </div>
-      </div>
-
-      {/* Field Navigation Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#E4E7EB] pb-2 overflow-x-auto">
-        <button
-          onClick={() => setActiveTab("jobs")}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap border ${
-            activeTab === "jobs"
-              ? "bg-[#734960] text-white border-[#734960] shadow-xs"
-              : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
-          }`}
-        >
-          <span>📋</span> My Scheduled Jobs ({currentTech.todaysJobs.length})
-        </button>
-
-        <button
-          onClick={() => setActiveTab("survey")}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap border ${
-            activeTab === "survey"
-              ? "bg-[#F4B860] text-[#333333] border-[#F4B860] shadow-xs"
-              : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
-          }`}
-        >
-          <span>📐</span> Roof Survey Tool
-        </button>
-
-        <button
-          onClick={() => setActiveTab("handover")}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap border ${
-            activeTab === "handover"
-              ? "bg-[#78B77B] text-white border-[#78B77B] shadow-xs"
-              : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
-          }`}
-        >
-          <span>✍️</span> Commissioning &amp; E-Signature
-        </button>
-
-        <button
-          onClick={() => setActiveTab("repairs")}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap border ${
-            activeTab === "repairs"
-              ? "bg-[#8E687F] text-white border-[#8E687F] shadow-xs"
-              : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
-          }`}
-        >
-          <span>🔧</span> Assigned Service Calls ({assignedTickets.length})
-        </button>
-      </div>
-
-      {/* ───────────────── TAB 1: MY SCHEDULED JOBS ───────────────── */}
-      {activeTab === "jobs" && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
-              Today&apos;s Field Route for {currentTech.name}
-            </h3>
-            <span className="text-[11px] text-[#5B965E] font-semibold">📍 Jaipur City Territory</span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {currentTech.todaysJobs.map((job, idx) => (
-              <div
-                key={idx}
-                className="bg-white p-5 rounded-2xl border border-[#E4E7EB] shadow-xs space-y-4 hover:border-[#8E687F] transition-all"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <span className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full border ${
-                      job.type === "Installation"
-                        ? "bg-[#FAF4F7] text-[#734960] border-[#8E687F]/30"
-                        : "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860]/40"
-                    }`}>
-                      {job.type}
-                    </span>
-                    <h3 className="text-sm font-bold text-[#333333] mt-2">{job.customerName}</h3>
-                    <p className="text-xs text-[#666666]">{job.address}</p>
-                  </div>
-                  <span className="font-mono text-xs font-bold bg-[#F5F7FA] px-2.5 py-1 rounded-lg text-[#734960] border border-[#E4E7EB]">
-                    {job.orderId}
-                  </span>
-                </div>
-
-                <div className="bg-[#F5F7FA] p-3 rounded-xl flex items-center justify-between text-xs border border-[#E4E7EB]">
-                  <div>
-                    <span className="text-[#666666] text-[10px] block">Time Window</span>
-                    <span className="font-bold text-[#333333]">{job.timeSlot}</span>
-                  </div>
-                  <div>
-                    <span className="text-[#666666] text-[10px] block">System Capacity</span>
-                    <span className="font-bold text-[#734960]">{job.capacity}</span>
-                  </div>
-                  <div>
-                    <span className="text-[#666666] text-[10px] block">Job Status</span>
-                    <span className={`font-bold ${job.status === "Completed" ? "text-[#5B965E]" : "text-[#DA9B40]"}`}>
-                      {job.status}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 pt-1">
-                  <button
-                    onClick={() => setActiveTab("handover")}
-                    className="flex-1 py-2 bg-[#734960] hover:bg-[#5A354A] text-white text-xs font-bold rounded-xl shadow-xs transition text-center"
-                  >
-                    Open Rooftop Commissioning Form ➔
-                  </button>
-                  <button
-                    onClick={() => alert(`Opening Google Maps navigation to: ${job.address}`)}
-                    className="px-3.5 py-2 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#333333] text-xs font-semibold rounded-xl border border-[#E4E7EB] transition"
-                  >
-                    📍 Navigate
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ───────────────── TAB 2: ROOF SURVEY TOOL ───────────────── */}
-      {activeTab === "survey" && (
-        <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 shadow-xs max-w-xl mx-auto space-y-4">
-          <div className="border-b border-[#E4E7EB] pb-3">
-            <span className="text-[10px] font-bold text-[#DA9B40] uppercase tracking-wider">Field Survey Tool</span>
-            <h2 className="text-base font-bold text-[#333333] mt-0.5">Physical Rooftop Assessment</h2>
-            <p className="text-xs text-[#666666]">
-              Measure shadow-free area, azimuth direction, and cable run for {currentTech.name}&apos;s customer visit
-            </p>
-          </div>
-
-          <div className="space-y-3 text-xs">
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* ────────────────── 1. ADMIN DISPATCH VIEW ────────────────── */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {role === "admin" && adminViewMode === "dispatch-center" && (
+        <div className="space-y-6">
+          {/* Admin Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E4E7EB] pb-4">
             <div>
-              <label className="text-[11px] font-bold text-[#666666] uppercase">Customer Lead</label>
-              <input
-                type="text"
-                value={surveyCustomer}
-                onChange={(e) => setSurveyCustomer(e.target.value)}
-                className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-[11px] font-bold text-[#666666] uppercase">Roof Orientation (Compass)</label>
-                <select
-                  value={roofDirection}
-                  onChange={(e) => setRoofDirection(e.target.value)}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-bold text-[#333333]"
-                >
-                  <option value="South (Optimal)">South (180° - 100% Sun Exposure)</option>
-                  <option value="South-West">South-West (225° - 92% Sun Exposure)</option>
-                  <option value="South-East">South-East (135° - 90% Sun Exposure)</option>
-                  <option value="West">West (270° - 80% Sun Exposure)</option>
-                  <option value="East">East (90° - 78% Sun Exposure)</option>
-                </select>
+              <div className="flex items-center gap-2">
+                <span className="text-xl">👷</span>
+                <h1 className="text-xl sm:text-2xl font-bold text-[#333333]">
+                  Technician Task Assignment &amp; Crew Dispatch
+                </h1>
+                <span className="text-[10px] font-bold bg-[#FAF4F7] text-[#734960] px-2.5 py-0.5 rounded-full border border-[#8E687F]/30 uppercase">
+                  Admin Only
+                </span>
               </div>
-
-              <div>
-                <label className="text-[11px] font-bold text-[#666666] uppercase flex justify-between">
-                  <span>Tilt Angle</span>
-                  <span className="font-bold text-[#734960]">{roofTilt}°</span>
-                </label>
-                <input
-                  type="range"
-                  min="10"
-                  max="45"
-                  value={roofTilt}
-                  onChange={(e) => setRoofTilt(Number(e.target.value))}
-                  className="w-full mt-2 accent-[#734960]"
-                />
-                <div className="flex justify-between text-[10px] text-gray-400">
-                  <span>10°</span>
-                  <span>Optimal: 26°</span>
-                  <span>45°</span>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <label className="text-[11px] font-bold text-[#666666] uppercase">Cable Run Distance to Main Inverter (Meters)</label>
-              <input
-                type="number"
-                value={cableDistance}
-                onChange={(e) => setCableDistance(Number(e.target.value))}
-                className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold"
-              />
-              <p className="text-[10px] text-[#666666] mt-1">
-                Auto-calculates DC wire gauges (4mm² vs 6mm²) and voltage drop.
+              <p className="text-xs sm:text-sm text-[#666666] mt-0.5">
+                Assign tasks to field technicians. Technicians only see customer details &amp; tasks you assign them.
               </p>
             </div>
 
-            <div>
-              <label className="text-[11px] font-bold text-[#666666] uppercase">Shadow Obstacles &amp; Parapet Notes</label>
-              <textarea
-                rows={2}
-                value={shadowObstacles}
-                onChange={(e) => setShadowObstacles(e.target.value)}
-                className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs"
-              />
-            </div>
-
-            {surveySubmitted && (
-              <div className="p-2.5 bg-[#EBF5EC] text-[#5B965E] text-xs font-bold rounded-xl border border-[#78B77B] text-center animate-in fade-in">
-                ✓ Survey Approved! Lead unlocked for instant BOM &amp; Quotation Generation.
-              </div>
-            )}
-
-            <button
-              type="button"
-              onClick={() => {
-                setSurveySubmitted(true);
-                setTimeout(() => setSurveySubmitted(false), 3000);
-              }}
-              className="w-full py-2.5 bg-[#F4B860] hover:bg-[#DA9B40] text-[#333333] font-bold rounded-xl text-xs shadow-xs transition"
-            >
-              Approve Survey &amp; Trigger Automatic Quote
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ───────────────── TAB 3: COMMISSIONING & E-SIGNATURE ───────────────── */}
-      {activeTab === "handover" && (
-        <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 shadow-xs max-w-xl mx-auto space-y-5">
-          <div className="border-b border-[#E4E7EB] pb-3 flex items-center justify-between">
-            <div>
-              <span className="text-[10px] font-bold text-[#5B965E] uppercase tracking-wider">Field Sign-off</span>
-              <h2 className="text-base font-bold text-[#333333] mt-0.5">On-Roof Testing &amp; Commissioning</h2>
-            </div>
-            <span className="text-xs bg-[#EBF5EC] text-[#5B965E] px-2.5 py-0.5 rounded-full font-bold border border-[#78B77B]/40">
-              ORD-003 (Rajesh Gupta)
-            </span>
-          </div>
-
-          {/* Time Tracker */}
-          <div className="bg-[#F5F7FA] p-3 rounded-xl grid grid-cols-2 gap-3 text-xs border border-[#E4E7EB]">
-            <div>
-              <label className="font-bold text-[#666666] text-[10px] uppercase">Job Start Time</label>
-              <input
-                type="text"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="w-full mt-1 px-2.5 py-1 bg-white border border-[#E4E7EB] rounded-lg font-mono text-xs"
-              />
-            </div>
-            <div>
-              <label className="font-bold text-[#666666] text-[10px] uppercase">Finish Time</label>
-              <input
-                type="text"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                className="w-full mt-1 px-2.5 py-1 bg-white border border-[#E4E7EB] rounded-lg font-mono text-xs"
-              />
-            </div>
-          </div>
-
-          {/* Live Meter Readings */}
-          <div className="bg-[#FAF4F7] border border-[#8E687F]/30 p-3.5 rounded-xl space-y-2">
-            <h4 className="text-[11px] font-bold text-[#734960] uppercase tracking-wider flex items-center gap-1.5">
-              <span>⚡</span> Commissioning Multimeter &amp; Inverter Output Check
-            </h4>
-            <div className="grid grid-cols-3 gap-2">
-              <div>
-                <label className="text-[10px] text-[#666666] block">System Size</label>
-                <input
-                  type="text"
-                  value={jobSize}
-                  onChange={(e) => setJobSize(e.target.value)}
-                  className="w-full mt-1 px-2 py-1 bg-white border border-[#E4E7EB] rounded-lg text-xs font-bold"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] text-[#666666] block">AC Output Voltage</label>
-                <input
-                  type="text"
-                  value={measuredVolts}
-                  onChange={(e) => setMeasuredVolts(e.target.value)}
-                  className="w-full mt-1 px-2 py-1 bg-white border border-[#E4E7EB] rounded-lg text-xs font-mono text-[#5B965E] font-bold"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] text-[#666666] block">Active Yield (Watts)</label>
-                <input
-                  type="text"
-                  value={measuredWatts}
-                  onChange={(e) => setMeasuredWatts(e.target.value)}
-                  className="w-full mt-1 px-2 py-1 bg-white border border-[#E4E7EB] rounded-lg text-xs font-mono text-[#5B965E] font-bold"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Photos Proof */}
-          <div className="space-y-1.5">
-            <label className="text-[11px] font-bold text-[#666666] uppercase">
-              Rooftop Installation Photos (Panels &amp; Earthing)
-            </label>
-            <div className="border border-dashed border-[#E4E7EB] rounded-xl p-3 text-center bg-[#F5F7FA]">
-              {photoUploaded ? (
-                <div className="flex items-center justify-center gap-3">
-                  <div className="w-12 h-10 bg-[#FAF4F7] text-[#734960] rounded-lg flex items-center justify-center text-lg border border-[#8E687F]/30">☀️</div>
-                  <div className="w-12 h-10 bg-[#EBF5EC] text-[#78B77B] rounded-lg flex items-center justify-center text-lg border border-[#78B77B]/40">🔌</div>
-                  <div className="text-left text-xs">
-                    <p className="font-bold text-[#5B965E]">2 Verified Photos Attached</p>
-                    <p className="text-[10px] text-[#666666]">Rooftop Structure &amp; Earthing Rod Geotagged</p>
-                  </div>
-                </div>
-              ) : (
-                <button onClick={() => setPhotoUploaded(true)} className="text-xs text-[#734960] font-bold">
-                  + Snap Rooftop Photos
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Digital E-Signature Pad */}
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label className="text-[11px] font-bold text-[#666666] uppercase">
-                Homeowner E-Signature (Sign Below on Screen)
-              </label>
+            <div className="flex items-center gap-2">
               <button
-                type="button"
-                onClick={clearSignature}
-                className="text-[11px] text-[#DC2626] hover:underline font-semibold"
+                onClick={() => setAdminViewMode("crew-view")}
+                className="px-3.5 py-2 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#333333] text-xs font-bold rounded-xl border border-[#E4E7EB] transition flex items-center gap-1.5"
               >
-                Clear
+                <span>👁️</span> Preview Technician View
+              </button>
+
+              <button
+                onClick={() => handleOpenAssignModal()}
+                className="px-4 py-2 bg-[#734960] hover:bg-[#5A354A] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
+              >
+                <span>+</span> Assign Task to Technician
               </button>
             </div>
-            <div className="border-2 border-[#E4E7EB] rounded-xl overflow-hidden bg-white shadow-inner">
-              <canvas
-                ref={canvasRef}
-                width={480}
-                height={120}
-                onMouseDown={startDrawing}
-                onMouseMove={draw}
-                onMouseUp={stopDrawing}
-                onMouseLeave={stopDrawing}
-                onTouchStart={startDrawing}
-                onTouchMove={draw}
-                onTouchEnd={stopDrawing}
-                className="w-full cursor-crosshair touch-none"
-              />
-            </div>
-            <p className="text-[10px] text-[#666666] italic">
-              Homeowner statement: &quot;I accept physical delivery, testing, and handoff of the plant.&quot;
-            </p>
           </div>
 
-          {handoverComplete && (
-            <div className="p-3 bg-[#EBF5EC] border border-[#78B77B] rounded-xl text-center space-y-0.5 animate-in fade-in">
-              <p className="text-xs font-bold text-[#5B965E]">
-                🎉 Handover Completed by {currentTech.name}!
-              </p>
-              <p className="text-[11px] text-[#333333]">
-                Customer passbook updated. 20-Year warranty officially initialized.
-              </p>
+          {/* Technicians Workload Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {techList.map((tech) => (
+              <div
+                key={tech.id}
+                className="bg-white rounded-2xl border border-[#E4E7EB] p-5 shadow-xs space-y-4 hover:border-[#734960]/50 transition-all"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-[#FAF4F7] text-[#734960] flex items-center justify-center text-2xl font-bold border border-[#8E687F]/30">
+                      👷
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-sm font-bold text-[#333333]">{tech.name}</h4>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                            tech.status === "Available"
+                              ? "bg-[#EBF5EC] text-[#5B965E] border-[#78B77B]/40"
+                              : "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860]/40"
+                          }`}
+                        >
+                          {tech.status}
+                        </span>
+                      </div>
+                      <p className="text-xs text-[#666666]">{tech.specialization}</p>
+                      <p className="text-[11px] text-[#666666] mt-0.5">📞 {tech.phone} • ⭐ {tech.rating}</p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleOpenAssignModal(tech.id)}
+                    className="px-3 py-1.5 bg-[#734960] hover:bg-[#5A354A] text-white text-xs font-bold rounded-xl shadow-xs transition"
+                  >
+                    + Assign Task
+                  </button>
+                </div>
+
+                {/* Assigned Tasks for this tech */}
+                <div className="space-y-2 pt-2 border-t border-[#E4E7EB]">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="font-bold text-[#666666] uppercase">
+                      Assigned Tasks ({tech.assignedTasks.length})
+                    </span>
+                    <button
+                      onClick={() => {
+                        setAdminPreviewTechId(tech.id);
+                        setAdminViewMode("crew-view");
+                      }}
+                      className="text-[#734960] hover:underline font-bold text-[11px]"
+                    >
+                      View Mobile Screen ➔
+                    </button>
+                  </div>
+
+                  {tech.assignedTasks.length > 0 ? (
+                    <div className="space-y-2">
+                      {tech.assignedTasks.map((task) => (
+                        <div
+                          key={task.orderId}
+                          className="bg-[#F5F7FA] p-3 rounded-xl border border-[#E4E7EB] text-xs space-y-1.5"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={`px-2 py-0.5 rounded text-[9px] font-bold ${
+                                  task.type === "Installation"
+                                    ? "bg-[#FAF4F7] text-[#734960]"
+                                    : task.type === "Survey"
+                                    ? "bg-[#FEF6EB] text-[#DA9B40]"
+                                    : "bg-[#EBF5EC] text-[#5B965E]"
+                                }`}
+                              >
+                                {task.type}
+                              </span>
+                              <span className="font-bold text-[#333333]">{task.customerName}</span>
+                              <span className="font-mono text-[10px] text-[#734960]">({task.orderId})</span>
+                            </div>
+
+                            <span
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                task.status === "Completed"
+                                  ? "bg-[#EBF5EC] text-[#5B965E]"
+                                  : task.status === "In Progress"
+                                  ? "bg-[#FEF6EB] text-[#DA9B40]"
+                                  : "bg-gray-200 text-gray-700"
+                              }`}
+                            >
+                              {task.status}
+                            </span>
+                          </div>
+
+                          <p className="text-[11px] text-[#666666]">{task.address} • {task.timeSlot}</p>
+                          <p className="text-[10px] text-[#333333] bg-white p-2 rounded-lg border border-[#E4E7EB]">
+                            <strong>Customer Issue:</strong> {task.customerDetails.reportedIssue}
+                          </p>
+
+                          <div className="flex items-center justify-between pt-1 text-[10px]">
+                            <span className="text-[#734960] font-semibold">Admin Note: {task.adminInstructions}</span>
+                            <button
+                              onClick={() => {
+                                const updatedTasks = tech.assignedTasks.filter((t) => t.orderId !== task.orderId);
+                                const updated = techList.map((t) =>
+                                  t.id === tech.id
+                                    ? {
+                                        ...t,
+                                        status: updatedTasks.length === 0 ? ("Available" as const) : t.status,
+                                        assignedTasks: updatedTasks,
+                                      }
+                                    : t
+                                );
+                                saveTechList(updated);
+                              }}
+                              className="text-red-600 hover:underline font-bold"
+                            >
+                              Unassign
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-3 bg-[#F5F7FA] rounded-xl text-center text-[11px] text-[#666666]">
+                      No tasks assigned yet. Click &quot;+ Assign Task&quot; above to dispatch.
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ── MODAL: ASSIGN TASK TO TECHNICIAN ── */}
+          {isAssignModalOpen && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-2xl border border-[#E4E7EB] shadow-2xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
+                <div className="flex items-center justify-between border-b border-[#E4E7EB] pb-3">
+                  <div>
+                    <h3 className="text-base font-bold text-[#333333] flex items-center gap-2">
+                      <span>👷</span> Assign Task to Technician
+                    </h3>
+                    <p className="text-xs text-[#666666]">
+                      The assigned technician will only be able to view this task and customer submission details.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setIsAssignModalOpen(false)}
+                    className="text-gray-400 hover:text-[#333333] text-lg font-bold"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <form onSubmit={handleAdminAssignSubmit} className="space-y-3.5 text-xs">
+                  <div>
+                    <label className="text-[11px] font-bold text-[#666666] uppercase">Assign To Field Technician</label>
+                    <select
+                      value={assignToTechId}
+                      onChange={(e) => setAssignToTechId(e.target.value)}
+                      className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl font-bold text-[#734960] bg-white"
+                    >
+                      {techList.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.name} ({t.specialization} - {t.status})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[11px] font-bold text-[#666666] uppercase">Task Type</label>
+                      <select
+                        value={newTaskType}
+                        onChange={(e) => setNewTaskType(e.target.value as "Installation" | "Survey" | "Service")}
+                        className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl font-semibold bg-white"
+                      >
+                        <option value="Installation">Rooftop Installation</option>
+                        <option value="Survey">Site Survey &amp; Shadow Analysis</option>
+                        <option value="Service">Repair Breakdown / Maintenance</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold text-[#666666] uppercase">System Capacity</label>
+                      <input
+                        type="text"
+                        value={newCapacity}
+                        onChange={(e) => setNewCapacity(e.target.value)}
+                        placeholder="e.g. 3 kW On-Grid System"
+                        className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl font-semibold"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[11px] font-bold text-[#666666] uppercase">Customer Name</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Narendra Verma"
+                        value={newCustName}
+                        onChange={(e) => setNewCustName(e.target.value)}
+                        className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl font-semibold"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold text-[#666666] uppercase">Customer Phone</label>
+                      <input
+                        type="text"
+                        placeholder="+91 98765 00000"
+                        value={newCustPhone}
+                        onChange={(e) => setNewCustPhone(e.target.value)}
+                        className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl font-semibold"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-bold text-[#666666] uppercase">Customer Site Address</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 19, C-Scheme, Jaipur"
+                      value={newAddress}
+                      onChange={(e) => setNewAddress(e.target.value)}
+                      className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl font-semibold"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[11px] font-bold text-[#666666] uppercase">Scheduled Time Slot</label>
+                      <input
+                        type="text"
+                        value={newTimeSlot}
+                        onChange={(e) => setNewTimeSlot(e.target.value)}
+                        className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl font-semibold"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-bold text-[#666666] uppercase">Order / Ticket ID</label>
+                      <input
+                        type="text"
+                        value={newOrderId}
+                        onChange={(e) => setNewOrderId(e.target.value)}
+                        className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl font-mono font-semibold"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Customer Submitted Details */}
+                  <div className="bg-[#F5F7FA] p-3 rounded-xl border border-[#E4E7EB] space-y-2">
+                    <span className="text-[10px] font-bold text-[#734960] uppercase block">
+                      Customer Submitted Details (Visible to Technician)
+                    </span>
+                    <div>
+                      <label className="text-[10px] text-[#666666] block">Customer Problem / Inquiry Description</label>
+                      <textarea
+                        rows={2}
+                        placeholder="What issue did the customer report..."
+                        value={newCustIssue}
+                        onChange={(e) => setNewCustIssue(e.target.value)}
+                        className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#E4E7EB] rounded-lg text-xs"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[10px] text-[#666666] block">Roof / Site Details</label>
+                        <input
+                          type="text"
+                          value={newCustRoof}
+                          onChange={(e) => setNewCustRoof(e.target.value)}
+                          placeholder="e.g. RCC Flat 2nd floor"
+                          className="w-full mt-1 px-2.5 py-1 bg-white border border-[#E4E7EB] rounded-lg text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] text-[#666666] block">Special Customer Notes</label>
+                        <input
+                          type="text"
+                          value={newCustNotes}
+                          onChange={(e) => setNewCustNotes(e.target.value)}
+                          placeholder="e.g. Call 15 mins prior"
+                          className="w-full mt-1 px-2.5 py-1 bg-white border border-[#E4E7EB] rounded-lg text-xs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Admin Instructions to Technician */}
+                  <div>
+                    <label className="text-[11px] font-bold text-[#734960] uppercase">
+                      Admin Instructions to Field Technician
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="e.g. Bring 6mm² DC wire, replace Inverter communication cable, verify net-meter..."
+                      value={newAdminInstructions}
+                      onChange={(e) => setNewAdminInstructions(e.target.value)}
+                      className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-medium"
+                    />
+                  </div>
+
+                  {assignSuccessAlert && (
+                    <div className="p-2.5 bg-[#EBF5EC] text-[#5B965E] font-bold rounded-xl border border-[#78B77B] text-center animate-in fade-in">
+                      {assignSuccessAlert}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E4E7EB]">
+                    <button
+                      type="button"
+                      onClick={() => setIsAssignModalOpen(false)}
+                      className="px-4 py-2 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#333333] font-semibold rounded-xl text-xs transition"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs shadow-xs transition"
+                    >
+                      Dispatch Task Now ➔
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* ───────────── 2. TECHNICIAN PORTAL (RESTRICTED) ───────────── */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {(role === "technician" || (role === "admin" && adminViewMode === "crew-view")) && (
+        <div className="space-y-6">
+          {/* Admin Back Toggle (only when Admin is previewing) */}
+          {role === "admin" && (
+            <div className="bg-[#FAF4F7] border border-[#8E687F]/30 p-3 rounded-2xl flex items-center justify-between text-xs">
+              <span className="font-bold text-[#734960]">
+                👁️ Previewing Technician Portal as: <strong>{currentViewTech.name}</strong>
+              </span>
+              <div className="flex items-center gap-2">
+                <select
+                  value={adminPreviewTechId}
+                  onChange={(e) => setAdminPreviewTechId(e.target.value)}
+                  className="px-2 py-1 bg-white border border-[#E4E7EB] rounded-lg font-bold text-xs"
+                >
+                  {techList.map((t) => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+                </select>
+                <button
+                  onClick={() => setAdminViewMode("dispatch-center")}
+                  className="px-3 py-1 bg-[#734960] text-white rounded-lg font-bold"
+                >
+                  Back to Dispatch ➔
+                </button>
+              </div>
             </div>
           )}
 
-          <button
-            type="button"
-            onClick={() => setHandoverComplete(true)}
-            className="w-full py-2.5 bg-[#78B77B] hover:bg-[#5B965E] text-white font-bold rounded-xl text-xs shadow-xs transition"
-          >
-            ✓ Complete Handover &amp; Start Warranty Clock
-          </button>
-        </div>
-      )}
+          {/* Clean Technician Header: strictly assigned tasks only */}
+          <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-[#FAF4F7] text-[#734960] flex items-center justify-center text-2xl font-bold border border-[#8E687F]/30 flex-shrink-0">
+                👷
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-base font-bold text-[#333333]">My Assigned Field Tasks</h2>
+                  <span className="text-[10px] font-bold bg-[#EBF5EC] text-[#5B965E] px-2 py-0.5 rounded-full border border-[#78B77B]/40">
+                    Logged in as {currentViewTech.name}
+                  </span>
+                </div>
+                <p className="text-xs text-[#666666] mt-0.5">
+                  Tasks dispatched and assigned to you by Admin. Review customer submissions and execute site jobs.
+                </p>
+              </div>
+            </div>
 
-      {/* ───────────────── TAB 4: ASSIGNED BREAKDOWN TICKETS ───────────────── */}
-      {activeTab === "repairs" && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
-              Breakdown Service Tickets Assigned to {currentTech.name}
-            </h3>
-            <span className="text-[11px] text-[#734960] font-semibold">{assignedTickets.length} active service calls</span>
+            <div className="flex items-center gap-2 text-xs">
+              <div className="bg-[#F5F7FA] px-3 py-1.5 rounded-xl border border-[#E4E7EB] text-center">
+                <span className="text-[10px] text-[#666666] block uppercase font-bold">Assigned Queue</span>
+                <span className="text-sm font-extrabold text-[#734960]">{currentViewTech.assignedTasks.length} Tasks</span>
+              </div>
+              <div className="bg-[#F5F7FA] px-3 py-1.5 rounded-xl border border-[#E4E7EB] text-center">
+                <span className="text-[10px] text-[#666666] block uppercase font-bold">Pending</span>
+                <span className="text-sm font-extrabold text-[#DA9B40]">
+                  {currentViewTech.assignedTasks.filter((t) => t.status !== "Completed").length} Active
+                </span>
+              </div>
+            </div>
           </div>
 
-          {assignedTickets.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {assignedTickets.map((tkt) => (
+          {/* Assigned Tasks List */}
+          {currentViewTech.assignedTasks.length > 0 ? (
+            <div className="space-y-4">
+              {currentViewTech.assignedTasks.map((task) => (
                 <div
-                  key={tkt.id}
-                  className="bg-white p-5 rounded-2xl border border-[#E4E7EB] shadow-xs space-y-3"
+                  key={task.orderId}
+                  className="bg-white rounded-2xl border border-[#E4E7EB] p-5 sm:p-6 shadow-xs space-y-4 hover:border-[#8E687F]/40 transition-all"
                 >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FAF4F7] text-[#734960] border border-[#8E687F]/30">
-                        {tkt.priority} Priority
+                  {/* Task Top Badges & ID */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E4E7EB] pb-3">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-bold border ${
+                          task.type === "Installation"
+                            ? "bg-[#FAF4F7] text-[#734960] border-[#8E687F]/30"
+                            : task.type === "Survey"
+                            ? "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860]/40"
+                            : "bg-[#EBF5EC] text-[#5B965E] border-[#78B77B]/40"
+                        }`}
+                      >
+                        {task.type}
                       </span>
-                      <h4 className="text-sm font-bold text-[#333333] mt-1.5">{tkt.customerName}</h4>
-                      <p className="text-xs text-[#666666]">{tkt.address} • {tkt.phone}</p>
+                      <span className="font-mono text-xs font-bold bg-[#F5F7FA] px-2.5 py-1 rounded-lg text-[#734960] border border-[#E4E7EB]">
+                        {task.orderId}
+                      </span>
+                      <span className="text-xs text-[#666666] font-semibold">🕒 {task.timeSlot}</span>
                     </div>
-                    <span className="text-xs font-mono font-bold text-[#DA9B40]">{tkt.id}</span>
+
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-xs font-bold px-3 py-1 rounded-full border ${
+                          task.status === "Completed"
+                            ? "bg-[#EBF5EC] text-[#5B965E] border-[#78B77B]/40"
+                            : task.status === "In Progress"
+                            ? "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860]/40"
+                            : "bg-gray-100 text-gray-700 border-gray-200"
+                        }`}
+                      >
+                        {task.status === "Completed" ? "✓ Completed" : task.status === "In Progress" ? "⚡ In Progress" : "Pending Start"}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="bg-[#F5F7FA] p-3 rounded-xl text-xs space-y-1.5 border border-[#E4E7EB]">
-                    <div className="flex justify-between">
-                      <span className="text-[#666666]">Equipment:</span>
-                      <span className="font-bold text-[#333333]">{tkt.productName} ({tkt.serialNumber})</span>
+                  {/* Customer Information & Quick Action Buttons */}
+                  <div className="bg-[#F5F7FA] p-4 rounded-xl border border-[#E4E7EB] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-bold text-[#666666] uppercase tracking-wider block">Customer Information</span>
+                      <h3 className="text-sm font-bold text-[#333333]">{task.customerName}</h3>
+                      <p className="text-xs text-[#666666]">📍 {task.address}</p>
+                      <p className="text-xs text-[#734960] font-semibold">⚡ System: {task.capacity}</p>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#666666]">Reported Issue:</span>
-                      <span className="font-bold text-[#DA9B40]">{tkt.issueType}</span>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <a
+                        href={`tel:${task.customerPhone}`}
+                        className="px-3.5 py-2 bg-white hover:bg-[#FAF4F7] text-[#734960] text-xs font-bold rounded-xl border border-[#734960]/30 shadow-xs transition flex items-center gap-1.5"
+                      >
+                        <span>📞</span> Call Customer ({task.customerPhone})
+                      </a>
+
+                      <button
+                        onClick={() => alert(`Opening GPS navigation route to: ${task.address}`)}
+                        className="px-3.5 py-2 bg-white hover:bg-[#F5F7FA] text-[#333333] text-xs font-bold rounded-xl border border-[#E4E7EB] shadow-xs transition flex items-center gap-1.5"
+                      >
+                        <span>📍</span> Navigate
+                      </button>
+
+                      <button
+                        onClick={() => setSelectedTaskForDetails(task)}
+                        className="px-3.5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
+                      >
+                        <span>📋</span> View Details &amp; Execute
+                      </button>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#666666]">Warranty Coverage:</span>
-                      <span className="font-bold text-[#5B965E]">
-                        {tkt.warrantyStatus} (Free Repair)
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-[#333333] pt-1 border-t border-[#E4E7EB]">
-                      {tkt.description}
-                    </p>
                   </div>
 
-                  <div className="flex items-center gap-2 pt-1">
-                    <button
-                      onClick={() => alert(`Marking Ticket ${tkt.id} as diagnosed & replaced at ₹0 cost.`)}
-                      className="flex-1 py-2 bg-[#78B77B] hover:bg-[#5B965E] text-white text-xs font-bold rounded-xl shadow-xs transition"
-                    >
-                      ✓ Replace Component &amp; Close Ticket
-                    </button>
-                    <button
-                      onClick={() => alert(`Dialing customer at ${tkt.phone}`)}
-                      className="px-3 py-2 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#333333] text-xs font-semibold rounded-xl border border-[#E4E7EB]"
-                    >
-                      📞 Call Client
-                    </button>
+                  {/* Customer Submitted Details Block */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                    <div className="bg-white p-3.5 rounded-xl border border-[#E4E7EB] space-y-1">
+                      <span className="text-[10px] font-bold text-[#734960] uppercase block">
+                        Customer Reported Issue / Requirements
+                      </span>
+                      <p className="text-xs text-[#333333] font-medium leading-relaxed">
+                        {task.customerDetails.reportedIssue || "Standard service request."}
+                      </p>
+                      {task.customerDetails.customerNotes && (
+                        <p className="text-[11px] text-[#666666] pt-1 border-t border-[#E4E7EB]/60">
+                          <strong>Note:</strong> {task.customerDetails.customerNotes}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="bg-[#FEF6EB]/60 p-3.5 rounded-xl border border-[#F4B860]/40 space-y-1">
+                      <span className="text-[10px] font-bold text-[#DA9B40] uppercase block">
+                        Admin Dispatch Instructions
+                      </span>
+                      <p className="text-xs text-[#333333] font-medium leading-relaxed">
+                        {task.adminInstructions}
+                      </p>
+                      <p className="text-[11px] text-[#DA9B40] font-semibold pt-1">
+                        Roof: {task.customerDetails.roofType || "Standard terrace"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Customer Uploaded Photos Thumbnails */}
+                  {task.customerDetails.customerPhotos && task.customerDetails.customerPhotos.length > 0 && (
+                    <div className="pt-1">
+                      <span className="text-[10px] font-bold text-[#666666] uppercase block mb-1.5">
+                        Photos Submitted by Customer ({task.customerDetails.customerPhotos.length})
+                      </span>
+                      <div className="flex items-center gap-2 overflow-x-auto">
+                        {task.customerDetails.customerPhotos.map((photo, i) => (
+                          <div
+                            key={i}
+                            className="bg-[#F5F7FA] px-3 py-2 rounded-lg border border-[#E4E7EB] text-xs font-semibold text-[#333333] flex items-center gap-1.5"
+                          >
+                            <span>📷</span>
+                            <span>{photo}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Task Work Status Controls */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#E4E7EB]">
+                    <div className="text-xs text-[#666666]">
+                      {task.status === "Completed" ? (
+                        <span className="text-[#5B965E] font-bold">
+                          ✓ Completed ({task.completedAt || "Signed off"})
+                        </span>
+                      ) : (
+                        <span>Update work progress as you execute this assignment</span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {task.status === "Pending" && (
+                        <button
+                          onClick={() => handleUpdateTaskStatus(task.orderId, "In Progress")}
+                          className="px-4 py-2 bg-[#DA9B40] hover:bg-[#B88030] text-white text-xs font-bold rounded-xl shadow-xs transition"
+                        >
+                          ⚡ Start Job (Mark In Progress)
+                        </button>
+                      )}
+
+                      {task.status === "In Progress" && (
+                        <button
+                          onClick={() => setSelectedTaskForDetails(task)}
+                          className="px-4 py-2 bg-[#78B77B] hover:bg-[#5B965E] text-white text-xs font-bold rounded-xl shadow-xs transition"
+                        >
+                          ✓ Complete Job &amp; Upload Photo Proof
+                        </button>
+                      )}
+
+                      {task.status === "Completed" && (
+                        <button
+                          onClick={() => handleUpdateTaskStatus(task.orderId, "In Progress")}
+                          className="text-xs text-[#734960] hover:underline font-semibold"
+                        >
+                          Reopen Job ↺
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-2xl border border-[#E4E7EB] p-8 text-center text-xs text-[#666666]">
-              🎉 No open breakdown tickets assigned to {currentTech.name}. All customer systems running optimally!
+            <div className="bg-white rounded-2xl border border-[#E4E7EB] p-12 text-center space-y-2">
+              <span className="text-4xl block">📋</span>
+              <h3 className="text-sm font-bold text-[#333333]">No Tasks Currently Assigned</h3>
+              <p className="text-xs text-[#666666] max-w-sm mx-auto">
+                You do not have any tasks dispatched for today. When Admin assigns a new site job to you, it will appear here immediately.
+              </p>
+            </div>
+          )}
+
+          {/* ── MODAL: TASK DETAIL & COMPLETION PROOF ── */}
+          {selectedTaskForDetails && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-2xl border border-[#E4E7EB] shadow-2xl max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
+                <div className="flex items-center justify-between border-b border-[#E4E7EB] pb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-[#734960] bg-[#FAF4F7] px-2 py-0.5 rounded border border-[#8E687F]/30">
+                        {selectedTaskForDetails.orderId}
+                      </span>
+                      <h3 className="text-base font-bold text-[#333333]">
+                        {selectedTaskForDetails.customerName}
+                      </h3>
+                    </div>
+                    <p className="text-xs text-[#666666] mt-0.5">{selectedTaskForDetails.address}</p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedTaskForDetails(null)}
+                    className="text-gray-400 hover:text-[#333333] text-lg font-bold"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Customer Details Box */}
+                <div className="bg-[#F5F7FA] p-4 rounded-xl border border-[#E4E7EB] space-y-2 text-xs">
+                  <h4 className="text-[11px] font-bold text-[#734960] uppercase tracking-wider">
+                    Customer Submitted Details
+                  </h4>
+                  <div className="space-y-1">
+                    <p><strong>System Capacity:</strong> {selectedTaskForDetails.capacity}</p>
+                    <p><strong>Reported Issue:</strong> {selectedTaskForDetails.customerDetails.reportedIssue}</p>
+                    <p><strong>Roof Specification:</strong> {selectedTaskForDetails.customerDetails.roofType}</p>
+                    {selectedTaskForDetails.customerDetails.customerNotes && (
+                      <p><strong>Customer Note:</strong> {selectedTaskForDetails.customerDetails.customerNotes}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Admin Instructions Box */}
+                <div className="bg-[#FEF6EB] p-4 rounded-xl border border-[#F4B860]/40 text-xs space-y-1">
+                  <h4 className="text-[11px] font-bold text-[#DA9B40] uppercase tracking-wider">
+                    Admin Instructions for This Task
+                  </h4>
+                  <p className="text-[#333333] font-medium">{selectedTaskForDetails.adminInstructions}</p>
+                </div>
+
+                {/* Upload Work / Completion Photo Proof */}
+                <div className="space-y-2 text-xs">
+                  <label className="text-[11px] font-bold text-[#666666] uppercase block">
+                    Upload On-Site Work / Completion Photo Proof
+                  </label>
+                  <input
+                    ref={proofFileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleProofPhotoSelect}
+                    className="hidden"
+                  />
+
+                  {!uploadProofPhoto && !selectedTaskForDetails.completionProofPhoto ? (
+                    <button
+                      type="button"
+                      onClick={() => proofFileInputRef.current?.click()}
+                      className="w-full border-2 border-dashed border-[#8E687F]/40 hover:border-[#734960] rounded-xl p-4 text-center bg-[#F5F7FA] hover:bg-[#FAF4F7] transition flex flex-col items-center justify-center gap-1 text-[#734960] font-bold"
+                    >
+                      <span className="text-2xl">📸</span>
+                      <span>Snap or Upload Photo of Completed Work</span>
+                      <span className="text-[10px] text-[#666666] font-normal">Takes high-res photo for Admin &amp; Customer records</span>
+                    </button>
+                  ) : (
+                    <div className="p-3 bg-[#FAF4F7] border border-[#8E687F]/30 rounded-xl flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={uploadProofPhoto || selectedTaskForDetails.completionProofPhoto}
+                          alt="Proof"
+                          className="w-16 h-16 object-cover rounded-lg border border-[#E4E7EB] bg-white"
+                        />
+                        <div>
+                          <p className="font-bold text-[#333333]">{uploadProofName || "Completion Proof Attached"}</p>
+                          <span className="text-[10px] font-bold text-[#5B965E]">✓ Verified Photo Attached</span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUploadProofPhoto("");
+                          setUploadProofName("");
+                          if (proofFileInputRef.current) proofFileInputRef.current.value = "";
+                        }}
+                        className="text-xs text-red-600 font-bold hover:underline"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Technician Notes */}
+                <div className="space-y-1 text-xs">
+                  <label className="text-[11px] font-bold text-[#666666] uppercase block">
+                    Technician Work Notes (What was done)
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="e.g. Inverter communication cable replaced. Measured AC voltage at 238V. Net-meter sync verified."
+                    value={workNotesInput || selectedTaskForDetails.workNotes || ""}
+                    onChange={(e) => setWorkNotesInput(e.target.value)}
+                    className="w-full px-3 py-1.5 border border-[#E4E7EB] rounded-xl focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                  />
+                </div>
+
+                {/* Modal Action Buttons */}
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E4E7EB]">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTaskForDetails(null)}
+                    className="px-4 py-2 bg-[#F5F7FA] hover:bg-[#E4E7EB] text-[#333333] font-semibold rounded-xl text-xs transition"
+                  >
+                    Close
+                  </button>
+
+                  {selectedTaskForDetails.status !== "Completed" ? (
+                    <button
+                      type="button"
+                      onClick={() => handleUpdateTaskStatus(selectedTaskForDetails.orderId, "Completed")}
+                      className="px-5 py-2 bg-[#78B77B] hover:bg-[#5B965E] text-white font-bold rounded-xl text-xs shadow-xs transition"
+                    >
+                      ✓ Mark Task Completed &amp; Submit Proof
+                    </button>
+                  ) : (
+                    <span className="text-xs font-bold text-[#5B965E] px-3 py-2 bg-[#EBF5EC] rounded-xl border border-[#78B77B]/40">
+                      ✓ Job Already Completed
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </div>

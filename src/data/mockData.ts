@@ -299,6 +299,9 @@ export interface Order {
   dispatchDate: string;
   installDate: string;
   assignedTechnician: string;
+  techId?: string;
+  photoProofUrl?: string;
+  photoProofName?: string;
   createdAt: string;
 }
 
@@ -716,6 +719,9 @@ export interface ServiceTicket {
   status: "Open" | "Assigned" | "In Progress" | "Resolved" | "Closed";
   warrantyStatus: "Under Warranty" | "Out of Warranty";
   assignedTechnician: string;
+  techId?: string;
+  photoProofUrl?: string;
+  photoProofName?: string;
   estimatedCost: number;
   actualCost: number;
   createdAt: string;
@@ -937,7 +943,7 @@ export const technicians: Technician[] = [
     id: "TECH-001",
     name: "Rohit Meena",
     phone: "+91 98765 11111",
-    specialization: "Installation & Commissioning",
+    specialization: "Lead Installation & Commissioning Engineer",
     status: "On Job",
     rating: 4.8,
     completedJobs: 156,
@@ -966,7 +972,7 @@ export const technicians: Technician[] = [
     id: "TECH-002",
     name: "Amit Kumar",
     phone: "+91 98765 22222",
-    specialization: "Installation & Survey",
+    specialization: "Rooftop Survey & Tilt Analysis Specialist",
     status: "Available",
     rating: 4.6,
     completedJobs: 132,
@@ -986,7 +992,7 @@ export const technicians: Technician[] = [
     id: "TECH-003",
     name: "Suresh Yadav",
     phone: "+91 98765 33333",
-    specialization: "Battery & Off-Grid Systems",
+    specialization: "Off-Grid & Lithium Battery Specialist",
     status: "On Job",
     rating: 4.5,
     completedJobs: 98,
@@ -1006,10 +1012,130 @@ export const technicians: Technician[] = [
     id: "TECH-004",
     name: "Sonia Verma",
     phone: "+91 98765 44444",
-    specialization: "Survey & Pre-Sales",
+    specialization: "Electrical Quality & Pre-Sales Inspector",
     status: "Available",
     rating: 4.9,
     completedJobs: 210,
+    todaysJobs: [],
+  },
+  {
+    id: "TECH-005",
+    name: "Vikram Rathore",
+    phone: "+91 98765 55555",
+    specialization: "High-Voltage String Inverter Specialist",
+    status: "Available",
+    rating: 4.7,
+    completedJobs: 89,
+    todaysJobs: [],
+  },
+  {
+    id: "TECH-006",
+    name: "Manoj Sharma",
+    phone: "+91 98765 66666",
+    specialization: "Earthing Pit & Lightning Arrestor Tech",
+    status: "Available",
+    rating: 4.8,
+    completedJobs: 142,
+    todaysJobs: [],
+  },
+  {
+    id: "TECH-007",
+    name: "Deepak Saini",
+    phone: "+91 98765 77777",
+    specialization: "Galvanized Structure Mounting Lead",
+    status: "On Job",
+    rating: 4.6,
+    completedJobs: 115,
+    todaysJobs: [],
+  },
+  {
+    id: "TECH-008",
+    name: "Pooja Choudhary",
+    phone: "+91 98765 88888",
+    specialization: "Discom Net-Metering & Grid Sync Engineer",
+    status: "Available",
+    rating: 4.9,
+    completedJobs: 167,
+    todaysJobs: [],
+  },
+  {
+    id: "TECH-009",
+    name: "Rajesh Gurjar",
+    phone: "+91 98765 99999",
+    specialization: "Solar DC Cabling & Combiner Box Tech",
+    status: "Available",
+    rating: 4.5,
+    completedJobs: 78,
+    todaysJobs: [],
+  },
+  {
+    id: "TECH-010",
+    name: "Ankit Tiwari",
+    phone: "+91 98765 10101",
+    specialization: "Micro-Inverter & AC DB Wiring Tech",
+    status: "Available",
+    rating: 4.7,
+    completedJobs: 92,
+    todaysJobs: [],
+  },
+  {
+    id: "TECH-011",
+    name: "Sunita Meena",
+    phone: "+91 98765 12121",
+    specialization: "Safety Compliance & Quality Assurance",
+    status: "Available",
+    rating: 4.9,
+    completedJobs: 180,
+    todaysJobs: [],
+  },
+  {
+    id: "TECH-012",
+    name: "Rakesh Prajapat",
+    phone: "+91 98765 13131",
+    specialization: "Commercial & Industrial Plant Crew",
+    status: "Available",
+    rating: 4.6,
+    completedJobs: 104,
+    todaysJobs: [],
+  },
+  {
+    id: "TECH-013",
+    name: "Tarun Bhati",
+    phone: "+91 98765 14141",
+    specialization: "Preventive Maintenance & Deep Cleaning",
+    status: "Available",
+    rating: 4.7,
+    completedJobs: 121,
+    todaysJobs: [],
+  },
+  {
+    id: "TECH-014",
+    name: "Neha Khandelwal",
+    phone: "+91 98765 15151",
+    specialization: "Inverter Telemetry & Firmware Diagnostics",
+    status: "Available",
+    rating: 4.8,
+    completedJobs: 95,
+    todaysJobs: [],
+  },
+  {
+    id: "TECH-015",
+    name: "Harish Jangid",
+    phone: "+91 98765 16161",
+    specialization: "Emergency Breakdown Fast Response",
+    status: "Available",
+    rating: 4.8,
+    completedJobs: 138,
+    todaysJobs: [],
+  },
+  {
+    id: "TECH-016",
+    name: "Vikas Shekhawat",
+    phone: "+91 98765 17171",
+    specialization: "Final Grid Testing & Handover Lead",
+    status: "Available",
+    rating: 4.9,
+    completedJobs: 164,
     todaysJobs: [],
   },
 ];

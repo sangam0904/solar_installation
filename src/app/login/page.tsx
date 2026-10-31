@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth, UserRole } from "@/context/AuthContext";
+import { useAuth, UserRole, ALL_16_EMPLOYEES } from "@/context/AuthContext";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -227,10 +227,11 @@ export default function LoginPage() {
                   onChange={(e) => setSelectedTech(e.target.value)}
                   className="w-full mt-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs font-bold text-[#734960] focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
                 >
-                  <option value="TECH-001">Rohit Meena (Installation &amp; Commissioning Lead)</option>
-                  <option value="TECH-002">Amit Kumar (Survey &amp; Pre-Sales)</option>
-                  <option value="TECH-003">Suresh Yadav (Off-Grid &amp; Battery Specialist)</option>
-                  <option value="TECH-004">Sonia Verma (Quality &amp; Feasibility)</option>
+                  {Object.entries(ALL_16_EMPLOYEES).map(([id, emp]) => (
+                    <option key={id} value={id}>
+                      {emp.name} ({id} - {emp.specialization})
+                    </option>
+                  ))}
                 </select>
               </div>
 

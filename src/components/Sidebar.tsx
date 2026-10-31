@@ -20,20 +20,13 @@ const adminMenuItems = [
 ];
 
 const technicianMenuItems = [
-  { name: "Today's Jobs", href: "/technician", icon: "📋" },
-  { name: "Roof Survey Tool", href: "/technician?tab=survey", icon: "📐" },
-  { name: "E-Sign Handover", href: "/technician?tab=handover", icon: "✍️" },
-  { name: "Service Tickets", href: "/service", icon: "🔧" },
-  { name: "My Inventory", href: "/inventory", icon: "🏭" },
+  { name: "My Assigned Tasks", href: "/technician", icon: "📋" },
+  { name: "Settings", href: "/settings", icon: "⚙️" },
 ];
 
 const customerMenuItems = [
-  { name: "Solar Passbook", href: "/customer", icon: "☀️" },
-  { name: "Progress Tracker", href: "/customer?tab=progress", icon: "📊" },
-  { name: "Upload Roof Photos", href: "/customer?tab=photos", icon: "📸" },
-  { name: "File Complaint", href: "/customer?tab=complaint", icon: "🚨" },
-  { name: "Ask for Enquiry", href: "/customer?tab=enquiry", icon: "💬" },
-  { name: "Warranty Cards", href: "/customer?tab=warranty", icon: "🛡️" },
+  { name: "My Solar Portal", href: "/customer", icon: "☀️" },
+  { name: "Settings", href: "/settings", icon: "⚙️" },
 ];
 
 export default function Sidebar() {
@@ -90,12 +83,23 @@ export default function Sidebar() {
       {/* Role Banner inside sidebar */}
       {isNavOpen && (
         <div className="px-3 py-2 bg-[#7A536C]/40 border-b border-[#7A536C]/50 flex items-center justify-between text-[11px]">
-          <span className="text-white/80 truncate">
-            {user?.name.split(" ")[0]} ({role})
-          </span>
+          <div className="flex items-center gap-1.5 truncate">
+            {user?.profilePhoto ? (
+              <img
+                src={user.profilePhoto}
+                alt="Avatar"
+                className="w-4 h-4 rounded-full object-cover flex-shrink-0 border border-white/30"
+              />
+            ) : (
+              <span className="text-xs">{user?.avatar || "👤"}</span>
+            )}
+            <span className="text-white/80 truncate">
+              {user?.name.split(" ")[0]} ({role})
+            </span>
+          </div>
           <Link
             href="/login"
-            className="text-[#F4B860] hover:underline font-bold text-[10px]"
+            className="text-[#F4B860] hover:underline font-bold text-[10px] flex-shrink-0"
             title="Switch User Role"
           >
             Switch ⇄

@@ -1,20 +1,50 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import PageShell from "@/components/PageShell";
 import { useAuth } from "@/context/AuthContext";
 import { useSearchParams } from "next/navigation";
+import { serviceTickets as defaultInitialTickets } from "@/data/mockData";
+
+interface UploadedPhoto {
+  id: number;
+  title: string;
+  category: string;
+  date: string;
+  url: string;
+  isRealFile?: boolean;
+}
+
+interface SubmittedEnquiry {
+  id: string;
+  subject: string;
+  message: string;
+  date: string;
+  attachedPhoto?: string;
+  fileName?: string;
+  status: string;
+}
+
+interface CustomerComplaintTicket {
+  id: string;
+  issue: string;
+  date: string;
+  status: string;
+  cost: string;
+  photo?: string;
+  photoName?: string;
+}
 
 function CustomerContent() {
   const { user, loginAsCustomer } = useAuth();
   const searchParams = useSearchParams();
 
   // Tab state: 'passbook' | 'progress' | 'photos' | 'complaint' | 'enquiry' | 'warranty'
-  const initialTab = (searchParams.get("tab") as any) || "passbook";
+  const initialTab = (searchParams.get("tab") as "passbook" | "progress" | "photos" | "complaint" | "enquiry" | "warranty") || "passbook";
   const [activeTab, setActiveTab] = useState<"passbook" | "progress" | "photos" | "complaint" | "enquiry" | "warranty">(initialTab);
 
   useEffect(() => {
-    const tabParam = searchParams.get("tab") as any;
+    const tabParam = searchParams.get("tab") as "passbook" | "progress" | "photos" | "complaint" | "enquiry" | "warranty" | null;
     if (tabParam) {
       setActiveTab(tabParam);
     }
@@ -82,19 +112,26 @@ function CustomerContent() {
   const current = customers.find((c) => c.key === selectedCustKey) || customers[0];
 
   // Photo upload states
-  const [uploadedPhotos, setUploadedPhotos] = useState<Array<{ id: number; title: string; category: string; date: string; url: string }>>([
-    { id: 1, title: "South Roof Shadow Analysis", category: "Pre-Installation Roof", date: "2026-10-21", url: "☀️" },
-    { id: 2, title: "Main Three-Phase Electricity Meter", category: "Utility Meter", date: "2026-10-21", url: "🔌" },
+  const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([
+    { id: 1, title: "South Roof Shadow Analysis", category: "Pre-Installation Roof", date: "2026-10-21", url: "☀️", isRealFile: false },
+    { id: 2, title: "Main Three-Phase Electricity Meter", category: "Utility Meter", date: "2026-10-21", url: "🔌", isRealFile: false },
   ]);
   const [newPhotoTitle, setNewPhotoTitle] = useState("");
-  const [newPhotoCat, setNewPhotoCat] = useState("Roof Layout");
+  const [newPhotoCat, setNewPhotoCat] = useState("Pre-Installation Roof");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [filePreview, setFilePreview] = useState<string>("");
   const [uploadSuccess, setUploadSuccess] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement | null>(null);
 
   // Complaint states
   const [complaintType, setComplaintType] = useState("Inverter Error (E-01/E-04)");
   const [complaintDesc, setComplaintDesc] = useState("");
+  const [complaintPhoto, setComplaintPhoto] = useState<string>("");
+  const [complaintPhotoName, setComplaintPhotoName] = useState<string>("");
   const [complaintSuccess, setComplaintSuccess] = useState(false);
-  const [myTickets, setMyTickets] = useState([
+  const complaintFileRef = useRef<HTMLInputElement | null>(null);
+
+  const [myTickets, setMyTickets] = useState<CustomerComplaintTicket[]>([
     {
       id: "TKT-088",
       issue: "Inverter E-04 Communication Error",
@@ -107,45 +144,175 @@ function CustomerContent() {
   // Enquiry states
   const [enquirySubject, setEnquirySubject] = useState("Add Battery Backup (Off-Grid Upgrade)");
   const [enquiryMessage, setEnquiryMessage] = useState("");
+  const [enquiryFile, setEnquiryFile] = useState<File | null>(null);
+  const [enquiryFilePreview, setEnquiryFilePreview] = useState<string>("");
   const [enquirySuccess, setEnquirySuccess] = useState(false);
+  const enquiryFileRef = useRef<HTMLInputElement | null>(null);
+  const [enquiryHistory, setEnquiryHistory] = useState<SubmittedEnquiry[]>([
+    {
+      id: "ENQ-101",
+      subject: "Subsidy Follow-up Question",
+      message: "Wanted to confirm if the second installment of PM Surya Ghar subsidy needs meter verification.",
+      date: "2026-10-25",
+      status: "In Review by Solar Consultant",
+    },
+  ]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setSelectedFile(file);
+    if (!newPhotoTitle) {
+      const cleanName = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+      setNewPhotoTitle(cleanName);
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setFilePreview(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleUploadPhoto = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPhotoTitle) return;
-    const item = {
+
+    const item: UploadedPhoto = {
       id: Date.now(),
       title: newPhotoTitle,
       category: newPhotoCat,
       date: "2026-10-31",
-      url: "📸",
+      url: filePreview || "📸",
+      isRealFile: Boolean(filePreview),
     };
+
     setUploadedPhotos([item, ...uploadedPhotos]);
     setNewPhotoTitle("");
+    setSelectedFile(null);
+    setFilePreview("");
+    if (photoInputRef.current) photoInputRef.current.value = "";
+
     setUploadSuccess(true);
     setTimeout(() => setUploadSuccess(false), 2500);
+  };
+
+  const handleComplaintFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setComplaintPhotoName(file.name);
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setComplaintPhoto(ev.target?.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleFileComplaint = (e: React.FormEvent) => {
     e.preventDefault();
     if (!complaintDesc) return;
-    const newTkt = {
-      id: `TKT-${Math.floor(100 + Math.random() * 900)}`,
+
+    const newTktId = `TKT-${Math.floor(100 + Math.random() * 900)}`;
+
+    // Build formal Service Ticket to file to Admin
+    const formalTicket = {
+      id: newTktId,
+      customerId: current.key ? `CUST-${current.key.toUpperCase()}` : "CUST-001",
+      customerName: current.name,
+      phone: current.phone,
+      address: current.address,
+      serialNumber: current.inverterSerial,
+      productName: current.system,
+      issueType: complaintType.includes("Inverter") ? "Inverter Error" : complaintType.includes("Power") ? "No Power" : complaintType.includes("Battery") ? "Battery Issue" : "Low Output",
+      description: complaintDesc,
+      priority: "High" as const,
+      status: "Open" as const, // Open on Admin Operations Desk
+      warrantyStatus: "Under Warranty" as const,
+      assignedTechnician: "",
+      estimatedCost: 0,
+      actualCost: 0,
+      createdAt: "2026-10-31",
+      resolvedAt: "",
+      photoProofUrl: complaintPhoto,
+      photoProofName: complaintPhotoName,
+    };
+
+    // Save ticket into shared localStorage for Admin Service Desk
+    try {
+      const savedTickets = JSON.parse(localStorage.getItem("sunpower_service_tickets") || "[]");
+      const fullList = savedTickets.length > 0 ? savedTickets : defaultInitialTickets;
+      localStorage.setItem("sunpower_service_tickets", JSON.stringify([formalTicket, ...fullList]));
+    } catch {
+      // Ignore
+    }
+
+    // Push real-time notification to Admin Operations Desk
+    try {
+      const notifs = JSON.parse(localStorage.getItem("sunpower_notifications") || "[]");
+      const adminNotif = {
+        id: `notif-${Date.now()}`,
+        recipientRole: "admin" as const,
+        text: `🚨 New Breakdown Complaint filed by ${current.name}: ${complaintType} (${newTktId})`,
+        time: "Just now",
+        type: "alert" as const,
+      };
+      localStorage.setItem("sunpower_notifications", JSON.stringify([adminNotif, ...notifs]));
+    } catch {
+      // Ignore
+    }
+
+    // Add to local customer view
+    const newLocalTkt: CustomerComplaintTicket = {
+      id: newTktId,
       issue: complaintType,
       date: "2026-10-31",
-      status: "Assigned to Rohit Meena (Dispatched)",
+      status: "Open (Filed to Admin Service Desk)",
       cost: "₹0 (Free Warranty Claim)",
+      photo: complaintPhoto,
+      photoName: complaintPhotoName,
     };
-    setMyTickets([newTkt, ...myTickets]);
+
+    setMyTickets([newLocalTkt, ...myTickets]);
     setComplaintSuccess(true);
     setComplaintDesc("");
-    setTimeout(() => setComplaintSuccess(false), 3000);
+    setComplaintPhoto("");
+    setComplaintPhotoName("");
+    if (complaintFileRef.current) complaintFileRef.current.value = "";
+    setTimeout(() => setComplaintSuccess(false), 3500);
+  };
+
+  const handleEnquiryFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setEnquiryFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setEnquiryFilePreview(ev.target?.result as string);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSendEnquiry = (e: React.FormEvent) => {
     e.preventDefault();
     if (!enquiryMessage) return;
+
+    const newEnq: SubmittedEnquiry = {
+      id: `ENQ-${Math.floor(200 + Math.random() * 800)}`,
+      subject: enquirySubject,
+      message: enquiryMessage,
+      date: "2026-10-31",
+      attachedPhoto: enquiryFilePreview,
+      fileName: enquiryFile?.name,
+      status: "Assigned to Technical Consultant",
+    };
+
+    setEnquiryHistory([newEnq, ...enquiryHistory]);
     setEnquirySuccess(true);
     setEnquiryMessage("");
+    setEnquiryFile(null);
+    setEnquiryFilePreview("");
+    if (enquiryFileRef.current) enquiryFileRef.current.value = "";
     setTimeout(() => setEnquirySuccess(false), 3000);
   };
 
@@ -224,7 +391,7 @@ function CustomerContent() {
         </div>
       </div>
 
-      {/* Navigation Tabs */}
+      {/* Navigation Tabs (Customer selects whatever they need from the top) */}
       <div className="flex items-center gap-2 border-b border-[#E4E7EB] pb-2 overflow-x-auto">
         <button
           onClick={() => setActiveTab("passbook")}
@@ -278,7 +445,7 @@ function CustomerContent() {
               : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
           }`}
         >
-          <span>💬</span> Ask for Enquiry / Upgrade
+          <span>💬</span> Ask for Enquiry / Upgrade ({enquiryHistory.length})
         </button>
 
         <button
@@ -383,14 +550,12 @@ function CustomerContent() {
             </span>
           </div>
 
-          {/* Interactive Step Timeline */}
           <div className="space-y-4">
             {progressSteps.map((step) => {
               const isCompleted = step.num < current.progressStep;
               const isCurrent = step.num === current.progressStep;
               return (
                 <div key={step.num} className="flex items-start gap-4">
-                  {/* Step Icon / Circle */}
                   <div
                     className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 border-2 transition ${
                       isCompleted
@@ -403,7 +568,6 @@ function CustomerContent() {
                     {isCompleted ? "✓" : step.num}
                   </div>
 
-                  {/* Step Content */}
                   <div className="flex-1 bg-[#F5F7FA] p-3.5 rounded-xl border border-[#E4E7EB]">
                     <div className="flex items-center justify-between">
                       <h4 className="text-xs font-bold text-[#333333]">{step.title}</h4>
@@ -431,17 +595,16 @@ function CustomerContent() {
       {/* ───────────────── TAB 3: UPLOAD ROOF PHOTOS ───────────────── */}
       {activeTab === "photos" && (
         <div className="space-y-6">
-          {/* Upload Form Box */}
           <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 shadow-xs space-y-4">
             <div>
               <span className="text-[10px] font-bold text-[#DA9B40] uppercase tracking-wider">Site Transparency</span>
               <h3 className="text-base font-bold text-[#333333]">Upload Rooftop &amp; Meter Photos</h3>
               <p className="text-xs text-[#666666]">
-                Upload images of your rooftop space, electrical meter, or inverter installation for verification.
+                Upload high-resolution images of your rooftop space, utility electric meter, or inverter installation.
               </p>
             </div>
 
-            <form onSubmit={handleUploadPhoto} className="space-y-3">
+            <form onSubmit={handleUploadPhoto} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-[11px] font-bold text-[#666666] uppercase">Photo Caption / Note</label>
@@ -465,16 +628,70 @@ function CustomerContent() {
                     <option value="Electricity Meter">Utility Net-Meter</option>
                     <option value="Earthing Pit">Earthing Connection</option>
                     <option value="Fault Proof">Inverter Fault Proof</option>
+                    <option value="Solar Structure">Rooftop Mounting Structure</option>
                   </select>
                 </div>
               </div>
 
-              {/* Drag Drop Simulator Area */}
-              <div className="border-2 border-dashed border-[#E4E7EB] hover:border-[#734960] rounded-xl p-6 text-center bg-[#F5F7FA] cursor-pointer transition">
-                <span className="text-3xl block mb-1">📸</span>
-                <span className="text-xs font-bold text-[#734960]">Click to select photos or drag &amp; drop</span>
-                <p className="text-[10px] text-[#666666] mt-0.5">Supports PNG, JPG, HEIC up to 15MB</p>
-              </div>
+              <input
+                ref={photoInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+
+              {!filePreview ? (
+                <div
+                  onClick={() => photoInputRef.current?.click()}
+                  className="border-2 border-dashed border-[#8E687F]/40 hover:border-[#734960] rounded-xl p-6 text-center bg-[#F5F7FA] hover:bg-[#FAF4F7] cursor-pointer transition group"
+                >
+                  <span className="text-3xl block mb-1 group-hover:scale-110 transition-transform">📸</span>
+                  <span className="text-xs font-bold text-[#734960] block">
+                    Click to select photo or take picture with camera
+                  </span>
+                  <p className="text-[10px] text-[#666666] mt-0.5">
+                    Supports JPG, PNG, WEBP, HEIC (Max 15MB)
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-[#FAF4F7] border border-[#8E687F]/30 rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4">
+                  <div className="w-24 h-24 rounded-lg overflow-hidden border border-[#E4E7EB] flex-shrink-0 bg-white">
+                    <img src={filePreview} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1 text-center sm:text-left">
+                    <span className="text-[10px] font-bold bg-[#EBF5EC] text-[#5B965E] px-2 py-0.5 rounded-full border border-[#78B77B]/40">
+                      ✓ Ready for Upload
+                    </span>
+                    <h5 className="text-xs font-bold text-[#333333] mt-1 truncate max-w-xs">
+                      {selectedFile?.name || "Selected Image"}
+                    </h5>
+                    <p className="text-[10px] text-[#666666]">
+                      {selectedFile ? `${(selectedFile.size / 1024).toFixed(1)} KB` : "Image preview"}
+                    </p>
+                    <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
+                      <button
+                        type="button"
+                        onClick={() => photoInputRef.current?.click()}
+                        className="text-[11px] font-bold text-[#734960] hover:underline"
+                      >
+                        Change Photo ⇄
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedFile(null);
+                          setFilePreview("");
+                          if (photoInputRef.current) photoInputRef.current.value = "";
+                        }}
+                        className="text-[11px] font-bold text-red-600 hover:underline"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {uploadSuccess && (
                 <div className="p-2.5 bg-[#EBF5EC] text-[#5B965E] text-xs font-bold rounded-xl border border-[#78B77B] text-center animate-in fade-in">
@@ -493,7 +710,6 @@ function CustomerContent() {
             </form>
           </div>
 
-          {/* Photo Gallery Grid */}
           <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 shadow-xs space-y-3">
             <h4 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
               My Uploaded Photos ({uploadedPhotos.length})
@@ -501,13 +717,22 @@ function CustomerContent() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {uploadedPhotos.map((photo) => (
-                <div key={photo.id} className="p-4 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] space-y-2">
-                  <div className="h-28 bg-white rounded-lg flex items-center justify-center text-3xl border border-[#E4E7EB]">
-                    {photo.url}
+                <div key={photo.id} className="p-3 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] space-y-2">
+                  <div className="h-32 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-[#E4E7EB]">
+                    {photo.isRealFile || photo.url.startsWith("data:") ? (
+                      <img
+                        src={photo.url}
+                        alt={photo.title}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
+                        onClick={() => window.open(photo.url, "_blank")}
+                      />
+                    ) : (
+                      <span className="text-4xl">{photo.url}</span>
+                    )}
                   </div>
                   <div>
                     <span className="text-[10px] font-bold text-[#734960] uppercase">{photo.category}</span>
-                    <h5 className="text-xs font-bold text-[#333333] mt-0.5">{photo.title}</h5>
+                    <h5 className="text-xs font-bold text-[#333333] mt-0.5 truncate">{photo.title}</h5>
                     <p className="text-[10px] text-[#666666]">Uploaded on {photo.date}</p>
                   </div>
                 </div>
@@ -520,17 +745,15 @@ function CustomerContent() {
       {/* ───────────────── TAB 4: FILE COMPLAINT ───────────────── */}
       {activeTab === "complaint" && (
         <div className="space-y-6 max-w-2xl mx-auto">
-          {/* Complaint Form */}
           <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 shadow-xs space-y-4">
             <div className="border-b border-[#E4E7EB] pb-3">
               <span className="text-[10px] font-bold text-[#DC2626] uppercase tracking-wider">Helpdesk Dispatch</span>
-              <h3 className="text-base font-bold text-[#333333] mt-0.5">Report Plant Issue / Breakdown</h3>
+              <h3 className="text-base font-bold text-[#333333] mt-0.5">Report Plant Issue / Breakdown to Admin</h3>
               <p className="text-xs text-[#666666]">
-                Your registered inverter serial ({current.inverterSerial}) is active under 5-year warranty.
+                Your complaint and uploaded photos will be dispatched directly to the Admin Service Desk.
               </p>
             </div>
 
-            {/* 60s Rule Banner */}
             <div className="bg-[#EBF5EC] border border-[#78B77B]/40 rounded-xl p-3 text-xs text-[#5B965E] font-semibold flex items-center justify-between">
               <span>🛡️ <strong>Under Active 5-Year Warranty:</strong> Diagnostic visit and replacement parts are <strong>₹0 (100% Free)</strong>.</span>
               <span className="font-extrabold text-[10px] bg-white px-2 py-0.5 rounded border border-[#78B77B]">
@@ -538,13 +761,13 @@ function CustomerContent() {
               </span>
             </div>
 
-            <form onSubmit={handleFileComplaint} className="space-y-3">
+            <form onSubmit={handleFileComplaint} className="space-y-3.5">
               <div>
                 <label className="text-[11px] font-bold text-[#666666] uppercase">Issue Symptom / Fault Code</label>
                 <select
                   value={complaintType}
                   onChange={(e) => setComplaintType(e.target.value)}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold"
+                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold bg-white"
                 >
                   <option value="Inverter Error (E-01/E-04)">Inverter Error Code (E-01 / E-04)</option>
                   <option value="Zero Power Generation">Zero Power Generation on Grid</option>
@@ -566,9 +789,50 @@ function CustomerContent() {
                 />
               </div>
 
+              {/* Real Photo Attachment for Complaint */}
+              <div>
+                <label className="text-[11px] font-bold text-[#666666] uppercase block">
+                  Attach Breakdown Photo / Inverter Display / Damage Proof
+                </label>
+                <input
+                  ref={complaintFileRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleComplaintFileChange}
+                  className="hidden"
+                />
+                {!complaintPhoto ? (
+                  <button
+                    type="button"
+                    onClick={() => complaintFileRef.current?.click()}
+                    className="mt-1 w-full border border-dashed border-[#E4E7EB] hover:border-[#DC2626] rounded-xl py-3 px-4 text-xs font-semibold text-[#666666] hover:text-[#DC2626] bg-[#F5F7FA] transition flex items-center justify-center gap-2"
+                  >
+                    <span>📷</span> Attach Inverter Error Photo / Damage Proof
+                  </button>
+                ) : (
+                  <div className="mt-1 p-2 bg-[#FAF4F7] border border-[#8E687F]/30 rounded-xl flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <img src={complaintPhoto} alt="Proof" className="w-10 h-10 object-cover rounded-lg border border-[#E4E7EB]" />
+                      <span className="font-semibold text-[#333333] truncate max-w-xs">{complaintPhotoName}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setComplaintPhoto("");
+                        setComplaintPhotoName("");
+                        if (complaintFileRef.current) complaintFileRef.current.value = "";
+                      }}
+                      className="text-xs text-red-600 font-bold hover:underline"
+                    >
+                      ✕ Remove
+                    </button>
+                  </div>
+                )}
+              </div>
+
               {complaintSuccess && (
                 <div className="p-3 bg-[#EBF5EC] text-[#5B965E] text-xs font-bold rounded-xl border border-[#78B77B] text-center animate-in fade-in">
-                  ✓ Breakdown Ticket Logged! Assigned to technician Rohit Meena. You will receive an arrival call.
+                  ✓ Breakdown complaint &amp; uploaded photo proof filed to Admin! Status: Open on Operations Desk.
                 </div>
               )}
 
@@ -577,7 +841,7 @@ function CustomerContent() {
                   type="submit"
                   className="px-5 py-2 bg-[#DC2626] hover:bg-red-700 text-white font-bold rounded-xl text-xs shadow-xs transition"
                 >
-                  Submit Breakdown Ticket (Free)
+                  Submit Breakdown Ticket to Admin (Free)
                 </button>
               </div>
             </form>
@@ -586,22 +850,28 @@ function CustomerContent() {
           {/* Ticket History */}
           <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 shadow-xs space-y-3">
             <h4 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
-              My Service Ticket History
+              My Service Ticket History ({myTickets.length})
             </h4>
 
             <div className="space-y-2">
               {myTickets.map((tkt) => (
-                <div key={tkt.id} className="p-3.5 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] text-xs flex items-center justify-between">
-                  <div>
+                <div key={tkt.id} className="p-3.5 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] text-xs space-y-1.5">
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="font-mono font-bold text-[#DA9B40]">{tkt.id}</span>
                       <span className="font-bold text-[#333333]">{tkt.issue}</span>
                     </div>
-                    <p className="text-[11px] text-[#666666] mt-0.5">Filed: {tkt.date} • {tkt.cost}</p>
+                    <span className="px-2.5 py-0.5 bg-[#EBF5EC] text-[#5B965E] font-bold text-[10px] rounded-full border border-[#78B77B]/40">
+                      {tkt.status}
+                    </span>
                   </div>
-                  <span className="px-2.5 py-1 bg-[#EBF5EC] text-[#5B965E] font-bold text-[10px] rounded-full border border-[#78B77B]/40">
-                    {tkt.status}
-                  </span>
+                  <p className="text-[11px] text-[#666666]">Filed: {tkt.date} • {tkt.cost}</p>
+                  {tkt.photo && (
+                    <div className="flex items-center gap-2 pt-1">
+                      <img src={tkt.photo} alt="Attached Proof" className="w-8 h-8 rounded object-cover border border-[#E4E7EB]" />
+                      <span className="text-[10px] text-[#734960] font-semibold">{tkt.photoName || "Photo Proof Filed to Admin"}</span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -611,58 +881,141 @@ function CustomerContent() {
 
       {/* ───────────────── TAB 5: ASK FOR ENQUIRY ───────────────── */}
       {activeTab === "enquiry" && (
-        <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 shadow-xs max-w-xl mx-auto space-y-4">
-          <div className="border-b border-[#E4E7EB] pb-3">
-            <span className="text-[10px] font-bold text-[#734960] uppercase tracking-wider">Client Inquiries</span>
-            <h3 className="text-base font-bold text-[#333333] mt-0.5">Ask for System Upgrade or Service</h3>
-            <p className="text-xs text-[#666666]">
-              Request additional capacity, battery storage backup, or schedule professional rooftop cleaning.
-            </p>
+        <div className="space-y-6 max-w-xl mx-auto">
+          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 shadow-xs space-y-4">
+            <div className="border-b border-[#E4E7EB] pb-3">
+              <span className="text-[10px] font-bold text-[#734960] uppercase tracking-wider">Client Inquiries &amp; Upgrades</span>
+              <h3 className="text-base font-bold text-[#333333] mt-0.5">Ask for System Upgrade, Subsidy, or Enquiry</h3>
+              <p className="text-xs text-[#666666]">
+                Submit questions regarding battery expansion, additional panels, subsidy disbursement, or upload roof photos for an upgrade proposal.
+              </p>
+            </div>
+
+            <form onSubmit={handleSendEnquiry} className="space-y-3">
+              <div>
+                <label className="text-[11px] font-bold text-[#666666] uppercase">Enquiry Subject</label>
+                <select
+                  value={enquirySubject}
+                  onChange={(e) => setEnquirySubject(e.target.value)}
+                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold"
+                >
+                  <option value="Add Battery Backup (Off-Grid Upgrade)">Add Battery Backup (Off-Grid Upgrade)</option>
+                  <option value="Capacity Expansion (e.g. 3kW to 5kW)">Expand Capacity (Add more solar panels)</option>
+                  <option value="Rooftop Panel Deep Cleaning Service">Book Panel Deep Cleaning Service</option>
+                  <option value="Annual Maintenance Contract (AMC)">Annual Maintenance Contract (AMC)</option>
+                  <option value="Subsidy Follow-up Question">Government Subsidy Disbursement Question</option>
+                  <option value="Net-Meter Tariff Query">Discom Net-Meter Billing Inquiry</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold text-[#666666] uppercase">Your Message / Requirements</label>
+                <textarea
+                  rows={3}
+                  placeholder="Let us know what you would like to know or upgrade..."
+                  value={enquiryMessage}
+                  onChange={(e) => setEnquiryMessage(e.target.value)}
+                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold text-[#666666] uppercase block">
+                  Upload Photo or File with Enquiry (e.g. Bill, Rooftop, Meter)
+                </label>
+                <input
+                  ref={enquiryFileRef}
+                  type="file"
+                  accept="image/*, application/pdf"
+                  onChange={handleEnquiryFileChange}
+                  className="hidden"
+                />
+
+                {!enquiryFilePreview ? (
+                  <button
+                    type="button"
+                    onClick={() => enquiryFileRef.current?.click()}
+                    className="mt-1 w-full border border-dashed border-[#E4E7EB] hover:border-[#734960] rounded-xl py-3 px-4 text-xs font-semibold text-[#734960] bg-[#F5F7FA] hover:bg-[#FAF4F7] transition flex items-center justify-center gap-2"
+                  >
+                    <span>📎</span> Click to upload file / photo for this inquiry
+                  </button>
+                ) : (
+                  <div className="mt-1 p-2.5 bg-[#FAF4F7] border border-[#8E687F]/30 rounded-xl flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-3">
+                      {enquiryFilePreview.startsWith("data:image") ? (
+                        <img src={enquiryFilePreview} alt="Attached" className="w-12 h-12 object-cover rounded-lg border border-[#E4E7EB]" />
+                      ) : (
+                        <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center text-xl border border-[#E4E7EB]">📄</div>
+                      )}
+                      <div>
+                        <p className="font-bold text-[#333333] truncate max-w-xs">{enquiryFile?.name || "Attached File"}</p>
+                        <p className="text-[10px] text-[#666666]">
+                          {enquiryFile ? `${(enquiryFile.size / 1024).toFixed(1)} KB` : "Attached file"}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEnquiryFile(null);
+                        setEnquiryFilePreview("");
+                        if (enquiryFileRef.current) enquiryFileRef.current.value = "";
+                      }}
+                      className="text-xs text-red-600 font-bold hover:underline"
+                    >
+                      ✕ Remove
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {enquirySuccess && (
+                <div className="p-3 bg-[#EBF5EC] text-[#5B965E] text-xs font-bold rounded-xl border border-[#78B77B] text-center animate-in fade-in">
+                  ✓ Enquiry &amp; attached files submitted successfully! Our solar engineering team will review it within 2 hours.
+                </div>
+              )}
+
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs shadow-xs transition"
+                >
+                  Send Enquiry ➔
+                </button>
+              </div>
+            </form>
           </div>
 
-          <form onSubmit={handleSendEnquiry} className="space-y-3">
-            <div>
-              <label className="text-[11px] font-bold text-[#666666] uppercase">Enquiry Subject</label>
-              <select
-                value={enquirySubject}
-                onChange={(e) => setEnquirySubject(e.target.value)}
-                className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold"
-              >
-                <option value="Add Battery Backup (Off-Grid Upgrade)">Add Battery Backup (Off-Grid Upgrade)</option>
-                <option value="Capacity Expansion (e.g. 3kW to 5kW)">Expand Capacity (Add more solar panels)</option>
-                <option value="Rooftop Panel Deep Cleaning Service">Book Panel Deep Cleaning Service</option>
-                <option value="Annual Maintenance Contract (AMC)">Annual Maintenance Contract (AMC)</option>
-                <option value="Subsidy Follow-up Question">Government Subsidy Disbursement Question</option>
-              </select>
-            </div>
+          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 shadow-xs space-y-3">
+            <h4 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
+              My Submitted Inquiries &amp; Quotes ({enquiryHistory.length})
+            </h4>
 
-            <div>
-              <label className="text-[11px] font-bold text-[#666666] uppercase">Your Message / Requirements</label>
-              <textarea
-                rows={3}
-                placeholder="Let us know what you would like to add or know about your plant..."
-                value={enquiryMessage}
-                onChange={(e) => setEnquiryMessage(e.target.value)}
-                className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
-                required
-              />
+            <div className="space-y-2.5">
+              {enquiryHistory.map((enq) => (
+                <div key={enq.id} className="p-3.5 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] text-xs space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-[#333333]">{enq.subject}</span>
+                    <span className="text-[10px] font-mono font-bold bg-white px-2 py-0.5 rounded border border-[#E4E7EB] text-[#734960]">
+                      {enq.id}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-[#666666]">{enq.message}</p>
+                  {enq.attachedPhoto && (
+                    <div className="pt-1 flex items-center gap-2">
+                      <img src={enq.attachedPhoto} alt="Attachment" className="w-8 h-8 rounded object-cover border border-[#E4E7EB]" />
+                      <span className="text-[10px] text-[#734960] font-semibold">{enq.fileName || "Attached Photo"}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between pt-1 border-t border-[#E4E7EB]/60 text-[10px]">
+                    <span className="text-[#666666]">Submitted: {enq.date}</span>
+                    <span className="font-bold text-[#DA9B40]">{enq.status}</span>
+                  </div>
+                </div>
+              ))}
             </div>
-
-            {enquirySuccess && (
-              <div className="p-3 bg-[#EBF5EC] text-[#5B965E] text-xs font-bold rounded-xl border border-[#78B77B] text-center animate-in fade-in">
-                ✓ Enquiry Received! Our solar consultant will call you within 2 hours with an estimate.
-              </div>
-            )}
-
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                className="px-5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs shadow-xs transition"
-              >
-                Send Enquiry ➔
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
       )}
 
@@ -677,7 +1030,6 @@ function CustomerContent() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Inverter Card */}
             <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] shadow-xs space-y-3">
               <div className="flex items-center justify-between">
                 <div>
@@ -705,7 +1057,6 @@ function CustomerContent() {
               </div>
             </div>
 
-            {/* Solar Panels Card */}
             <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] shadow-xs space-y-3">
               <div className="flex items-center justify-between">
                 <div>
