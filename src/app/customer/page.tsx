@@ -15,6 +15,16 @@ interface UploadedPhoto {
   isRealFile?: boolean;
 }
 
+interface EnquiryProgressStep {
+  stepNumber: number;
+  title: string;
+  subtitle: string;
+  date: string;
+  details: string;
+  isCompleted: boolean;
+  isCurrent: boolean;
+}
+
 interface SubmittedEnquiry {
   id: string;
   subject: string;
@@ -23,6 +33,11 @@ interface SubmittedEnquiry {
   attachedPhoto?: string;
   fileName?: string;
   status: string;
+  currentStep: number;
+  consultantName: string;
+  consultantPhone: string;
+  estimatedResolution: string;
+  steps: EnquiryProgressStep[];
 }
 
 interface CustomerComplaintTicket {
@@ -150,20 +165,131 @@ function CustomerContent() {
     },
   ]);
 
-  // Enquiry states
+  // Enquiry states & Flipkart Stepped Progress Data
   const [enquirySubject, setEnquirySubject] = useState("Add Battery Backup (Off-Grid Upgrade)");
   const [enquiryMessage, setEnquiryMessage] = useState("");
   const [enquiryFile, setEnquiryFile] = useState<File | null>(null);
   const [enquiryFilePreview, setEnquiryFilePreview] = useState<string>("");
   const [enquirySuccess, setEnquirySuccess] = useState(false);
   const enquiryFileRef = useRef<HTMLInputElement | null>(null);
+  const [expandedEnquiryId, setExpandedEnquiryId] = useState<string>("ENQ-101");
+
   const [enquiryHistory, setEnquiryHistory] = useState<SubmittedEnquiry[]>([
     {
       id: "ENQ-101",
-      subject: "Subsidy Follow-up Question",
+      subject: "Add Battery Backup (Off-Grid Upgrade)",
+      message: "Currently have 5 kW On-Grid system. Looking to add 10 kWh Lithium Battery Bank for power backup during grid shedding.",
+      date: "29 Oct 2026",
+      status: "Feasibility Review in Progress",
+      currentStep: 3,
+      consultantName: "Rohit Meena (Lead Technical Engineer)",
+      consultantPhone: "+91 98765 11111",
+      estimatedResolution: "Quotation & Proposal Expected Today by 5:30 PM",
+      steps: [
+        {
+          stepNumber: 1,
+          title: "Enquiry Placed",
+          subtitle: "29 Oct, 10:15 AM",
+          date: "29 Oct 2026",
+          details: "Battery backup query registered on SunPower engineering portal",
+          isCompleted: true,
+          isCurrent: false,
+        },
+        {
+          stepNumber: 2,
+          title: "Assigned to Consultant",
+          subtitle: "29 Oct, 11:30 AM",
+          date: "29 Oct 2026",
+          details: "Assigned to Lead Engineer Rohit Meena • System telemetry and inverter load reviewed",
+          isCompleted: true,
+          isCurrent: false,
+        },
+        {
+          stepNumber: 3,
+          title: "Technical Feasibility",
+          subtitle: "In Progress ⚡",
+          date: "31 Oct, 02:00 PM",
+          details: "Hybrid inverter compatibility confirmed • Preparing battery rack layout & safety breaker plan",
+          isCompleted: false,
+          isCurrent: true,
+        },
+        {
+          stepNumber: 4,
+          title: "Quotation & Subsidy",
+          subtitle: "Expected Today, 5:30 PM",
+          date: "31 Oct 2026",
+          details: "Itemized BOM & formal commercial quotation proposal dispatch",
+          isCompleted: false,
+          isCurrent: false,
+        },
+        {
+          stepNumber: 5,
+          title: "Site Execution",
+          subtitle: "Scheduled on Confirmation",
+          date: "Nov 2026",
+          details: "Warehouse dispatch and technician installation at site",
+          isCompleted: false,
+          isCurrent: false,
+        },
+      ],
+    },
+    {
+      id: "ENQ-092",
+      subject: "PM Surya Ghar Subsidy Follow-up",
       message: "Wanted to confirm if the second installment of PM Surya Ghar subsidy needs meter verification.",
-      date: "2026-10-25",
-      status: "In Review by Solar Consultant",
+      date: "22 Oct 2026",
+      status: "Subsidy Sanction Approved",
+      currentStep: 4,
+      consultantName: "Pooja Choudhary (Grid Sync Engineer)",
+      consultantPhone: "+91 98765 88888",
+      estimatedResolution: "Direct Benefit Transfer (DBT) Token Generated",
+      steps: [
+        {
+          stepNumber: 1,
+          title: "Enquiry Placed",
+          subtitle: "22 Oct, 09:00 AM",
+          date: "22 Oct 2026",
+          details: "National Solar Portal reference number verified",
+          isCompleted: true,
+          isCurrent: false,
+        },
+        {
+          stepNumber: 2,
+          title: "Net-Meter Verified",
+          subtitle: "23 Oct, 02:00 PM",
+          date: "23 Oct 2026",
+          details: "Bi-directional net meter sync confirmed with JVVNL Discom",
+          isCompleted: true,
+          isCurrent: false,
+        },
+        {
+          stepNumber: 3,
+          title: "Subsidy Sanctioned",
+          subtitle: "25 Oct, 11:15 AM",
+          date: "25 Oct 2026",
+          details: "MNRE DBT authorization approved for ₹78,000 credit",
+          isCompleted: true,
+          isCurrent: false,
+        },
+        {
+          stepNumber: 4,
+          title: "Bank Credit Processing",
+          subtitle: "In Progress ⚡",
+          date: "30 Oct, 04:30 PM",
+          details: "PFMS token dispatched to registered bank account",
+          isCompleted: false,
+          isCurrent: true,
+        },
+        {
+          stepNumber: 5,
+          title: "Subsidy Credited",
+          subtitle: "Expected 04 Nov 2026",
+          date: "04 Nov 2026",
+          details: "Funds reflection in registered customer bank account",
+          isCompleted: false,
+          isCurrent: false,
+        },
+      ],
     },
   ]);
 
@@ -302,17 +428,70 @@ function CustomerContent() {
     e.preventDefault();
     if (!enquiryMessage) return;
 
+    const newEnqId = `ENQ-${Math.floor(200 + Math.random() * 800)}`;
     const newEnq: SubmittedEnquiry = {
-      id: `ENQ-${Math.floor(200 + Math.random() * 800)}`,
+      id: newEnqId,
       subject: enquirySubject,
       message: enquiryMessage,
-      date: "2026-10-31",
+      date: "31 Oct 2026",
       attachedPhoto: enquiryFilePreview,
       fileName: enquiryFile?.name,
-      status: "Assigned to Technical Consultant",
+      status: "Enquiry Received • Assigning Engineer",
+      currentStep: 1,
+      consultantName: "Rohit Meena (Technical Lead)",
+      consultantPhone: "+91 98765 11111",
+      estimatedResolution: "Consultant Call & Assessment within 2 hours",
+      steps: [
+        {
+          stepNumber: 1,
+          title: "Enquiry Placed",
+          subtitle: "Just Now • 31 Oct",
+          date: "31 Oct 2026",
+          details: "Upgrade inquiry and specifications registered on engineering portal",
+          isCompleted: true,
+          isCurrent: false,
+        },
+        {
+          stepNumber: 2,
+          title: "Technical Review",
+          subtitle: "In Progress ⚡",
+          date: "Today by 4:00 PM",
+          details: "Assigned to Rohit Meena • Analyzing rooftop space, inverter capacity & SLD",
+          isCompleted: false,
+          isCurrent: true,
+        },
+        {
+          stepNumber: 3,
+          title: "BOM & Subsidy",
+          subtitle: "Next Step",
+          date: "Expected by 5:30 PM",
+          details: "Itemized Bill of Materials & PM Surya Ghar central subsidy calculation",
+          isCompleted: false,
+          isCurrent: false,
+        },
+        {
+          stepNumber: 4,
+          title: "Proposal Dispatched",
+          subtitle: "Within 24 Hours",
+          date: "01 Nov 2026",
+          details: "Formal quotation document will be shared via portal and WhatsApp",
+          isCompleted: false,
+          isCurrent: false,
+        },
+        {
+          stepNumber: 5,
+          title: "Site Execution",
+          subtitle: "Final Step",
+          date: "Scheduled on Confirmation",
+          details: "Hardware allocation at warehouse and certified field technician site visit",
+          isCompleted: false,
+          isCurrent: false,
+        },
+      ],
     };
 
     setEnquiryHistory([newEnq, ...enquiryHistory]);
+    setExpandedEnquiryId(newEnqId);
     setEnquirySuccess(true);
     setEnquiryMessage("");
     setEnquiryFile(null);
@@ -321,7 +500,7 @@ function CustomerContent() {
     setTimeout(() => setEnquirySuccess(false), 3000);
   };
 
-  // Milestone steps definition
+  // Milestone steps definition for Main Rooftop Plant
   const progressSteps = [
     { num: 1, title: "Inquiry & Roof Pre-Qualification", desc: "Form filled & subsidy verified" },
     { num: 2, title: "Site Survey & Shading Check", desc: "Technician measured tilt & orientation" },
@@ -895,50 +1074,66 @@ function CustomerContent() {
         </div>
       )}
 
-      {/* ───────────────── SECTION 5: ASK FOR ENQUIRY ───────────────── */}
+      {/* ───────────────── SECTION 5: ASK FOR ENQUIRY & FLIPKART-STYLE LIVE PROGRESS TRACKER ───────────────── */}
       {activeTab === "enquiry" && (
-        <div className="space-y-6 max-w-xl mx-auto">
+        <div className="space-y-6 max-w-4xl mx-auto">
+          {/* New Enquiry Form Card */}
           <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 card-floating space-y-4">
             <div className="border-b border-[#E4E7EB] pb-3">
-              <span className="text-[10px] font-bold text-[#734960] uppercase tracking-wider">Client Inquiries &amp; Upgrades</span>
-              <h3 className="text-base font-bold text-[#333333] mt-0.5">Ask for System Upgrade, Subsidy, or Enquiry</h3>
+              <span className="text-[10px] font-bold text-[#734960] uppercase tracking-wider">
+                Client Inquiries &amp; System Upgrades
+              </span>
+              <h3 className="text-base font-bold text-[#333333] mt-0.5">
+                Submit New Solar Enquiry / Upgrade Request
+              </h3>
               <p className="text-xs text-[#666666]">
                 Submit questions regarding battery expansion, additional panels, subsidy disbursement, or upload roof photos for an upgrade proposal.
               </p>
             </div>
 
-            <form onSubmit={handleSendEnquiry} className="space-y-3">
-              <div>
-                <label className="text-[11px] font-bold text-[#666666] uppercase">Enquiry Subject</label>
-                <select
-                  value={enquirySubject}
-                  onChange={(e) => setEnquirySubject(e.target.value)}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold"
-                >
-                  <option value="Add Battery Backup (Off-Grid Upgrade)">Add Battery Backup (Off-Grid Upgrade)</option>
-                  <option value="Capacity Expansion (e.g. 3kW to 5kW)">Expand Capacity (Add more solar panels)</option>
-                  <option value="Rooftop Panel Deep Cleaning Service">Book Panel Deep Cleaning Service</option>
-                  <option value="Annual Maintenance Contract (AMC)">Annual Maintenance Contract (AMC)</option>
-                  <option value="Subsidy Follow-up Question">Government Subsidy Disbursement Question</option>
-                  <option value="Net-Meter Tariff Query">Discom Net-Meter Billing Inquiry</option>
-                </select>
+            <form onSubmit={handleSendEnquiry} className="space-y-3.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-bold text-[#666666] uppercase">Enquiry Subject</label>
+                  <select
+                    value={enquirySubject}
+                    onChange={(e) => setEnquirySubject(e.target.value)}
+                    className="w-full mt-1 px-3 py-2 border border-[#E4E7EB] rounded-xl text-xs font-semibold bg-white"
+                  >
+                    <option value="Add Battery Backup (Off-Grid Upgrade)">Add Battery Backup (Off-Grid Upgrade)</option>
+                    <option value="Capacity Expansion (e.g. 3kW to 5kW)">Expand Capacity (Add more solar panels)</option>
+                    <option value="Rooftop Panel Deep Cleaning Service">Book Panel Deep Cleaning Service</option>
+                    <option value="Annual Maintenance Contract (AMC)">Annual Maintenance Contract (AMC)</option>
+                    <option value="Subsidy Follow-up Question">Government Subsidy Disbursement Question</option>
+                    <option value="Net-Meter Tariff Query">Discom Net-Meter Billing Inquiry</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold text-[#666666] uppercase">Homeowner / Account</label>
+                  <input
+                    type="text"
+                    disabled
+                    value={`${current.name} • ${current.system}`}
+                    className="w-full mt-1 px-3 py-2 border border-[#E4E7EB] rounded-xl text-xs font-semibold bg-[#F5F7FA] text-[#666666]"
+                  />
+                </div>
               </div>
 
               <div>
                 <label className="text-[11px] font-bold text-[#666666] uppercase">Your Message / Requirements</label>
                 <textarea
-                  rows={3}
-                  placeholder="Let us know what you would like to know or upgrade..."
+                  rows={2}
+                  placeholder="Tell us what you need (e.g. want 5kWh lithium battery storage for nighttime backup)..."
                   value={enquiryMessage}
                   onChange={(e) => setEnquiryMessage(e.target.value)}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                  className="w-full mt-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
                   required
                 />
               </div>
 
               <div>
                 <label className="text-[11px] font-bold text-[#666666] uppercase block">
-                  Upload Photo or File with Enquiry (e.g. Bill, Rooftop, Meter)
+                  Upload Photo or File with Enquiry (e.g. Electricity Bill, Rooftop, Meter)
                 </label>
                 <input
                   ref={enquiryFileRef}
@@ -952,7 +1147,7 @@ function CustomerContent() {
                   <button
                     type="button"
                     onClick={() => enquiryFileRef.current?.click()}
-                    className="mt-1 w-full border border-dashed border-[#E4E7EB] hover:border-[#734960] rounded-xl py-3 px-4 text-xs font-semibold text-[#734960] bg-[#F5F7FA] hover:bg-[#FAF4F7] transition flex items-center justify-center gap-2 cursor-pointer card-floating"
+                    className="mt-1 w-full border border-dashed border-[#E4E7EB] hover:border-[#734960] rounded-xl py-2.5 px-4 text-xs font-semibold text-[#734960] bg-[#F5F7FA] hover:bg-[#FAF4F7] transition flex items-center justify-center gap-2 cursor-pointer card-floating"
                   >
                     <span>📎</span> Click to upload file / photo for this inquiry
                   </button>
@@ -988,49 +1183,250 @@ function CustomerContent() {
 
               {enquirySuccess && (
                 <div className="p-3 bg-[#EBF5EC] text-[#5B965E] text-xs font-bold rounded-xl border border-[#78B77B] text-center animate-in fade-in">
-                  ✓ Enquiry &amp; attached files submitted successfully! Our solar engineering team will review it within 2 hours.
+                  ✓ Enquiry submitted! Live Flipkart-style progress tracker generated below.
                 </div>
               )}
 
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs card-floating transition cursor-pointer"
+                  className="px-5 py-2.5 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs card-floating transition cursor-pointer flex items-center gap-2"
                 >
-                  Send Enquiry ➔
+                  <span>Submit Enquiry &amp; Track</span>
+                  <span>➔</span>
                 </button>
               </div>
             </form>
           </div>
 
-          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 card-floating space-y-3">
-            <h4 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
-              My Submitted Inquiries &amp; Quotes ({enquiryHistory.length})
-            </h4>
+          {/* ───────────────── FLIPKART-LIKE PROGRESS TRACKER SECTION ───────────────── */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-extrabold text-[#333333] uppercase tracking-wider flex items-center gap-2">
+                  <span>📦</span> Track My Enquiries &amp; Work Progress
+                </h4>
+                <p className="text-xs text-[#666666]">
+                  Real-time stepped milestone timeline showing exactly how far your solar upgrade has progressed
+                </p>
+              </div>
+              <span className="text-xs font-bold px-2.5 py-1 bg-[#EBF5EC] text-[#5B965E] rounded-full border border-[#78B77B]/40">
+                {enquiryHistory.length} Active Tracks
+              </span>
+            </div>
 
-            <div className="space-y-2.5">
-              {enquiryHistory.map((enq) => (
-                <div key={enq.id} className="p-3.5 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] card-floating text-xs space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-[#333333]">{enq.subject}</span>
-                    <span className="text-[10px] font-mono font-bold bg-white px-2 py-0.5 rounded border border-[#E4E7EB] text-[#734960]">
-                      {enq.id}
+            {enquiryHistory.map((enq) => {
+              const isExpanded = expandedEnquiryId === enq.id;
+              const currentStepObj = enq.steps.find((s) => s.isCurrent) || enq.steps[enq.steps.length - 1];
+
+              return (
+                <div
+                  key={enq.id}
+                  className="bg-white rounded-2xl border border-[#E4E7EB] card-floating overflow-hidden transition-all"
+                >
+                  {/* Top Header Card */}
+                  <div className="p-4 sm:p-5 border-b border-[#E4E7EB] bg-[#FAF4F7]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-mono font-bold text-xs bg-white text-[#734960] px-2.5 py-0.5 rounded-md border border-[#8E687F]/30 shadow-2xs">
+                          {enq.id}
+                        </span>
+                        <h4 className="text-sm font-extrabold text-[#333333]">
+                          {enq.subject}
+                        </h4>
+                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#FEF6EB] text-[#DA9B40] border border-[#F4B860]/40 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#DA9B40] animate-ping" />
+                          {enq.status}
+                        </span>
+                      </div>
+                      <p className="text-xs text-[#666666] mt-1.5 line-clamp-2">
+                        &ldquo;{enq.message}&rdquo;
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2 sm:text-right flex-shrink-0">
+                      <button
+                        onClick={() => setExpandedEnquiryId(isExpanded ? "" : enq.id)}
+                        className="px-3 py-1.5 bg-white hover:bg-[#FAF4F7] text-[#734960] text-xs font-bold rounded-xl border border-[#8E687F]/30 transition card-floating cursor-pointer flex items-center gap-1.5"
+                      >
+                        <span>{isExpanded ? "Hide Details" : "Track Details"}</span>
+                        <span className="text-[10px]">{isExpanded ? "▲" : "▼"}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Flipkart-Style Progress Notice Banner */}
+                  <div className="bg-[#EBF5EC] border-b border-[#78B77B]/30 px-4 py-2.5 text-xs text-[#333333] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">🚚</span>
+                      <span>
+                        <strong>Current Status:</strong> {currentStepObj?.details}
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-bold text-[#5B965E] bg-white px-2.5 py-0.5 rounded-full border border-[#78B77B]/40 flex-shrink-0">
+                      ⏱️ {enq.estimatedResolution}
                     </span>
                   </div>
-                  <p className="text-[11px] text-[#666666]">{enq.message}</p>
-                  {enq.attachedPhoto && (
-                    <div className="pt-1 flex items-center gap-2">
-                      <img src={enq.attachedPhoto} alt="Attachment" className="w-8 h-8 rounded object-cover border border-[#E4E7EB]" />
-                      <span className="text-[10px] text-[#734960] font-semibold">{enq.fileName || "Attached Photo"}</span>
+
+                  {/* ── THE FLIPKART STEPPED PROGRESS LINE ── */}
+                  <div className="p-4 sm:p-6 bg-white overflow-x-auto">
+                    <div className="min-w-[620px] py-4">
+                      {/* Step Icons & Connecting Line Bar */}
+                      <div className="relative flex items-center justify-between">
+                        {/* Continuous Background Track Line */}
+                        <div className="absolute top-4 left-4 right-4 h-1 bg-[#E4E7EB] -translate-y-1/2 z-0" />
+
+                        {/* Completed Active Track Line (calculated by currentStep progress) */}
+                        <div
+                          className="absolute top-4 left-4 h-1 bg-[#78B77B] -translate-y-1/2 z-0 transition-all duration-700"
+                          style={{
+                            width: `${Math.min(100, Math.max(0, ((enq.currentStep - 1) / (enq.steps.length - 1)) * 100))}%`,
+                          }}
+                        />
+
+                        {/* Step Nodes */}
+                        {enq.steps.map((st) => {
+                          return (
+                            <div key={st.stepNumber} className="relative z-10 flex flex-col items-center">
+                              {/* Step Node Circle */}
+                              <div
+                                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-sm ${
+                                  st.isCompleted
+                                    ? "bg-[#78B77B] text-white ring-4 ring-[#EBF5EC]"
+                                    : st.isCurrent
+                                    ? "bg-[#DA9B40] text-white ring-4 ring-[#FEF6EB] animate-pulse"
+                                    : "bg-white border-2 border-[#D8DCE3] text-[#999999]"
+                                }`}
+                              >
+                                {st.isCompleted ? "✓" : st.isCurrent ? "⚡" : st.stepNumber}
+                              </div>
+
+                              {/* Step Details Beneath Node */}
+                              <div className="text-center mt-2.5 max-w-[110px]">
+                                <p
+                                  className={`text-[11px] font-extrabold leading-tight ${
+                                    st.isCompleted
+                                      ? "text-[#333333]"
+                                      : st.isCurrent
+                                      ? "text-[#DA9B40]"
+                                      : "text-gray-400"
+                                  }`}
+                                >
+                                  {st.title}
+                                </p>
+                                <p className="text-[10px] text-[#666666] font-medium mt-0.5">
+                                  {st.subtitle}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Expandable Activity Log & Consultant Contact Details (Flipkart 'See all updates') */}
+                  {isExpanded && (
+                    <div className="p-4 sm:p-5 bg-[#F5F7FA] border-t border-[#E4E7EB] space-y-4 animate-in fade-in">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-[#E4E7EB] card-floating">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-[#FAF4F7] text-[#734960] flex items-center justify-center font-bold text-sm">
+                            👷
+                          </div>
+                          <div>
+                            <span className="text-[10px] font-bold text-[#666666] uppercase">
+                              Dedicated Solar Consultant
+                            </span>
+                            <h5 className="text-xs font-bold text-[#333333]">{enq.consultantName}</h5>
+                            <p className="text-[11px] text-[#78B77B] font-semibold">{enq.consultantPhone}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={`tel:${enq.consultantPhone}`}
+                            className="px-3 py-1.5 bg-[#78B77B] hover:bg-[#5B965E] text-white text-xs font-bold rounded-xl card-floating transition flex items-center gap-1.5"
+                          >
+                            <span>📞</span> Call Engineer
+                          </a>
+                          <button
+                            onClick={() => switchTab("complaint")}
+                            className="px-3 py-1.5 bg-white hover:bg-[#FAF4F7] text-[#734960] border border-[#8E687F]/30 text-xs font-bold rounded-xl card-floating transition cursor-pointer"
+                          >
+                            💬 Send Message
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Timeline Detail Log */}
+                      <div className="space-y-2">
+                        <h5 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
+                          Full Activity Milestone Log
+                        </h5>
+                        <div className="space-y-2">
+                          {enq.steps.map((st) => (
+                            <div
+                              key={st.stepNumber}
+                              className={`p-3 rounded-xl border text-xs flex items-start justify-between gap-3 ${
+                                st.isCompleted
+                                  ? "bg-white border-[#E4E7EB]"
+                                  : st.isCurrent
+                                  ? "bg-[#FEF6EB] border-[#F4B860]/40 font-medium"
+                                  : "bg-[#F5F7FA] border-[#E4E7EB]/60 opacity-60"
+                              }`}
+                            >
+                              <div className="flex items-start gap-2.5">
+                                <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5 ${
+                                  st.isCompleted
+                                    ? "bg-[#78B77B] text-white"
+                                    : st.isCurrent
+                                    ? "bg-[#DA9B40] text-white"
+                                    : "bg-gray-200 text-gray-500"
+                                }`}>
+                                  {st.isCompleted ? "✓" : st.stepNumber}
+                                </span>
+                                <div>
+                                  <p className="font-bold text-[#333333]">{st.title}</p>
+                                  <p className="text-[11px] text-[#666666] mt-0.5">{st.details}</p>
+                                </div>
+                              </div>
+                              <span className="text-[10px] font-mono font-semibold text-[#8E687F] flex-shrink-0">
+                                {st.date}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Attached File/Photo Preview if any */}
+                      {enq.attachedPhoto && (
+                        <div className="p-3 bg-white rounded-xl border border-[#E4E7EB] flex items-center gap-3">
+                          <img
+                            src={enq.attachedPhoto}
+                            alt="Attachment"
+                            className="w-12 h-12 object-cover rounded-lg border border-[#E4E7EB]"
+                          />
+                          <div>
+                            <span className="text-[10px] font-bold text-[#734960] uppercase">
+                              Attached Document / Roof Image
+                            </span>
+                            <p className="text-xs font-bold text-[#333333]">{enq.fileName || "Uploaded Site File"}</p>
+                            <a
+                              href={enq.attachedPhoto}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-[11px] text-[#734960] font-bold hover:underline"
+                            >
+                              View Full Size ↗
+                            </a>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
-                  <div className="flex items-center justify-between pt-1 border-t border-[#E4E7EB]/60 text-[10px]">
-                    <span className="text-[#666666]">Submitted: {enq.date}</span>
-                    <span className="font-bold text-[#DA9B40]">{enq.status}</span>
-                  </div>
                 </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
         </div>
       )}

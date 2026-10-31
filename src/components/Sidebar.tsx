@@ -69,20 +69,16 @@ function SidebarInner() {
           )}
         </Link>
 
-        {/* Close/Open Toggle Button */}
+        {/* Clean, Single Navbar Toggle Button */}
         <button
           onClick={toggleNav}
-          className={`p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center ${
+          className={`p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center cursor-pointer ${
             !isNavOpen ? "mx-auto mt-1" : ""
           }`}
-          title={isNavOpen ? "Collapse Navbar (Close)" : "Expand Navbar (Open)"}
-          aria-label={isNavOpen ? "Close Navbar" : "Open Navbar"}
+          title={isNavOpen ? "Collapse Navbar" : "Expand Navbar"}
+          aria-label={isNavOpen ? "Collapse Navbar" : "Expand Navbar"}
         >
-          {isNavOpen ? (
-            <span className="text-xs font-bold">◀</span>
-          ) : (
-            <span className="text-xs font-bold">▶</span>
-          )}
+          <span className="text-xs font-bold leading-none">{isNavOpen ? "◀" : "▶"}</span>
         </button>
       </div>
 
@@ -159,10 +155,10 @@ function SidebarInner() {
                 }`}
                 onClick={() => setCustomerSubOpen(!customerSubOpen)}
               >
-                <Link href="/customer" className="flex items-center gap-2.5 flex-1 min-w-0">
+                <div className="flex items-center gap-2.5 flex-1 min-w-0">
                   <span className="text-base flex-shrink-0">☀️</span>
                   {isNavOpen && <span className="truncate">My Solar Portal</span>}
-                </Link>
+                </div>
                 {isNavOpen && (
                   <span className="text-[10px] text-white/70">{customerSubOpen ? "▲" : "▼"}</span>
                 )}
@@ -206,12 +202,7 @@ function SidebarInner() {
         )}
 
         {/* ======================================================== */}
-        {/* ROLE: ADMIN (Exact format requested by user)              */}
-        {/* 1. dashboard {TECHNICIAN PORTAL AND CUSTOMER PORTAL}    */}
-        {/* 2. lead and CRM {QUOTATIONS, ORDERS, INVENTARY, WARRANTY}*/}
-        {/* 3. SERVICE DESK                                         */}
-        {/* 4. SUBSIDY TRACKER                                      */}
-        {/* 5. SETTINGS                                             */}
+        {/* ROLE: ADMIN                                              */}
         {/* ======================================================== */}
         {role !== "technician" && role !== "customer" && (
           <>
@@ -230,43 +221,23 @@ function SidebarInner() {
                     setDashboardOpen(!dashboardOpen);
                   }
                 }}
-                title={!isNavOpen ? "Dashboard (Click for Portals)" : undefined}
+                title={!isNavOpen ? "Dashboard" : undefined}
               >
-                <Link
-                  href="/"
-                  onClick={(e) => {
-                    if (isNavOpen) {
-                      e.stopPropagation();
-                      setDashboardOpen(true);
-                    }
-                  }}
-                  className="flex items-center gap-2.5 flex-1 min-w-0"
-                >
+                <div className="flex items-center gap-2.5 flex-1 min-w-0">
                   <span className="text-base flex-shrink-0">📊</span>
                   {isNavOpen && <span className="truncate">Dashboard</span>}
-                </Link>
+                </div>
 
                 {isNavOpen && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setDashboardOpen(!dashboardOpen);
-                    }}
-                    className="p-1 text-white/70 hover:text-white focus:outline-none"
-                    aria-label="Toggle Dashboard Dropdown"
-                  >
-                    <span className="text-[10px] block">
-                      {dashboardOpen ? "▲" : "▼"}
-                    </span>
-                  </button>
+                  <span className="text-[10px] text-white/70 block">
+                    {dashboardOpen ? "▲" : "▼"}
+                  </span>
                 )}
               </div>
 
-              {/* Expanded Dropdown Content (when navbar open) */}
+              {/* Expanded Dropdown Content */}
               {isNavOpen && dashboardOpen && (
                 <div className="ml-3 pl-2 mt-1 space-y-1 border-l-2 border-[#F4B860]/40">
-                  {/* Dashboard Main Link */}
                   <Link
                     href="/"
                     className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition ${
@@ -279,7 +250,6 @@ function SidebarInner() {
                     <span className="truncate">Overview</span>
                   </Link>
 
-                  {/* Technician Portal Sub-item */}
                   <Link
                     href="/technician"
                     className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition ${
@@ -292,7 +262,6 @@ function SidebarInner() {
                     <span className="truncate">Technician Portal</span>
                   </Link>
 
-                  {/* Customer Portal Sub-item with its nested dropdown list */}
                   <div className="space-y-0.5 pt-0.5">
                     <div
                       className={`flex items-center justify-between px-2 py-1.5 rounded-lg text-[11px] transition cursor-pointer ${
@@ -302,23 +271,15 @@ function SidebarInner() {
                       }`}
                       onClick={() => setCustomerSubOpen(!customerSubOpen)}
                     >
-                      <Link
-                        href="/customer"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setCustomerSubOpen(true);
-                        }}
-                        className="flex items-center gap-2 flex-1 min-w-0"
-                      >
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
                         <span className="text-xs">👤</span>
                         <span className="truncate">Customer Portal</span>
-                      </Link>
+                      </div>
                       <span className="text-[9px] text-white/60">
                         {customerSubOpen ? "▲" : "▼"}
                       </span>
                     </div>
 
-                    {/* Customer Portal Sub-items List */}
                     {customerSubOpen && (
                       <div className="ml-3 pl-2 space-y-0.5 border-l border-white/20">
                         {customerPortalSubItems.map((sub) => {
@@ -396,7 +357,7 @@ function SidebarInner() {
               )}
             </div>
 
-            {/* ── 2. LEAD AND CRM DROPDOWN { QUOTATIONS, ORDERS, INVENTORY, WARRANTY } ── */}
+            {/* ── 2. LEAD AND CRM DROPDOWN ── */}
             <div className="relative group">
               <div
                 className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
@@ -411,38 +372,19 @@ function SidebarInner() {
                     setCrmOpen(!crmOpen);
                   }
                 }}
-                title={!isNavOpen ? "Lead & CRM (Quotations, Orders, Inventory, Warranty)" : undefined}
+                title={!isNavOpen ? "Lead & CRM" : undefined}
               >
-                <Link
-                  href="/leads"
-                  onClick={(e) => {
-                    if (isNavOpen) {
-                      e.stopPropagation();
-                      setCrmOpen(true);
-                    }
-                  }}
-                  className="flex items-center gap-2.5 flex-1 min-w-0"
-                >
+                <div className="flex items-center gap-2.5 flex-1 min-w-0">
                   <span className="text-base flex-shrink-0">🎯</span>
                   {isNavOpen && <span className="truncate">Lead &amp; CRM</span>}
-                </Link>
+                </div>
 
                 {isNavOpen && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCrmOpen(!crmOpen);
-                    }}
-                    className="p-1 text-white/70 hover:text-white focus:outline-none"
-                    aria-label="Toggle CRM Dropdown"
-                  >
-                    <span className="text-[10px] block">{crmOpen ? "▲" : "▼"}</span>
-                  </button>
+                  <span className="text-[10px] text-white/70 block">{crmOpen ? "▲" : "▼"}</span>
                 )}
               </div>
 
-              {/* Expanded Dropdown Content (when navbar open) */}
+              {/* Expanded Dropdown Content */}
               {isNavOpen && crmOpen && (
                 <div className="ml-3 pl-2 mt-1 space-y-1 border-l-2 border-[#78B77B]/50">
                   {crmSubItems.map((sub) => {
@@ -568,26 +510,17 @@ function SidebarInner() {
         )}
       </nav>
 
-      {/* Bottom Action Bar with Logout / Switch */}
-      <div className="p-2 border-t border-[#7A536C]/70 bg-[#835D74]/50 space-y-1">
+      {/* Bottom Action Bar: Only clean Logout / Switch */}
+      <div className="p-2 border-t border-[#7A536C]/70 bg-[#835D74]/50">
         <Link
           href="/login"
           onClick={logout}
-          className="w-full flex items-center justify-center gap-2 py-1.5 px-2 rounded-xl text-xs font-medium text-white/90 hover:bg-white/10 transition-colors"
+          className="w-full flex items-center justify-center gap-2 py-2 px-2 rounded-xl text-xs font-medium text-white/90 hover:bg-white/10 transition-colors"
           title="Sign out or switch portal"
         >
           <span className="text-xs">🚪</span>
           {isNavOpen && <span className="text-[11px] font-semibold">Sign Out / Switch</span>}
         </Link>
-
-        <button
-          onClick={toggleNav}
-          className="w-full flex items-center justify-center gap-2 py-1 px-2 rounded-xl text-[10px] font-medium text-white/70 hover:bg-white/10 transition-colors"
-          title={isNavOpen ? "Close navigation bar" : "Open navigation bar"}
-        >
-          <span>{isNavOpen ? "◀" : "▶"}</span>
-          {isNavOpen && <span>{isNavOpen ? "Collapse Menu" : "Expand"}</span>}
-        </button>
       </div>
     </aside>
   );
