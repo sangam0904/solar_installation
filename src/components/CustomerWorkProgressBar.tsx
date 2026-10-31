@@ -216,7 +216,7 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
               <span className="text-[11px] font-mono text-white/90 font-bold">
                 {orderId || `ORD-${customer.key.toUpperCase()}-2026`}
               </span>
-              <span className="text-[11px] text-white/80 font-medium">
+              <span className="text-[11px] text-white !text-white font-medium" style={{ color: "#ffffff" }}>
                 • {customer.system}
               </span>
             </div>

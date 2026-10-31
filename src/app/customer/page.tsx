@@ -581,12 +581,12 @@ function CustomerContent() {
         </div>
 
         {/* Secured Plant Verification Badge */}
-        <div className="flex items-center gap-2.5 bg-white px-3.5 py-2 rounded-xl border border-[#DEDCDC] shadow-2xs">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="text-[11px] font-bold text-[#191D23]">
+        <div className="flex items-center gap-2.5 bg-[#191D23] px-3.5 py-2 rounded-xl border border-[#57707A] shadow-xs">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span className="text-[11px] font-bold text-white !text-white" style={{ color: "#ffffff" }}>
             {current.system}
           </span>
-          <span className="text-[10px] text-[#7B919C] border-l border-[#DEDCDC] pl-2 font-mono">
+          <span className="text-[10px] text-[#DEDCDC] border-l border-[#57707A] pl-2 font-mono">
             Plant ID: {current.inverterSerial}
           </span>
         </div>
@@ -598,7 +598,9 @@ function CustomerContent() {
           <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#191D23] text-white border border-white/20">
             Plant ID: {current.inverterSerial}
           </span>
-          <h2 className="text-lg sm:text-xl font-extrabold text-white">{current.system}</h2>
+          <h2 className="text-lg sm:text-xl font-extrabold text-white !text-white tracking-tight" style={{ color: "#ffffff" }}>
+            {current.system}
+          </h2>
           <p className="text-xs text-white/85">{current.address} • Commissioned: {current.installedDate}</p>
         </div>
 
