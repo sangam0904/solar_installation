@@ -18,6 +18,7 @@ import {
   ClockIcon,
   DashboardIcon,
   ChevronLeftIcon,
+  MessageSquareIcon,
 } from "@/components/Icons";
 
 export interface AppNotification {
@@ -166,11 +167,11 @@ export default function Header() {
         )}
         {role === "customer" && (
           <Link
-            href="/customer?tab=complaint"
-            className="px-3 py-1.5 bg-[#6D5284] hover:bg-[#4A355E] text-white text-xs font-bold rounded-xl card-floating transition-colors inline-flex items-center gap-1.5 shadow-xs"
+            href="/customer?tab=enquiry"
+            className="px-3 py-1.5 bg-[#191D23] hover:bg-[#57707A] text-white text-xs font-bold rounded-xl transition-colors inline-flex items-center gap-1.5 shadow-xs"
           >
-            <AlertCircleIcon className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Report</span> Issue
+            <MessageSquareIcon className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Ask</span> Support
           </Link>
         )}
 

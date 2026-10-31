@@ -17,12 +17,14 @@ import {
   FileTextIcon,
   ClockIcon,
   MapPinIcon,
+  BotIcon,
 } from "@/components/Icons";
 
 import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import CustomerWorkProgressBar from "@/components/CustomerWorkProgressBar";
+import CustomerSupportChatbot from "@/components/CustomerSupportChatbot";
 import { useAuth } from "@/context/AuthContext";
 import { useSearchParams } from "next/navigation";
 import { serviceTickets as defaultInitialTickets } from "@/data/mockData";
@@ -61,30 +63,24 @@ interface SubmittedEnquiry {
   steps: EnquiryProgressStep[];
 }
 
-interface CustomerComplaintTicket {
-  id: string;
-  issue: string;
-  date: string;
-  status: string;
-  cost: string;
-  photo?: string;
-  photoName?: string;
-}
-
 function CustomerContent() {
   const { user, role } = useAuth();
   const [mounted, setMounted] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
   const searchParams = useSearchParams();
 
-  // Tab state: 'passbook' | 'progress' | 'photos' | 'complaint' | 'enquiry' | 'warranty'
-  const initialTab = (searchParams.get("tab") as "passbook" | "progress" | "photos" | "complaint" | "enquiry" | "warranty") || "passbook";
-  const [activeTab, setActiveTab] = useState<"passbook" | "progress" | "photos" | "complaint" | "enquiry" | "warranty">(initialTab);
+  // Tab state: 'passbook' | 'progress' | 'photos' | 'enquiry' | 'warranty'
+  type CustomerTab = "passbook" | "progress" | "photos" | "enquiry" | "warranty";
+  const initialTab = (searchParams.get("tab") as CustomerTab) || "passbook";
+  const [activeTab, setActiveTab] = useState<CustomerTab>(
+    initialTab === ("complaint" as any) ? "passbook" : initialTab
+  );
 
-  const switchTab = (tab: "passbook" | "progress" | "photos" | "complaint" | "enquiry" | "warranty") => {
+  const switchTab = (tab: CustomerTab) => {
     setActiveTab(tab);
     if (typeof window !== "undefined") {
       const url = new URL(window.location.href);
@@ -94,9 +90,14 @@ function CustomerContent() {
   };
 
   useEffect(() => {
-    const tabParam = searchParams.get("tab") as "passbook" | "progress" | "photos" | "complaint" | "enquiry" | "warranty" | null;
+    const tabParam = searchParams.get("tab") as CustomerTab | "complaint" | null;
     if (tabParam) {
-      setActiveTab(tabParam);
+      if (tabParam === "complaint") {
+        setActiveTab("passbook");
+        setIsChatOpen(true);
+      } else {
+        setActiveTab(tabParam);
+      }
     }
   }, [searchParams]);
 
@@ -153,23 +154,6 @@ function CustomerContent() {
   const [filePreview, setFilePreview] = useState<string>("");
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const photoInputRef = useRef<HTMLInputElement | null>(null);
-
-  // Complaints / Service Ticket State
-  const [myTickets, setMyTickets] = useState<CustomerComplaintTicket[]>([
-    {
-      id: "TKT-001",
-      issue: "Inverter red alarm light blinking (Code E-04)",
-      date: "28 Oct 2026",
-      status: "In Progress",
-      cost: "Free (Warranty Covered)",
-    },
-  ]);
-  const [complaintType, setComplaintType] = useState("Inverter Error (E-01/E-04)");
-  const [complaintDesc, setComplaintDesc] = useState("");
-  const [complaintPhoto, setComplaintPhoto] = useState<string>("");
-  const [complaintPhotoName, setComplaintPhotoName] = useState<string>("");
-  const [complaintSuccess, setComplaintSuccess] = useState(false);
-  const complaintFileRef = useRef<HTMLInputElement | null>(null);
 
   // Enquiry / Upgrade Requests History
   const [enquirySubject, setEnquirySubject] = useState("Add Battery Backup (Off-Grid Upgrade)");
@@ -338,59 +322,6 @@ function CustomerContent() {
 
     setTimeout(() => {
       setUploadSuccess(false);
-    }, 4000);
-  };
-
-  const handleComplaintFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setComplaintPhotoName(file.name);
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      setComplaintPhoto(ev.target?.result as string);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleFileComplaint = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!complaintDesc) return;
-
-    const newTicket: CustomerComplaintTicket = {
-      id: `TKT-${Math.floor(100 + Math.random() * 900)}`,
-      issue: `${complaintType}: ${complaintDesc}`,
-      date: "Today",
-      status: "Open (Pending Admin Dispatch)",
-      cost: "₹0 (5-Year Inverter Warranty)",
-      photo: complaintPhoto,
-      photoName: complaintPhotoName,
-    };
-
-    setMyTickets([newTicket, ...myTickets]);
-    setComplaintSuccess(true);
-
-    try {
-      const savedNotifs = JSON.parse(localStorage.getItem("sunpower_notifications") || "[]");
-      const adminNotif = {
-        id: `notif-${Date.now()}`,
-        recipientRole: "admin" as const,
-        text: `Customer Complaint Filed: ${complaintType} from ${current.name} (${newTicket.id})`,
-        time: "Just now",
-        type: "complaint" as const,
-      };
-      localStorage.setItem("sunpower_notifications", JSON.stringify([adminNotif, ...savedNotifs]));
-      window.dispatchEvent(new Event("storage"));
-    } catch {
-      // Ignore
-    }
-
-    setComplaintDesc("");
-    setComplaintPhoto("");
-    setComplaintPhotoName("");
-    if (complaintFileRef.current) complaintFileRef.current.value = "";
-
-    setTimeout(() => {
-      setComplaintSuccess(false);
     }, 4000);
   };
 
@@ -595,7 +526,6 @@ function CustomerContent() {
     { id: "passbook", label: "Solar Yield & Passbook", badge: "Live Yield" },
     { id: "progress", label: "Installation Progress Report", badge: `Step ${current.progressStep}/6` },
     { id: "photos", label: `Upload Roof Photos (${uploadedPhotos.length})`, badge: `${uploadedPhotos.length} Photos` },
-    { id: "complaint", label: "File Service Complaint", badge: myTickets.length > 0 ? `${myTickets.length} Active` : "Free Warranty" },
     { id: "enquiry", label: `Ask for Enquiry / Upgrade (${enquiryHistory.length})`, badge: `${enquiryHistory.length} Inquiries` },
     { id: "warranty", label: "Digital Warranty Cards", badge: "2 Active" },
   ];
@@ -608,8 +538,6 @@ function CustomerContent() {
         return <ChartBarIcon className={className} />;
       case "photos":
         return <CameraIcon className={className} />;
-      case "complaint":
-        return <AlertCircleIcon className={className} />;
       case "enquiry":
         return <MessageSquareIcon className={className} />;
       case "warranty":
@@ -698,10 +626,11 @@ function CustomerContent() {
 
         <div className="flex items-center gap-2">
           <button
-            onClick={() => switchTab("complaint")}
-            className="px-3.5 py-2 bg-white hover:bg-gray-100 text-[#191D23] text-xs font-bold rounded-xl transition cursor-pointer shadow-xs"
+            onClick={() => setIsChatOpen(true)}
+            className="px-3.5 py-2 bg-white hover:bg-gray-100 text-[#191D23] text-xs font-bold rounded-xl transition cursor-pointer shadow-xs flex items-center gap-1.5"
           >
-            Report Breakdown
+            <BotIcon className="w-3.5 h-3.5 text-[#191D23]" />
+            <span>Support Chat</span>
           </button>
           <button
             onClick={() => switchTab("progress")}
@@ -751,7 +680,6 @@ function CustomerContent() {
                 <option value="passbook">Solar Yield &amp; Passbook</option>
                 <option value="progress">Installation Progress Report</option>
                 <option value="photos">Upload Roof Photos ({uploadedPhotos.length})</option>
-                <option value="complaint">File Service Complaint</option>
                 <option value="enquiry">Ask for Enquiry / Upgrade ({enquiryHistory.length})</option>
                 <option value="warranty">Digital Warranty Cards</option>
               </select>
@@ -833,20 +761,20 @@ function CustomerContent() {
             </div>
 
             <div
-              onClick={() => switchTab("complaint")}
-              className="bg-white p-5 rounded-2xl border border-[#DEDCDC] shadow-xs hover:border-red-600 cursor-pointer transition space-y-2 group"
+              onClick={() => setIsChatOpen(true)}
+              className="bg-white p-5 rounded-2xl border border-[#DEDCDC] shadow-xs hover:border-[#57707A] cursor-pointer transition space-y-2 group"
             >
               <div className="flex items-center justify-between">
-                <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center text-red-600">
-                  <AlertCircleIcon className="w-5 h-5 text-red-600" />
+                <div className="w-9 h-9 rounded-xl bg-[#F7F8F9] flex items-center justify-center text-[#57707A] group-hover:bg-[#191D23] group-hover:text-white transition-colors">
+                  <BotIcon className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-bold text-red-600 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                  File Ticket &rarr;
+                <span className="text-xs font-bold text-[#57707A] flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                  Ask AI &rarr;
                 </span>
               </div>
-              <h4 className="text-sm font-bold text-[#191D23]">Breakdown &amp; Service Call</h4>
+              <h4 className="text-sm font-bold text-[#191D23]">Customer Support &amp; Help</h4>
               <p className="text-xs text-[#57707A] leading-relaxed">
-                Inverter fault code or zero power? Log instant breakdown with ₹0 auto warranty guarantee.
+                Instant 24/7 AI assistance for system yields, cleaning tips, net-metering &amp; subsidy questions.
               </p>
             </div>
           </div>
@@ -1261,146 +1189,7 @@ function CustomerContent() {
         </div>
       )}
 
-      {/* ───────────────── SECTION 4: FILE COMPLAINT ───────────────── */}
-      {activeTab === "complaint" && (
-        <div className="space-y-6 max-w-2xl mx-auto">
-          <div className="bg-white rounded-2xl border border-[#DEDCDC] p-6 shadow-xs space-y-4">
-            <div className="border-b border-[#DEDCDC] pb-3">
-              <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider">Helpdesk Dispatch</span>
-              <h3 className="text-base font-bold text-[#191D23] mt-0.5">Report Plant Issue / Breakdown to Admin</h3>
-              <p className="text-xs text-[#57707A]">
-                Your complaint and uploaded photos will be dispatched directly to the Admin Service Desk.
-              </p>
-            </div>
-
-            <div className="bg-[#F7F8F9] border border-[#DEDCDC] rounded-xl p-3 text-xs text-[#191D23] font-semibold flex items-center justify-between">
-              <span className="flex items-center gap-1.5">
-                <ShieldCheckIcon className="w-4 h-4 text-[#57707A]" />
-                <span><strong>Under Active 5-Year Warranty:</strong> Diagnostic visit and replacement parts are <strong>₹0 (100% Free)</strong>.</span>
-              </span>
-              <span className="font-extrabold text-[10px] bg-white text-[#191D23] px-2 py-0.5 rounded border border-[#DEDCDC]">
-                FREE REPAIR
-              </span>
-            </div>
-
-            <form onSubmit={handleFileComplaint} className="space-y-3.5">
-              <div>
-                <label className="text-[11px] font-bold text-[#7B919C] uppercase">Issue Symptom / Fault Code</label>
-                <select
-                  value={complaintType}
-                  onChange={(e) => setComplaintType(e.target.value)}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#DEDCDC] rounded-xl text-xs font-semibold bg-white"
-                >
-                  <option value="Inverter Error (E-01/E-04)">Inverter Error Code (E-01 / E-04)</option>
-                  <option value="Zero Power Generation">Zero Power Generation on Grid</option>
-                  <option value="Battery Not Holding Charge">Battery Not Holding Charge (Off-Grid)</option>
-                  <option value="Solar Yield Below Expected">Yield Lower than Expected</option>
-                  <option value="Storm / Hail Physical Damage">Storm / Physical Hail Damage</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="text-[11px] font-bold text-[#7B919C] uppercase">Complaint Description</label>
-                <textarea
-                  rows={3}
-                  placeholder="Describe when the issue started and any error lights visible..."
-                  value={complaintDesc}
-                  onChange={(e) => setComplaintDesc(e.target.value)}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#DEDCDC] rounded-xl text-xs focus:ring-2 focus:ring-[#57707A]/30 focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="text-[11px] font-bold text-[#7B919C] uppercase block">
-                  Attach Breakdown Photo / Inverter Display / Damage Proof
-                </label>
-                <input
-                  ref={complaintFileRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleComplaintFileChange}
-                  className="hidden"
-                />
-                {!complaintPhoto ? (
-                  <button
-                    type="button"
-                    onClick={() => complaintFileRef.current?.click()}
-                    className="mt-1 w-full border border-dashed border-[#C5BAC4] hover:border-[#191D23] rounded-xl py-3 px-4 text-xs font-semibold text-[#57707A] hover:text-[#191D23] bg-[#F7F8F9] transition flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <CameraIcon className="w-4 h-4 text-[#57707A]" /> Attach Inverter Error Photo / Damage Proof
-                  </button>
-                ) : (
-                  <div className="mt-1 p-2 bg-[#F7F8F9] border border-[#DEDCDC] rounded-xl flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2">
-                      <img src={complaintPhoto} alt="Proof" className="w-10 h-10 object-cover rounded-lg border border-[#DEDCDC]" />
-                      <span className="font-semibold text-[#191D23] truncate max-w-xs">{complaintPhotoName}</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setComplaintPhoto("");
-                        setComplaintPhotoName("");
-                        if (complaintFileRef.current) complaintFileRef.current.value = "";
-                      }}
-                      className="text-xs text-red-600 font-bold hover:underline cursor-pointer"
-                    >
-                      &times; Remove
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {complaintSuccess && (
-                <div className="p-3 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-300 text-center animate-in fade-in flex items-center justify-center gap-1.5">
-                  <CheckCircleIcon className="w-4 h-4 text-emerald-700" /> Breakdown complaint &amp; uploaded photo proof filed to Admin! Status: Open on Operations Desk.
-                </div>
-              )}
-
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-[#191D23] hover:bg-[#57707A] text-white font-bold rounded-xl text-xs transition cursor-pointer shadow-xs"
-                >
-                  Submit Breakdown Ticket to Admin (Free)
-                </button>
-              </div>
-            </form>
-          </div>
-
-          {/* Ticket History */}
-          <div className="bg-white rounded-2xl border border-[#DEDCDC] p-5 shadow-xs space-y-3">
-            <h4 className="text-xs font-bold text-[#191D23] uppercase tracking-wider">
-              My Service Ticket History ({myTickets.length})
-            </h4>
-
-            <div className="space-y-2">
-              {myTickets.map((tkt) => (
-                <div key={tkt.id} className="p-3.5 bg-[#F7F8F9] rounded-xl border border-[#DEDCDC] text-xs space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-[#57707A]">{tkt.id}</span>
-                      <span className="font-bold text-[#191D23]">{tkt.issue}</span>
-                    </div>
-                    <span className="px-2.5 py-0.5 bg-white text-[#191D23] font-bold text-[10px] rounded-full border border-[#DEDCDC]">
-                      {tkt.status}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-[#7B919C]">Filed: {tkt.date} • {tkt.cost}</p>
-                  {tkt.photo && (
-                    <div className="flex items-center gap-2 pt-1">
-                      <img src={tkt.photo} alt="Attached Proof" className="w-8 h-8 rounded object-cover border border-[#DEDCDC]" />
-                      <span className="text-[10px] text-[#57707A] font-semibold">{tkt.photoName || "Photo Proof Filed to Admin"}</span>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ───────────────── SECTION 5: ASK FOR ENQUIRY & FLIPKART-STYLE LIVE PROGRESS TRACKER ───────────────── */}
+      {/* ───────────────── SECTION 4: ASK FOR ENQUIRY & FLIPKART-STYLE LIVE PROGRESS TRACKER ───────────────── */}
       {activeTab === "enquiry" && (
         <div className="space-y-6 max-w-4xl mx-auto">
           {/* New Enquiry Form Card */}
@@ -1678,10 +1467,10 @@ function CustomerContent() {
                             <PhoneIcon className="w-3.5 h-3.5" /> Call Engineer
                           </a>
                           <button
-                            onClick={() => switchTab("complaint")}
+                            onClick={() => setIsChatOpen(true)}
                             className="px-3 py-1.5 bg-white hover:bg-[#F7F8F9] text-[#191D23] border border-[#DEDCDC] text-xs font-bold rounded-xl transition cursor-pointer"
                           >
-                            <MessageSquareIcon className="w-3.5 h-3.5 text-[#57707A] inline mr-1" /> Send Message
+                            <MessageSquareIcon className="w-3.5 h-3.5 text-[#57707A] inline mr-1" /> Open Support Chat
                           </button>
                         </div>
                       </div>
@@ -1832,6 +1621,15 @@ function CustomerContent() {
           </div>
         </div>
       )}
+
+      {/* ── FLOATING CUSTOMER SUPPORT CHATBOT (RIGHT BOTTOM CORNER) ── */}
+      <CustomerSupportChatbot
+        customerName={current.name}
+        systemCapacity={current.system}
+        subsidyStatus={current.subsidyStatus}
+        isOpen={isChatOpen}
+        onOpenChange={setIsChatOpen}
+      />
     </PageShell>
   );
 }

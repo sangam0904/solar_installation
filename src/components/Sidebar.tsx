@@ -34,7 +34,6 @@ const customerPortalSubItems = [
   { name: "Solar Yield & Passbook", href: "/customer?tab=passbook", icon: SunIcon, tab: "passbook" },
   { name: "Installation Progress Report", href: "/customer?tab=progress", icon: ChartBarIcon, tab: "progress" },
   { name: "Upload Roof Photos", href: "/customer?tab=photos", icon: CameraIcon, tab: "photos" },
-  { name: "File Service Complaint", href: "/customer?tab=complaint", icon: AlertCircleIcon, tab: "complaint" },
   { name: "Ask for Enquiry / Upgrade", href: "/customer?tab=enquiry", icon: MessageSquareIcon, tab: "enquiry" },
   { name: "Digital Warranty Cards", href: "/customer?tab=warranty", icon: ShieldCheckIcon, tab: "warranty" },
 ];
