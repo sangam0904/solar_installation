@@ -61,8 +61,28 @@ export default function LoginPage() {
     }, 2500);
   };
 
+  const handleBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F5F7FA] text-[#333333] flex flex-col justify-center items-center p-4 sm:p-6">
+      {/* Back Button Option */}
+      <div className="w-full max-w-md mb-3 flex items-center justify-start">
+        <button
+          onClick={handleBack}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-[#FAF4F7] text-[#734960] hover:text-[#5A354A] border border-[#E4E7EB] hover:border-[#734960]/30 rounded-xl text-xs font-bold card-floating transition cursor-pointer group"
+          title="Return to previous screen"
+        >
+          <span className="text-sm font-extrabold transition-transform group-hover:-translate-x-1">←</span>
+          <span>Back</span>
+        </button>
+      </div>
+
       {/* SunPower Logo & Title */}
       <div className="text-center mb-6 space-y-2">
         <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#F4B860] shadow-sm text-2xl">
@@ -137,7 +157,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={handleGoogleSubmit}
-                className="w-full py-2.5 px-4 bg-white hover:bg-[#F5F7FA] text-[#333333] border border-[#E4E7EB] rounded-2xl text-xs font-bold shadow-2xs flex items-center justify-center gap-2 transition"
+                className="w-full py-2.5 px-4 bg-white hover:bg-[#F5F7FA] text-[#333333] border border-[#E4E7EB] rounded-2xl text-xs font-bold shadow-2xs flex items-center justify-center gap-2 transition cursor-pointer"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path
@@ -195,16 +215,16 @@ export default function LoginPage() {
                   type="password"
                   value={adminPassword}
                   onChange={(e) => setAdminPassword(e.target.value)}
-                  className="w-full mt-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs font-mono focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                  className="w-full mt-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
                   required
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full py-2.5 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs shadow-sm transition"
+                className="w-full py-2.5 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs shadow-sm transition cursor-pointer"
               >
-                Log In to Admin Portal ➔
+                Sign In to Admin Portal ➔
               </button>
             </form>
           )}
@@ -216,20 +236,20 @@ export default function LoginPage() {
                 <span className="text-[10px] uppercase font-bold text-[#DA9B40] bg-[#FEF6EB] px-2.5 py-0.5 rounded-full border border-[#F4B860]/40">
                   Field Operations Crew
                 </span>
-                <h3 className="text-base font-bold text-[#333333] pt-1">Technician Sign In</h3>
-                <p className="text-xs text-[#666666]">Access your personalized job queue, surveys, and digital handover</p>
+                <h3 className="text-base font-bold text-[#333333] pt-1">Select Field Technician &amp; PIN</h3>
+                <p className="text-xs text-[#666666]">Access your daily rooftop installation and maintenance jobs</p>
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-[#666666] uppercase">Select Crew Member</label>
+                <label className="text-[11px] font-bold text-[#666666] uppercase">Select Assigned Crew Member</label>
                 <select
                   value={selectedTech}
                   onChange={(e) => setSelectedTech(e.target.value)}
-                  className="w-full mt-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs font-bold text-[#734960] focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                  className="w-full mt-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs font-bold bg-white focus:outline-none"
                 >
-                  {Object.entries(ALL_16_EMPLOYEES).map(([id, emp]) => (
+                  {Object.entries(ALL_16_EMPLOYEES).map(([id, tech]) => (
                     <option key={id} value={id}>
-                      {emp.name} ({id} - {emp.specialization})
+                      {tech.name} • {tech.specialization} ({id})
                     </option>
                   ))}
                 </select>
@@ -241,7 +261,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      setForgotEmail("rohit.m@sunpower.com");
+                      setForgotEmail("rohit.meena@sunpower.com");
                       setShowForgotModal(true);
                     }}
                     className="text-[11px] text-[#734960] hover:underline font-semibold"
@@ -260,14 +280,14 @@ export default function LoginPage() {
               </div>
 
               <div className="p-3 bg-[#FEF6EB] rounded-xl border border-[#F4B860]/40 text-xs text-[#DA9B40]">
-                👷 <strong>Field Notice:</strong> After login, you will see <em>only</em> jobs, surveys, and breakdowns assigned to your crew.
+                👷 <strong>Field Mode:</strong> Only your assigned daily job cards, site photos, barcode scan &amp; commissioning forms will load.
               </div>
 
               <button
                 type="submit"
-                className="w-full py-2.5 bg-[#8E687F] hover:bg-[#734960] text-white font-bold rounded-xl text-xs shadow-sm transition"
+                className="w-full py-2.5 bg-[#DA9B40] hover:bg-[#C2852E] text-white font-bold rounded-xl text-xs shadow-sm transition cursor-pointer"
               >
-                Log In to Field Companion ➔
+                Access My Field Jobs ➔
               </button>
             </form>
           )}
@@ -277,24 +297,22 @@ export default function LoginPage() {
             <form onSubmit={handleCustomerSubmit} className="space-y-4">
               <div className="space-y-1">
                 <span className="text-[10px] uppercase font-bold text-[#5B965E] bg-[#EBF5EC] px-2.5 py-0.5 rounded-full border border-[#78B77B]/40">
-                  Homeowner Self-Service
+                  Solar Homeowner Access
                 </span>
-                <h3 className="text-base font-bold text-[#333333] pt-1">Customer Solar Passbook</h3>
-                <p className="text-xs text-[#666666]">Track project milestones, upload roof pics, and report breakdowns</p>
+                <h3 className="text-base font-bold text-[#333333] pt-1">Track Your Rooftop Installation</h3>
+                <p className="text-xs text-[#666666]">Monitor daily generation, upload photos, and track subsidy status</p>
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-[#666666] uppercase">Registered Mobile Number or Name</label>
-                <div className="flex gap-2 mt-1">
-                  <input
-                    type="text"
-                    placeholder="+91 99887 76655 (or type Rajesh / Mohan)"
-                    value={customerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
-                    className="flex-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#78B77B]/30 focus:outline-none"
-                    required
-                  />
-                </div>
+                <label className="text-[11px] font-bold text-[#666666] uppercase">Registered Mobile Number</label>
+                <input
+                  type="tel"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  placeholder="+91 99887 76655"
+                  className="w-full mt-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#78B77B]/30 focus:outline-none"
+                  required
+                />
               </div>
 
               <div>
@@ -327,7 +345,7 @@ export default function LoginPage() {
 
               <button
                 type="submit"
-                className="w-full py-2.5 bg-[#78B77B] hover:bg-[#5B965E] text-white font-bold rounded-xl text-xs shadow-sm transition"
+                className="w-full py-2.5 bg-[#78B77B] hover:bg-[#5B965E] text-white font-bold rounded-xl text-xs shadow-sm transition cursor-pointer"
               >
                 Enter My Solar Passbook ➔
               </button>
@@ -346,7 +364,7 @@ export default function LoginPage() {
                   loginAsAdmin();
                   router.push("/");
                 }}
-                className="py-1.5 px-2 bg-[#FAF4F7] hover:bg-[#734960] hover:text-white text-[#734960] border border-[#8E687F]/30 rounded-xl text-[10px] font-bold transition text-center"
+                className="py-1.5 px-2 bg-[#FAF4F7] hover:bg-[#734960] hover:text-white text-[#734960] border border-[#8E687F]/30 rounded-xl text-[10px] font-bold transition text-center cursor-pointer"
               >
                 👑 Admin
               </button>
@@ -356,7 +374,7 @@ export default function LoginPage() {
                   loginAsTechnician("TECH-001");
                   router.push("/technician");
                 }}
-                className="py-1.5 px-2 bg-[#FEF6EB] hover:bg-[#DA9B40] hover:text-white text-[#DA9B40] border border-[#F4B860]/40 rounded-xl text-[10px] font-bold transition text-center"
+                className="py-1.5 px-2 bg-[#FEF6EB] hover:bg-[#DA9B40] hover:text-white text-[#DA9B40] border border-[#F4B860]/40 rounded-xl text-[10px] font-bold transition text-center cursor-pointer"
               >
                 👷 Rohit (Tech)
               </button>
@@ -366,7 +384,7 @@ export default function LoginPage() {
                   loginAsCustomer("rajesh");
                   router.push("/customer");
                 }}
-                className="py-1.5 px-2 bg-[#EBF5EC] hover:bg-[#5B965E] hover:text-white text-[#5B965E] border border-[#78B77B]/40 rounded-xl text-[10px] font-bold transition text-center"
+                className="py-1.5 px-2 bg-[#EBF5EC] hover:bg-[#5B965E] hover:text-white text-[#5B965E] border border-[#78B77B]/40 rounded-xl text-[10px] font-bold transition text-center cursor-pointer"
               >
                 👤 Rajesh (Client)
               </button>
@@ -393,7 +411,7 @@ export default function LoginPage() {
               </div>
               <button
                 onClick={() => setShowForgotModal(false)}
-                className="text-gray-400 hover:text-[#333333] text-lg font-bold"
+                className="text-gray-400 hover:text-[#333333] text-lg font-bold cursor-pointer"
               >
                 ✕
               </button>
@@ -426,13 +444,13 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowForgotModal(false)}
-                  className="px-3.5 py-1.5 border border-[#E4E7EB] text-[#666666] rounded-xl text-xs font-semibold hover:bg-[#F5F7FA]"
+                  className="px-3.5 py-1.5 border border-[#E4E7EB] text-[#666666] rounded-xl text-xs font-semibold hover:bg-[#F5F7FA] cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#734960] hover:bg-[#5A354A] text-white rounded-xl text-xs font-bold shadow-xs transition"
+                  className="px-4 py-1.5 bg-[#734960] hover:bg-[#5A354A] text-white rounded-xl text-xs font-bold shadow-xs transition cursor-pointer"
                 >
                   Send Reset Link
                 </button>

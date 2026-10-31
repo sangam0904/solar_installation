@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import { useNav } from "@/context/NavContext";
 import { useAuth } from "@/context/AuthContext";
 
@@ -22,9 +23,19 @@ const defaultAdminNotifications: AppNotification[] = [
 ];
 
 export default function Header() {
+  const router = useRouter();
+  const pathname = usePathname();
   const [showNotifications, setShowNotifications] = useState(false);
   const { isNavOpen, toggleNav } = useNav();
   const { user, role, logout } = useAuth();
+
+  const handleBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
 
   const [notifications, setNotifications] = useState<AppNotification[]>(() => {
     if (typeof window !== "undefined") {
@@ -59,11 +70,9 @@ export default function Header() {
   // Filter notifications relevant to current logged-in role & technician ID
   const relevantNotifications = notifications.filter((n) => {
     if (role === "admin") {
-      // Admin sees admin notifications and general alerts
       return !n.recipientRole || n.recipientRole === "admin" || !n.recipientId;
     }
     if (role === "technician") {
-      // Technician sees tasks assigned to them or general crew notices
       if (user?.techId && n.recipientId) {
         return n.recipientId === user.techId;
       }
@@ -87,19 +96,30 @@ export default function Header() {
   };
 
   return (
-    <header className="h-14 bg-white border-b border-[#E4E7EB] flex items-center justify-between px-4 sm:px-6 sticky top-0 z-40 shadow-xs">
-      {/* Left Side: Navbar Toggle + Search */}
-      <div className="flex items-center gap-3 flex-1 max-w-lg">
+    <header className="h-14 bg-white border-b border-[#E4E7EB] flex items-center justify-between px-3 sm:px-6 sticky top-0 z-40 card-floating">
+      {/* Left Side: Navbar Toggle + Back Button + Search */}
+      <div className="flex items-center gap-2 sm:gap-3 flex-1 max-w-xl">
         {/* Navbar Open/Close Hamburger Toggle */}
         <button
           onClick={toggleNav}
-          className="p-1.5 rounded-lg text-[#666666] hover:text-[#734960] hover:bg-[#F5F7FA] border border-[#E4E7EB] transition-colors flex items-center justify-center flex-shrink-0"
+          className="p-1.5 rounded-lg text-[#666666] hover:text-[#734960] hover:bg-[#F5F7FA] border border-[#E4E7EB] transition-colors flex items-center justify-center flex-shrink-0 cursor-pointer"
           title={isNavOpen ? "Collapse Navbar (◀)" : "Expand Navbar (▶)"}
           aria-label="Toggle Navigation Bar"
         >
           <span className="text-base font-bold leading-none">
             {isNavOpen ? "◀" : "☰"}
           </span>
+        </button>
+
+        {/* Global Back Option Button */}
+        <button
+          onClick={handleBack}
+          className="px-2.5 py-1.5 rounded-lg text-[#734960] hover:text-[#5A354A] bg-[#FAF4F7] hover:bg-[#F3E8EF] border border-[#734960]/20 hover:border-[#734960]/40 transition-all flex items-center gap-1.5 flex-shrink-0 text-xs font-bold card-floating cursor-pointer group"
+          title="Go Back to Previous Page"
+          aria-label="Go Back"
+        >
+          <span className="text-sm font-extrabold transition-transform group-hover:-translate-x-0.5">←</span>
+          <span className="text-xs font-bold">Back</span>
         </button>
 
         {/* Global Search Bar */}
@@ -120,22 +140,22 @@ export default function Header() {
       </div>
 
       {/* Right Side: Quick Action + Notification + User */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         {/* Role-Sensitive Action Button */}
         {role === "admin" && (
           <Link
             href="/leads"
-            className="px-3 py-1.5 bg-[#734960] hover:bg-[#5A354A] text-white text-xs font-semibold rounded-xl shadow-xs transition-colors inline-flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-[#734960] hover:bg-[#5A354A] text-white text-xs font-semibold rounded-xl card-floating transition-colors inline-flex items-center gap-1.5"
           >
-            <span>+</span> New Lead
+            <span>+</span> <span className="hidden sm:inline">New</span> Lead
           </Link>
         )}
         {role === "customer" && (
           <Link
             href="/customer?tab=complaint"
-            className="px-3 py-1.5 bg-[#78B77B] hover:bg-[#5B965E] text-white text-xs font-bold rounded-xl shadow-xs transition-colors inline-flex items-center gap-1.5"
+            className="px-3 py-1.5 bg-[#78B77B] hover:bg-[#5B965E] text-white text-xs font-bold rounded-xl card-floating transition-colors inline-flex items-center gap-1.5"
           >
-            <span>🚨</span> Report Issue
+            <span>🚨</span> <span className="hidden sm:inline">Report</span> Issue
           </Link>
         )}
 
@@ -143,7 +163,7 @@ export default function Header() {
         <div className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-1.5 text-[#666666] hover:text-[#734960] hover:bg-[#F5F7FA] rounded-xl transition-colors border border-transparent hover:border-[#E4E7EB]"
+            className="relative p-1.5 text-[#666666] hover:text-[#734960] hover:bg-[#F5F7FA] rounded-xl transition-colors border border-transparent hover:border-[#E4E7EB] cursor-pointer"
             title="Notifications"
           >
             <span className="text-base">🔔</span>
@@ -187,7 +207,7 @@ export default function Header() {
                 <div className="px-3.5 py-2 border-t border-[#E4E7EB] bg-[#F5F7FA] text-center">
                   <button
                     onClick={handleClearNotifications}
-                    className="text-xs text-[#734960] font-semibold hover:underline"
+                    className="text-xs text-[#734960] font-semibold hover:underline cursor-pointer"
                   >
                     Mark all as read
                   </button>
@@ -208,7 +228,7 @@ export default function Header() {
               />
             ) : (
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shadow-xs ${
+                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold card-floating ${
                   role === "technician"
                     ? "bg-[#DA9B40] text-[#333333]"
                     : role === "customer"
@@ -233,7 +253,7 @@ export default function Header() {
           <Link
             href="/login"
             onClick={logout}
-            className="p-1 text-[#666666] hover:text-[#734960] rounded-lg hover:bg-[#F5F7FA] transition"
+            className="p-1 text-[#666666] hover:text-[#734960] rounded-lg hover:bg-[#F5F7FA] transition cursor-pointer"
             title="Switch User / Log Out"
           >
             <span className="text-xs">🚪</span>

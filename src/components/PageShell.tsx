@@ -1,12 +1,83 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { useNav } from "@/context/NavContext";
+import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 
 interface PageShellProps {
   children: React.ReactNode;
+}
+
+function PageBreadcrumbBack() {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  if (pathname === "/") return null;
+
+  const getPageMeta = (path: string) => {
+    switch (path) {
+      case "/leads":
+        return { title: "Leads & CRM Pipeline", parent: "Lead & CRM", parentHref: "/leads" };
+      case "/quotations":
+        return { title: "Quotations & BOM Builder", parent: "Lead & CRM", parentHref: "/leads" };
+      case "/orders":
+        return { title: "Orders & Warehouse Dispatch", parent: "Lead & CRM", parentHref: "/leads" };
+      case "/inventory":
+        return { title: "Inventory & Barcode Serials", parent: "Lead & CRM", parentHref: "/leads" };
+      case "/warranty":
+        return { title: "20-Year Solar Warranty Registry", parent: "Lead & CRM", parentHref: "/leads" };
+      case "/service":
+        return { title: "Service Desk & Breakdowns", parent: "Operations", parentHref: "/" };
+      case "/subsidy":
+        return { title: "PM Surya Ghar Subsidy Tracker", parent: "Operations", parentHref: "/" };
+      case "/technician":
+        return { title: "Technician Field Operations", parent: "Dashboard", parentHref: "/" };
+      case "/customer":
+        return { title: "Customer Solar Passbook", parent: "Dashboard", parentHref: "/" };
+      case "/settings":
+        return { title: "Settings & Profile", parent: "System", parentHref: "/" };
+      default:
+        return { title: path.replace("/", "").toUpperCase(), parent: "Home", parentHref: "/" };
+    }
+  };
+
+  const meta = getPageMeta(pathname);
+
+  const handleBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-between py-1 px-1 -mt-2 mb-2">
+      <button
+        onClick={handleBack}
+        className="inline-flex items-center gap-2 px-3 py-1.5 bg-white hover:bg-[#FAF4F7] text-[#734960] hover:text-[#5A354A] border border-[#E4E7EB] hover:border-[#734960]/30 rounded-xl text-xs font-bold card-floating transition cursor-pointer group"
+        title="Go back to previous screen"
+      >
+        <span className="text-sm font-extrabold transition-transform group-hover:-translate-x-1">←</span>
+        <span>Back</span>
+      </button>
+
+      <div className="text-[11px] font-semibold text-[#8E687F] flex items-center gap-1.5">
+        <Link href="/" className="hover:underline text-[#666666]">
+          Home
+        </Link>
+        <span>/</span>
+        <Link href={meta.parentHref} className="hover:underline text-[#666666]">
+          {meta.parent}
+        </Link>
+        <span>/</span>
+        <span className="text-[#734960] font-bold">{meta.title}</span>
+      </div>
+    </div>
+  );
 }
 
 export default function PageShell({ children }: PageShellProps) {
@@ -21,9 +92,12 @@ export default function PageShell({ children }: PageShellProps) {
         } min-w-0 flex flex-col`}
       >
         <Header />
-        <div className="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-6">
+        <main className="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-4">
+          <Suspense fallback={null}>
+            <PageBreadcrumbBack />
+          </Suspense>
           {children}
-        </div>
+        </main>
       </div>
     </div>
   );
