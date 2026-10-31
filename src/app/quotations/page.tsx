@@ -95,47 +95,64 @@ export default function QuotationsPage() {
   const gst = subtotal * 0.138;
   const grandTotal = subtotal + gst;
 
+  // PM Surya Ghar subsidy amounts based on plant capacity
+  const subsidyAmount = useMemo(() => {
+    if (selectedGrid === "Off-Grid") return 0;
+    if (selectedCapacity === "1 kW") return 30000;
+    if (selectedCapacity === "2 kW") return 60000;
+    return 78000; // 3 kW and above get max ₹78,000 under PM Surya Ghar
+  }, [selectedCapacity, selectedGrid]);
+
+  const netPayable = Math.max(0, grandTotal - subsidyAmount);
+
+  const handlePrint = () => {
+    if (typeof window !== "undefined") {
+      window.print();
+    }
+  };
+
   return (
     <PageShell>
-      {/* ── Page Header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      {/* ── 1. Page Header (Hidden on Print) ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 print:hidden">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-[#333333] flex items-center gap-2">
-            <span>📋</span> Quotation & Automated BOM Builder
+            <span>📋</span> Quotation &amp; Automated BOM Builder
           </h1>
           <p className="text-xs sm:text-sm text-[#666666] mt-0.5">
-            Instant Bill of Materials calculation for 1 kW to 5 kW On-Grid & Off-Grid systems
+            Instant Bill of Materials calculation &amp; formal quote generation for 1 kW to 5 kW systems
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => window.print()}
-            className="px-3.5 py-2 bg-white hover:bg-[#F5F7FA] text-[#734960] border border-[#734960]/30 rounded-xl text-xs font-semibold shadow-xs transition"
+            onClick={handlePrint}
+            className="px-4 py-2 bg-white hover:bg-[#FAF4F7] text-[#734960] border border-[#734960]/30 rounded-xl text-xs font-bold card-floating transition flex items-center gap-2 cursor-pointer"
+            title="Print clean quotation bill or save as PDF"
           >
-            🖨️ Print Quote
+            <span>🖨️</span> Print Quote (Bill Only)
           </button>
           <button
             onClick={() => {
               setQuoteSent(true);
               setTimeout(() => setQuoteSent(false), 2500);
             }}
-            className="px-4 py-2 bg-[#734960] hover:bg-[#5A354A] text-white rounded-xl text-xs font-semibold shadow-xs transition"
+            className="px-4 py-2 bg-[#734960] hover:bg-[#5A354A] text-white rounded-xl text-xs font-bold card-floating transition flex items-center gap-2 cursor-pointer"
           >
-            ✉️ Send to Customer
+            <span>✉️</span> Send to Customer
           </button>
         </div>
       </div>
 
       {quoteSent && (
-        <div className="p-3 bg-[#EBF5EC] border border-[#78B77B] text-[#5B965E] rounded-xl text-xs font-bold text-center animate-in fade-in">
-          ✓ Quotation PDF generated and sent via WhatsApp & Email to {customerName}!
+        <div className="p-3 bg-[#EBF5EC] border border-[#78B77B] text-[#5B965E] rounded-xl text-xs font-bold text-center animate-in fade-in print:hidden">
+          ✓ Quotation PDF generated and dispatched via WhatsApp &amp; Email to {customerName}!
         </div>
       )}
 
-      {/* ── Configuration Section ── */}
-      <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 shadow-xs space-y-4">
+      {/* ── 2. Configuration Section (Hidden on Print) ── */}
+      <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 card-floating space-y-4 print:hidden">
         <h2 className="text-sm font-bold text-[#333333] uppercase tracking-wider">
-          System Configuration & Spec Selection
+          System Configuration &amp; Spec Selection
         </h2>
 
         <div>
@@ -144,7 +161,8 @@ export default function QuotationsPage() {
             type="text"
             value={customerName}
             onChange={(e) => setCustomerName(e.target.value)}
-            className="w-full mt-1 px-3 py-2 border border-[#E4E7EB] rounded-xl text-xs text-[#333333] font-semibold focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+            className="w-full mt-1 px-3.5 py-2 border border-[#E4E7EB] rounded-xl text-xs text-[#333333] font-semibold focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+            placeholder="Enter customer name..."
           />
         </div>
 
@@ -160,9 +178,9 @@ export default function QuotationsPage() {
                     key={cap}
                     type="button"
                     onClick={() => setSelectedCapacity(cap)}
-                    className={`py-2 px-1 rounded-xl text-xs font-bold transition text-center border ${
+                    className={`py-2 px-1 rounded-xl text-xs font-bold transition text-center border cursor-pointer ${
                       selected
-                        ? "bg-[#734960] text-white border-[#734960] shadow-xs"
+                        ? "bg-[#734960] text-white border-[#734960] card-floating"
                         : "bg-[#F5F7FA] text-[#333333] border-[#E4E7EB] hover:bg-[#FAF4F7]"
                     }`}
                   >
@@ -184,11 +202,11 @@ export default function QuotationsPage() {
                     key={opt.value}
                     type="button"
                     onClick={() => setSelectedGrid(opt.value)}
-                    className={`py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 border ${
+                    className={`py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 border cursor-pointer ${
                       selected
                         ? opt.value === "On-Grid"
-                          ? "bg-[#78B77B] text-white border-[#78B77B] shadow-xs"
-                          : "bg-[#F4B860] text-[#333333] border-[#F4B860] shadow-xs"
+                          ? "bg-[#78B77B] text-white border-[#78B77B] card-floating"
+                          : "bg-[#F4B860] text-[#333333] border-[#F4B860] card-floating"
                         : "bg-[#F5F7FA] text-[#666666] border-[#E4E7EB] hover:bg-gray-100"
                     }`}
                   >
@@ -202,136 +220,224 @@ export default function QuotationsPage() {
         </div>
       </div>
 
-      {/* ── Bill of Materials (BOM) Table ── */}
-      <div className="bg-white rounded-2xl border border-[#E4E7EB] shadow-xs overflow-hidden">
-        <div className="px-5 py-3.5 border-b border-[#E4E7EB] flex items-center justify-between bg-[#F5F7FA]">
+      {/* ── 3. FORMAL QUOTATION BILL DOCUMENT (The ONLY part printed in PDF) ── */}
+      <div
+        id="printable-quotation-bill"
+        className="printable-quote-bill bg-white rounded-2xl border-2 border-[#734960]/20 p-6 sm:p-8 card-floating space-y-6"
+      >
+        {/* Letterhead Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b-2 border-[#734960]/40 pb-5">
           <div>
-            <h3 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
-              Itemized Bill of Materials (BOM)
-            </h3>
-            <p className="text-[10px] text-[#666666]">
-              Auto-populated hardware kit for {selectedCapacity} {selectedGrid} System
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 bg-[#F4B860] rounded-xl flex items-center justify-center text-xl shadow-xs">
+                ☀️
+              </div>
+              <div>
+                <h2 className="text-xl font-extrabold text-[#734960] tracking-tight">
+                  SunPower Solutions Pvt. Ltd.
+                </h2>
+                <p className="text-[10px] font-bold text-[#666666] uppercase tracking-wider">
+                  MNRE Channel Partner &amp; Rooftop Solar Turnkey EPC
+                </p>
+              </div>
+            </div>
+            <p className="text-xs text-[#555555] mt-2">
+              Plot 42, Solar Park Road, Industrial Area Phase-1, Jaipur 302013, Rajasthan
+            </p>
+            <p className="text-xs text-[#555555]">
+              GSTIN: <strong>08AAACS1234F1Z5</strong> • CIN: U40106RJ2026PTC099881
+            </p>
+            <p className="text-xs text-[#555555]">
+              Phone: +91 141 289900 • Email: billing@sunpower.com • Web: www.sunpower.com
             </p>
           </div>
-          <span className="text-xs font-bold text-[#734960] bg-white px-3 py-1 rounded-full border border-[#E4E7EB]">
-            {bomItems?.length ?? 0} Components
-          </span>
+
+          <div className="sm:text-right flex flex-col sm:items-end">
+            <span className="px-3 py-1 bg-[#FAF4F7] text-[#734960] font-mono text-xs font-extrabold rounded-lg border border-[#8E687F]/30">
+              QUOTE REF: QT-2026-088
+            </span>
+            <p className="text-xs text-[#333333] font-bold mt-2">
+              Issue Date: <span className="font-semibold text-[#666666]">{today}</span>
+            </p>
+            <p className="text-xs text-[#DA9B40] font-bold">
+              Validity: 15 Days (Until 15 Nov 2026)
+            </p>
+            <p className="text-[11px] text-[#666666] mt-0.5">
+              Sales Engineer: <strong>Rohit Meena</strong>
+            </p>
+
+            <button
+              onClick={handlePrint}
+              className="mt-3 px-3 py-1 bg-[#734960] hover:bg-[#5A354A] text-white text-[11px] font-bold rounded-lg print:hidden cursor-pointer"
+            >
+              🖨️ Print / Save as PDF
+            </button>
+          </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-[#F5F7FA] text-[#666666] font-semibold border-b border-[#E4E7EB]">
+        {/* Bill To & Project Specifications */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-[#F5F7FA] p-4 rounded-xl border border-[#E4E7EB] text-xs">
+          <div>
+            <span className="text-[10px] font-bold uppercase text-[#734960] tracking-wider block">
+              QUOTATION TO (CLIENT DETAILS)
+            </span>
+            <p className="text-base font-extrabold text-[#333333] mt-0.5">{customerName}</p>
+            <p className="text-[#666666] mt-0.5">Site Location: Jaipur, Rajasthan (JVVNL Discom Area)</p>
+            <p className="text-[#666666]">Contact: +91 99887 76655 • Electricity K-No: 2108-9943-12</p>
+          </div>
+
+          <div className="sm:text-right">
+            <span className="text-[10px] font-bold uppercase text-[#78B77B] tracking-wider block">
+              PROPOSED SYSTEM SPECIFICATIONS
+            </span>
+            <p className="text-base font-extrabold text-[#333333] mt-0.5">
+              {selectedCapacity} {selectedGrid} Solar Power Plant
+            </p>
+            <p className="text-[#666666] mt-0.5">
+              Est. Daily Generation: <strong>~{parseInt(selectedCapacity) * 4.3} kWh / Day</strong>
+            </p>
+            <p className="text-[#5B965E] font-semibold">
+              Eligible for PM Surya Ghar DBT Central Subsidy
+            </p>
+          </div>
+        </div>
+
+        {/* Itemized Bill of Materials (BOM) */}
+        <div>
+          <div className="flex items-center justify-between pb-2">
+            <h4 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
+              Itemized Hardware &amp; BOS Component Bill
+            </h4>
+            <span className="text-[11px] text-[#666666]">
+              All items meet MNRE &amp; ALMM compliance standards
+            </span>
+          </div>
+
+          <table className="w-full text-left text-xs border border-[#E4E7EB]">
+            <thead className="bg-[#FAF4F7] text-[#333333] font-bold border-b border-[#E4E7EB]">
               <tr>
-                <th className="px-4 py-2.5 w-10 text-center">#</th>
-                <th className="px-4 py-2.5">Item Name</th>
-                <th className="px-4 py-2.5">Specification</th>
-                <th className="px-4 py-2.5 text-center">Qty</th>
-                <th className="px-4 py-2.5 text-right">Unit Price (₹)</th>
-                <th className="px-4 py-2.5 text-right">Total (₹)</th>
+                <th className="px-3 py-2.5 w-10 text-center">#</th>
+                <th className="px-3 py-2.5">Component Description</th>
+                <th className="px-3 py-2.5">Technical Specification</th>
+                <th className="px-3 py-2.5 text-center">Qty</th>
+                <th className="px-3 py-2.5 text-right">Unit Rate (₹)</th>
+                <th className="px-3 py-2.5 text-right">Amount (₹)</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E4E7EB]/60">
+            <tbody className="divide-y divide-[#E4E7EB]">
               {bomItems?.map((item, idx) => (
-                <tr key={idx} className="hover:bg-[#F5F7FA] transition-colors">
-                  <td className="px-4 py-2.5 text-center text-[#666666] font-mono">{idx + 1}</td>
-                  <td className="px-4 py-2.5 font-bold text-[#333333]">{item.name}</td>
-                  <td className="px-4 py-2.5 text-[#666666]">{item.specification}</td>
-                  <td className="px-4 py-2.5 text-center font-semibold text-[#333333]">
+                <tr key={idx} className="hover:bg-[#F5F7FA]">
+                  <td className="px-3 py-2 text-center text-[#666666] font-mono">{idx + 1}</td>
+                  <td className="px-3 py-2 font-bold text-[#333333]">{item.name}</td>
+                  <td className="px-3 py-2 text-[#666666]">{item.specification}</td>
+                  <td className="px-3 py-2 text-center font-semibold text-[#333333]">
                     {item.quantity} {item.unit}
                   </td>
-                  <td className="px-4 py-2.5 text-right text-[#666666]">{fmt(item.unitPrice)}</td>
-                  <td className="px-4 py-2.5 text-right font-bold text-[#333333]">
-                    {fmt(item.quantity * item.unitPrice)}
+                  <td className="px-3 py-2 text-right text-[#666666]">{fmt(item.unitPrice)}</td>
+                  <td className="px-3 py-2 text-right font-bold text-[#333333]">
+                    ₹{fmt(item.quantity * item.unitPrice)}
                   </td>
                 </tr>
               ))}
             </tbody>
-            <tfoot className="bg-[#FAF4F7] border-t border-[#E4E7EB] font-semibold">
+            <tfoot className="bg-[#F5F7FA] font-bold border-t-2 border-[#E4E7EB]">
               <tr>
-                <td colSpan={5} className="px-4 py-2 text-right text-[#666666]">
+                <td colSpan={5} className="px-3 py-2 text-right text-[#666666]">
                   Hardware Subtotal:
                 </td>
-                <td className="px-4 py-2 text-right font-bold text-[#333333]">₹{fmt(subtotal)}</td>
+                <td className="px-3 py-2 text-right font-bold text-[#333333]">₹{fmt(subtotal)}</td>
               </tr>
               <tr>
-                <td colSpan={5} className="px-4 py-2 text-right text-[#666666]">
-                  GST (Blended 13.8%):
+                <td colSpan={5} className="px-3 py-2 text-right text-[#666666]">
+                  GST (Blended 13.8% for Solar Turnkey EPC):
                 </td>
-                <td className="px-4 py-2 text-right text-[#666666]">₹{fmt(gst)}</td>
+                <td className="px-3 py-2 text-right text-[#666666]">₹{fmt(gst)}</td>
               </tr>
-              <tr className="border-t border-[#734960]/20 text-sm">
-                <td colSpan={5} className="px-4 py-3 text-right font-bold text-[#734960]">
-                  Grand Total (Incl. Taxes & Delivery):
+              <tr className="border-t border-[#734960]/30 bg-[#FAF4F7]">
+                <td colSpan={5} className="px-3 py-2.5 text-right font-bold text-[#734960]">
+                  Gross Project Turnkey Cost (All Inclusive):
                 </td>
-                <td className="px-4 py-3 text-right font-extrabold text-[#734960]">
+                <td className="px-3 py-2.5 text-right font-extrabold text-[#734960]">
                   ₹{fmt(grandTotal)}
+                </td>
+              </tr>
+              {subsidyAmount > 0 && (
+                <tr className="bg-[#EBF5EC] text-[#5B965E]">
+                  <td colSpan={5} className="px-3 py-2 text-right font-bold">
+                    Less: PM Surya Ghar Central DBT Subsidy (Credited Directly to Customer Bank):
+                  </td>
+                  <td className="px-3 py-2 text-right font-extrabold text-[#5B965E]">
+                    - ₹{fmt(subsidyAmount)}
+                  </td>
+                </tr>
+              )}
+              <tr className="bg-[#734960] text-white text-sm">
+                <td colSpan={5} className="px-3 py-3 text-right font-extrabold uppercase tracking-wide">
+                  Net Customer Out-of-Pocket Cost (Final Payable):
+                </td>
+                <td className="px-3 py-3 text-right font-black text-base">
+                  ₹{fmt(netPayable)}
                 </td>
               </tr>
             </tfoot>
           </table>
         </div>
-      </div>
 
-      {/* ── Quotation Formal Preview ── */}
-      <div className="bg-white rounded-2xl border-2 border-[#734960]/30 p-6 shadow-sm space-y-5">
-        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b border-[#E4E7EB] pb-4">
+        {/* Commercial Terms & Warranties */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-[#E4E7EB] pt-4 text-xs text-[#555555]">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="w-7 h-7 bg-[#F4B860] rounded-lg flex items-center justify-center text-sm shadow-xs">
-                ☀️
+            <h5 className="font-bold text-[#333333] uppercase text-[11px] mb-1">
+              Warranty Guarantees
+            </h5>
+            <ul className="list-disc list-inside space-y-1 text-[11px]">
+              <li><strong>Solar PV Modules:</strong> 25-Year Linear Power Warranty (&lt;0.5% yearly degradation).</li>
+              <li><strong>Inverter &amp; Protection:</strong> 5-Year Comprehensive Warranty with ₹0 replacement.</li>
+              <li><strong>Galvanized Structure:</strong> 5-Year Rust &amp; Structural Wind Resilience (150 km/h).</li>
+              <li><strong>Workmanship &amp; EPC:</strong> 5-Year Free Service &amp; Annual Preventive Maintenance.</li>
+            </ul>
+          </div>
+
+          <div>
+            <h5 className="font-bold text-[#333333] uppercase text-[11px] mb-1">
+              Commercial &amp; Payment Terms
+            </h5>
+            <ul className="list-disc list-inside space-y-1 text-[11px]">
+              <li><strong>Payment Schedule:</strong> 50% advance on PO, 50% on hardware installation &amp; testing.</li>
+              <li><strong>Net-Metering:</strong> JVVNL / Discom liaisoning &amp; bi-directional meter managed by us.</li>
+              <li><strong>Govt. Subsidy:</strong> National Solar Portal documentation uploaded within 48h of grid sync.</li>
+              <li><strong>Validity:</strong> Prices firm for 15 days from quote generation date.</li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Signature & Acceptance Block */}
+        <div className="grid grid-cols-2 gap-8 border-t-2 border-[#E4E7EB] pt-6 mt-4 text-xs">
+          <div>
+            <p className="font-bold text-[#333333]">For SunPower Solutions Pvt. Ltd.</p>
+            <div className="h-14 flex items-end">
+              <span className="text-[10px] text-[#734960] font-mono font-bold italic">
+                [Digitally Signed by Sales Director]
               </span>
-              <h3 className="text-lg font-bold text-[#734960]">SunPower Solutions Pvt Ltd</h3>
             </div>
-            <p className="text-xs text-[#666666] mt-1">
-              Plot 42, Solar Park Road, Industrial Area Phase-1, Jaipur 302013
+            <p className="border-t border-[#333333] pt-1 font-semibold text-[#555555]">
+              Authorized Signatory &amp; Stamp
             </p>
-            <p className="text-xs text-[#666666]">GSTIN: 08AAACS1234F1Z5 • Phone: +91 141 289900</p>
           </div>
-          <div className="sm:text-right">
-            <span className="px-2.5 py-1 bg-[#FAF4F7] text-[#734960] font-mono text-xs font-bold rounded-lg border border-[#8E687F]/30">
-              QT-2026-088
-            </span>
-            <p className="text-xs text-[#666666] mt-1.5">Date: {today}</p>
-            <p className="text-xs font-bold text-[#DA9B40]">Validity: 15 Days</p>
-          </div>
-        </div>
 
-        <div className="bg-[#F5F7FA] p-3 rounded-xl text-xs flex flex-col sm:flex-row justify-between gap-2 border border-[#E4E7EB]">
-          <div>
-            <span className="text-[#666666]">Prepared For:</span>
-            <p className="font-bold text-[#333333] text-sm">{customerName}</p>
-          </div>
-          <div>
-            <span className="text-[#666666]">System Size:</span>
-            <p className="font-bold text-[#333333]">{selectedCapacity} {selectedGrid}</p>
-          </div>
-          <div>
-            <span className="text-[#666666]">Estimated PM Surya Ghar Subsidy:</span>
-            <p className="font-bold text-[#78B77B]">
-              {selectedCapacity === "1 kW" ? "₹30,000" : selectedCapacity === "2 kW" ? "₹60,000" : "₹78,000"}
+          <div className="text-right flex flex-col items-end">
+            <p className="font-bold text-[#333333]">Customer Acceptance</p>
+            <div className="h-14 flex items-end">
+              <span className="text-[10px] text-gray-400 italic">Signature &amp; Date</span>
+            </div>
+            <p className="border-t border-[#333333] pt-1 font-semibold text-[#555555] w-48 text-right">
+              {customerName}
             </p>
           </div>
-          <div className="sm:text-right">
-            <span className="text-[#666666]">Net Out-of-Pocket Cost:</span>
-            <p className="font-extrabold text-[#734960] text-sm">
-              ₹{fmt(Math.max(0, grandTotal - (selectedCapacity === "1 kW" ? 30000 : selectedCapacity === "2 kW" ? 60000 : 78000)))}
-            </p>
-          </div>
-        </div>
-
-        {/* Commercial Terms */}
-        <div className="text-xs text-[#666666] space-y-1.5 border-t border-[#E4E7EB] pt-3">
-          <p className="font-bold text-[#333333]">Commercial Terms & Warranty Commitments:</p>
-          <ul className="list-disc list-inside space-y-0.5 text-[11px]">
-            <li>50% advance along with confirmed order, 50% upon physical installation & inverter handover.</li>
-            <li>Solar Panels: 25-Year performance warranty. Inverter & Lithium Batteries: 5-Year comprehensive replacement warranty.</li>
-            <li>Government subsidy support via National Solar Portal handled end-to-end by SunPower Solutions.</li>
-          </ul>
         </div>
       </div>
 
-      {/* ── Saved Quotations Table ── */}
-      <div className="bg-white rounded-2xl border border-[#E4E7EB] shadow-xs overflow-hidden">
+      {/* ── 4. Saved Quotations Table (Hidden on Print) ── */}
+      <div className="bg-white rounded-2xl border border-[#E4E7EB] card-floating overflow-hidden print:hidden">
         <div className="px-5 py-3.5 border-b border-[#E4E7EB] bg-[#F5F7FA]">
           <h3 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
             Recent Client Quotations

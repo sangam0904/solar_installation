@@ -58,3 +58,84 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #8E687F;
 }
+
+/* ======================================================== */
+/* PRINT MEDIA RULES - Clean Quotation Bill & PDF Export     */
+/* ======================================================== */
+@media print {
+  /* Hide all non-bill desktop elements: navbar, sidebar, header, web buttons, page headers */
+  aside,
+  header,
+  nav,
+  button,
+  .print\:hidden,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Reset document canvas for standard A4 printing */
+  html,
+  body {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    color: #111111 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    font-size: 11pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Neutralize layout wrapper margins */
+  div[class*="min-h-screen"] {
+    min-height: auto !important;
+    background: #ffffff !important;
+    display: block !important;
+  }
+
+  div[class*="ml-"] {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  /* Display only the official printable quotation bill */
+  .printable-quote-bill {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 24px 32px !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    color: #111827 !important;
+    page-break-inside: avoid;
+  }
+
+  /* Ensure print tables have solid borders and clean print typography */
+  .printable-quote-bill table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  .printable-quote-bill th,
+  .printable-quote-bill td {
+    border: 1px solid #e5e7eb !important;
+    padding: 6px 10px !important;
+  }
+
+  .printable-quote-bill thead th {
+    background-color: #f3f4f6 !important;
+    color: #111827 !important;
+    font-weight: bold !important;
+  }
+}

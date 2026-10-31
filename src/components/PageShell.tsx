@@ -55,7 +55,7 @@ function PageBreadcrumbBack() {
   };
 
   return (
-    <div className="flex items-center justify-between py-1 px-1 -mt-2 mb-2">
+    <div className="flex items-center justify-between py-1 px-1 -mt-2 mb-2 print:hidden">
       <button
         onClick={handleBack}
         className="inline-flex items-center gap-2 px-3 py-1.5 bg-white hover:bg-[#FAF4F7] text-[#734960] hover:text-[#5A354A] border border-[#E4E7EB] hover:border-[#734960]/30 rounded-xl text-xs font-bold card-floating transition cursor-pointer group"
