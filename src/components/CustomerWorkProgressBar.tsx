@@ -2,6 +2,20 @@
 
 import React, { useState, useEffect } from "react";
 import { ALL_16_EMPLOYEES } from "@/context/AuthContext";
+import {
+  PackageIcon,
+  HardHatIcon,
+  PhoneIcon,
+  MessageSquareIcon,
+  CheckCircleIcon,
+  CheckIcon,
+  ZapIcon,
+  ClockIcon,
+  StarIcon,
+  WrenchIcon,
+  ShieldCheckIcon,
+  FileTextIcon,
+} from "@/components/Icons";
 
 export interface CustomerWorkProgressBarProps {
   customer: {
@@ -28,7 +42,7 @@ interface MilestoneStep {
   stepNumber: number;
   name: string;
   shortLabel: string;
-  icon: string;
+  iconType: "order" | "survey" | "dispatch" | "install" | "sync" | "subsidy";
   statusTitle: string;
   deliveryEta: string;
   statusBadge: string;
@@ -42,7 +56,7 @@ const MILESTONE_DEFINITIONS: MilestoneStep[] = [
     stepNumber: 1,
     name: "Order Booked & Pre-Qualification",
     shortLabel: "Order Confirmed",
-    icon: "📋",
+    iconType: "order",
     statusTitle: "Engineering Order Booked",
     deliveryEta: "Completed • Survey Scheduled",
     statusBadge: "Phase 1 Complete",
@@ -58,7 +72,7 @@ const MILESTONE_DEFINITIONS: MilestoneStep[] = [
     stepNumber: 2,
     name: "Site Survey & 3D Shading Analysis",
     shortLabel: "Site Surveyed",
-    icon: "📐",
+    iconType: "survey",
     statusTitle: "Rooftop Tilt & Shading Approved",
     deliveryEta: "Completed • Hardware Assigned",
     statusBadge: "Phase 2 Complete",
@@ -74,7 +88,7 @@ const MILESTONE_DEFINITIONS: MilestoneStep[] = [
     stepNumber: 3,
     name: "Hardware Dispatched from Warehouse",
     shortLabel: "Out for Delivery",
-    icon: "🚚",
+    iconType: "dispatch",
     statusTitle: "Dispatch Crew On The Way",
     deliveryEta: "Arriving at Site in 40 Mins",
     statusBadge: "Dispatched & In Transit",
@@ -91,10 +105,10 @@ const MILESTONE_DEFINITIONS: MilestoneStep[] = [
     stepNumber: 4,
     name: "Rooftop Structure & Solar Installation",
     shortLabel: "Rooftop Mounting",
-    icon: "🔧",
+    iconType: "install",
     statusTitle: "Technicians At Work On Your Rooftop",
     deliveryEta: "Expected Complete Today by 2:30 PM",
-    statusBadge: "Active Installation ⚡",
+    statusBadge: "Active Installation",
     liveStatusBanner: "Certified engineers actively bolting mounting structures & DC cables",
     description: "Hot-dip galvanized structure anchored, high-efficiency solar modules bolted, and dedicated chemical earthing pit completed.",
     checkpoints: [
@@ -108,10 +122,10 @@ const MILESTONE_DEFINITIONS: MilestoneStep[] = [
     stepNumber: 5,
     name: "Grid Net-Meter Sync & Commissioning",
     shortLabel: "Grid Sync & Testing",
-    icon: "⚡",
+    iconType: "sync",
     statusTitle: "Discom Net-Meter Sync & Live Yield Test",
     deliveryEta: "Commissioning Today by 4:45 PM",
-    statusBadge: "Grid Commissioning ⚡",
+    statusBadge: "Grid Commissioning",
     liveStatusBanner: "Testing live solar power generation & bidirectional Discom net-metering",
     description: "Inverter synchronized with electricity grid, live kilowatt-hour telemetry online, and Discom meter inspector handover.",
     checkpoints: [
@@ -125,7 +139,7 @@ const MILESTONE_DEFINITIONS: MilestoneStep[] = [
     stepNumber: 6,
     name: "Subsidy Disbursed & 25-Year Warranty",
     shortLabel: "100% Handed Over",
-    icon: "🏆",
+    iconType: "subsidy",
     statusTitle: "Plant 100% Commissioned & Subsidy Credited",
     deliveryEta: "Successfully Handed Over",
     statusBadge: "100% Complete & Active",
@@ -140,13 +154,30 @@ const MILESTONE_DEFINITIONS: MilestoneStep[] = [
   },
 ];
 
+function renderMilestoneIcon(type: string, className = "w-5 h-5") {
+  switch (type) {
+    case "order":
+      return <FileTextIcon className={className} />;
+    case "survey":
+      return <ShieldCheckIcon className={className} />;
+    case "dispatch":
+      return <PackageIcon className={className} />;
+    case "install":
+      return <WrenchIcon className={className} />;
+    case "sync":
+      return <ZapIcon className={className} />;
+    case "subsidy":
+      return <CheckCircleIcon className={className} />;
+    default:
+      return <ZapIcon className={className} />;
+  }
+}
+
 export default function CustomerWorkProgressBar({ customer, orderId }: CustomerWorkProgressBarProps) {
-  // Allow interactive step progression for simulation/testing while defaulting to customer's actual step
   const [currentStep, setCurrentStep] = useState<number>(customer.progressStep || 5);
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const [selectedMilestoneNum, setSelectedMilestoneNum] = useState<number>(customer.progressStep || 5);
 
-  // Sync if customer prop changes
   useEffect(() => {
     setCurrentStep(customer.progressStep || 5);
     setSelectedMilestoneNum(customer.progressStep || 5);
@@ -162,25 +193,25 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
   const progressPercent = Math.min(100, Math.max(12, ((currentStep - 1) / (MILESTONE_DEFINITIONS.length - 1)) * 100));
 
   return (
-    <div className="bg-white rounded-2xl border-2 border-[#78B77B]/40 shadow-xl overflow-hidden card-floating">
+    <div className="bg-white rounded-2xl border border-[#DEDCDC] shadow-md overflow-hidden">
       {/* Top Delivery-App Banner Header */}
-      <div className="bg-gradient-to-r from-[#2A4D30] via-[#5B965E] to-[#78B77B] text-white p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-[#191D23] via-[#57707A] to-[#7B919C] text-white p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <div className="relative w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-2xl flex-shrink-0 shadow-inner">
-            <span>{activeMilestone.icon}</span>
+          <div className="relative w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center text-white flex-shrink-0 shadow-inner">
+            {renderMilestoneIcon(activeMilestone.iconType, "w-6 h-6 text-white")}
             {currentStep < 6 && (
               <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F4B860] opacity-80"></span>
-                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-[#F4B860] border-2 border-white"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C5BAC4] opacity-80"></span>
+                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-[#C5BAC4] border-2 border-[#191D23]"></span>
               </span>
             )}
           </div>
 
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-white/25 text-white border border-white/30 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#F4B860] animate-pulse"></span>
-                LIVE DELIVERY TRACKER
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-white/20 text-white border border-white/20 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                LIVE PROGRESS TRACKER
               </span>
               <span className="text-[11px] font-mono text-white/90 font-bold">
                 {orderId || `ORD-${customer.key.toUpperCase()}-2026`}
@@ -195,7 +226,7 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
             </h3>
 
             <p className="text-xs text-white/90 flex items-center gap-1.5 mt-0.5">
-              <span>⏱️</span>
+              <ClockIcon className="w-3.5 h-3.5 text-white/80" />
               <span className="font-semibold">{activeMilestone.deliveryEta}</span>
               <span className="text-white/60">•</span>
               <span className="text-white/80">Site: {customer.address}</span>
@@ -207,30 +238,31 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
         <div className="flex items-center gap-2 self-stretch md:self-auto justify-between md:justify-end border-t md:border-t-0 pt-3 md:pt-0 border-white/20">
           <div className="text-right hidden sm:block">
             <span className="text-[10px] font-bold uppercase tracking-wider text-white/70 block">Overall Progress</span>
-            <span className="text-sm font-black text-[#FEF6EB]">
+            <span className="text-sm font-black text-white">
               Stage {currentStep} of 6 ({Math.round(progressPercent)}%)
             </span>
           </div>
 
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-white/25 cursor-pointer"
+            className="px-3 py-1.5 bg-white/15 hover:bg-white/25 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-white/20 cursor-pointer"
           >
-            <span>{isExpanded ? "Hide Details ▲" : "View Full Activity ▼"}</span>
+            <span>{isExpanded ? "Hide Details" : "View Full Activity"}</span>
+            <span className="text-[10px]">{isExpanded ? "▲" : "▼"}</span>
           </button>
         </div>
       </div>
 
       {/* ──────────────────────────────────────────────────────────── */}
-      {/* DELIVERY APP HORIZONTAL PROGRESS BAR WITH MOVING STEPPER PIN */}
+      {/* HORIZONTAL PROGRESS BAR WITH MOVING STEPPER PIN               */}
       {/* ──────────────────────────────────────────────────────────── */}
-      <div className="p-4 sm:p-6 bg-gradient-to-b from-[#FAFDFB] to-white border-b border-[#EBCED6]">
+      <div className="p-4 sm:p-6 bg-[#F7F8F9] border-b border-[#DEDCDC]">
         {/* Step indicator header */}
-        <div className="flex items-center justify-between text-xs font-bold text-[#666666] mb-4">
-          <span className="flex items-center gap-1 text-[#5B965E]">
-            <span>🚚</span> Solar Delivery &amp; Rooftop Commissioning Track
+        <div className="flex items-center justify-between text-xs font-bold text-[#57707A] mb-4">
+          <span className="flex items-center gap-1.5 text-[#191D23]">
+            <PackageIcon className="w-4 h-4 text-[#57707A]" /> Solar Delivery &amp; Rooftop Commissioning Track
           </span>
-          <span className="text-[11px] text-[#4A355E] font-semibold">
+          <span className="text-[11px] text-[#57707A] font-semibold">
             {currentStep === 6 ? "Plant 100% Commissioned" : `Active: Step ${currentStep} (${activeMilestone.shortLabel})`}
           </span>
         </div>
@@ -238,11 +270,11 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
         {/* Visual Progress Track */}
         <div className="relative pt-6 pb-4 px-2 sm:px-6">
           {/* Background Track Line */}
-          <div className="absolute top-10 left-6 right-6 h-2 bg-gray-200 rounded-full z-0"></div>
+          <div className="absolute top-10 left-6 right-6 h-2 bg-[#DEDCDC] rounded-full z-0"></div>
 
           {/* Animated Filled Progress Line */}
           <div
-            className="absolute top-10 left-6 h-2 bg-gradient-to-r from-[#78B77B] via-[#5B965E] to-[#DA9B40] rounded-full z-0 transition-all duration-700 ease-out shadow-sm"
+            className="absolute top-10 left-6 h-2 bg-gradient-to-r from-[#191D23] via-[#57707A] to-[#7B919C] rounded-full z-0 transition-all duration-700 ease-out shadow-xs"
             style={{ width: `calc(${progressPercent}% - 24px)` }}
           ></div>
 
@@ -251,11 +283,10 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
             className="absolute -top-1 z-20 transition-all duration-700 ease-out -translate-x-1/2 flex flex-col items-center pointer-events-none"
             style={{ left: `calc(1.5rem + (100% - 3rem) * ${(currentStep - 1) / 5})` }}
           >
-            <div className="px-2 py-0.5 bg-[#333333] text-white text-[10px] font-black rounded-full shadow-lg flex items-center gap-1 whitespace-nowrap animate-bounce border border-white">
-              <span>{currentStep === 3 ? "🚚" : currentStep === 4 ? "🔧" : currentStep === 5 ? "⚡" : "🏆"}</span>
+            <div className="px-2.5 py-0.5 bg-[#191D23] text-white text-[10px] font-black rounded-full shadow-lg flex items-center gap-1 whitespace-nowrap animate-bounce border border-white">
               <span>{currentStep === 6 ? "COMPLETE" : "ON SITE NOW"}</span>
             </div>
-            <div className="w-2 h-2 bg-[#333333] rotate-45 -mt-1"></div>
+            <div className="w-2 h-2 bg-[#191D23] rotate-45 -mt-1"></div>
           </div>
 
           {/* 6 Milestone Step Nodes */}
@@ -270,22 +301,22 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
                   key={step.stepNumber}
                   type="button"
                   onClick={() => setSelectedMilestoneNum(step.stepNumber)}
-                  className="flex flex-col items-center group cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#78B77B] rounded-xl p-1 transition"
+                  className="flex flex-col items-center group cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#57707A] rounded-xl p-1 transition"
                 >
                   {/* Circle Node */}
                   <div
-                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 shadow-md ${
+                    className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 shadow-sm ${
                       isCompleted
-                        ? "bg-[#5B965E] text-white border-2 border-white ring-2 ring-[#78B77B]/40"
+                        ? "bg-[#57707A] text-white border-2 border-white ring-2 ring-[#7B919C]/40"
                         : isCurrent
-                        ? "bg-[#FEF6EB] text-[#DA9B40] border-2 border-[#F4B860] ring-4 ring-[#F4B860]/30 scale-110"
-                        : "bg-white text-gray-400 border-2 border-gray-300"
+                        ? "bg-[#191D23] text-white border-2 border-white ring-4 ring-[#C5BAC4] scale-110"
+                        : "bg-white text-[#989DAA] border-2 border-[#DEDCDC]"
                     }`}
                   >
                     {isCompleted ? (
-                      <span className="text-sm font-extrabold">✓</span>
+                      <CheckIcon className="w-4 h-4 text-white stroke-[3]" />
                     ) : (
-                      <span className="text-xs sm:text-sm">{step.icon}</span>
+                      renderMilestoneIcon(step.iconType, "w-4 h-4")
                     )}
                   </div>
 
@@ -293,10 +324,10 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
                   <span
                     className={`mt-2 text-[10px] sm:text-[11px] font-bold text-center max-w-[65px] sm:max-w-[85px] leading-tight transition ${
                       isCurrent
-                        ? "text-[#DA9B40] font-extrabold"
+                        ? "text-[#191D23] font-extrabold"
                         : isCompleted
-                        ? "text-[#5B965E]"
-                        : "text-gray-400"
+                        ? "text-[#57707A]"
+                        : "text-[#989DAA]"
                     } ${isSelected ? "underline decoration-2 underline-offset-2" : ""}`}
                   >
                     {step.shortLabel}
@@ -308,9 +339,8 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
         </div>
 
         {/* Simulation / Interactive Step Switcher */}
-        <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between flex-wrap gap-2 text-xs">
-          <div className="flex items-center gap-1.5 text-[11px] text-gray-500 font-medium">
-            <span>💡</span>
+        <div className="mt-3 pt-3 border-t border-[#DEDCDC] flex items-center justify-between flex-wrap gap-2 text-xs">
+          <div className="flex items-center gap-1.5 text-[11px] text-[#7B919C] font-medium">
             <span>Click any milestone above or preview progress steps:</span>
           </div>
 
@@ -322,11 +352,11 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
                 setSelectedMilestoneNum(prev);
               }}
               disabled={currentStep === 1}
-              className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 disabled:opacity-40 text-gray-700 rounded-lg font-bold text-[11px] transition"
+              className="px-2.5 py-1 bg-white hover:bg-gray-100 disabled:opacity-40 text-[#191D23] border border-[#DEDCDC] rounded-lg font-bold text-[11px] transition"
             >
-              ◀ Previous Stage
+              &larr; Previous Stage
             </button>
-            <span className="px-2 py-1 bg-[#F7EEF2] font-mono font-bold text-[11px] text-[#4A355E] rounded-lg">
+            <span className="px-2 py-1 bg-white border border-[#DEDCDC] font-mono font-bold text-[11px] text-[#191D23] rounded-lg">
               Stage {currentStep} / 6
             </span>
             <button
@@ -336,9 +366,9 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
                 setSelectedMilestoneNum(next);
               }}
               disabled={currentStep === 6}
-              className="px-2.5 py-1 bg-[#5B965E] hover:bg-[#47774A] disabled:opacity-40 text-white rounded-lg font-bold text-[11px] transition"
+              className="px-2.5 py-1 bg-[#191D23] hover:bg-[#57707A] disabled:opacity-40 text-white rounded-lg font-bold text-[11px] transition"
             >
-              Next Stage ▶
+              Next Stage &rarr;
             </button>
           </div>
         </div>
@@ -350,31 +380,33 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
       {isExpanded && (
         <div className="p-4 sm:p-6 bg-white space-y-5 animate-in fade-in duration-300">
           {/* Active Stage Live Description Banner */}
-          <div className="bg-[#F7EEF2] border border-[#6D5284]/20 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="bg-[#F7F8F9] border border-[#DEDCDC] rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-start gap-3">
-              <span className="text-2xl mt-0.5">{viewedMilestone.icon}</span>
+              <div className="w-10 h-10 rounded-xl bg-white border border-[#DEDCDC] flex items-center justify-center text-[#57707A] flex-shrink-0 shadow-2xs">
+                {renderMilestoneIcon(viewedMilestone.iconType, "w-5 h-5")}
+              </div>
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h4 className="text-sm font-extrabold text-[#4A355E]">
+                  <h4 className="text-sm font-extrabold text-[#191D23]">
                     Stage {viewedMilestone.stepNumber}: {viewedMilestone.name}
                   </h4>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-[#4A355E] border border-[#6D5284]/30">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-[#57707A] border border-[#C5BAC4]">
                     {viewedMilestone.statusBadge}
                   </span>
                 </div>
-                <p className="text-xs text-[#555555] mt-1 leading-relaxed">
+                <p className="text-xs text-[#57707A] mt-1 leading-relaxed">
                   {viewedMilestone.description}
                 </p>
               </div>
             </div>
 
-            <div className="flex-shrink-0 text-right sm:border-l sm:border-[#6D5284]/20 sm:pl-4">
-              <span className="text-[10px] font-bold text-[#6D5284] uppercase block">Stage Status</span>
-              <span className="text-xs font-black text-[#4A355E]">
+            <div className="flex-shrink-0 text-right sm:border-l sm:border-[#DEDCDC] sm:pl-4">
+              <span className="text-[10px] font-bold text-[#7B919C] uppercase block">Stage Status</span>
+              <span className="text-xs font-black text-[#191D23]">
                 {viewedMilestone.stepNumber < currentStep
-                  ? "✓ Verified Done"
+                  ? "Verified Done"
                   : viewedMilestone.stepNumber === currentStep
-                  ? "⚡ Active In-Progress"
+                  ? "Active In-Progress"
                   : "Scheduled Next"}
               </span>
             </div>
@@ -384,11 +416,11 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {/* Left 2 Cols: Live Checkpoints Activity Log */}
             <div className="lg:col-span-2 space-y-2.5">
-              <h5 className="text-xs font-extrabold text-[#333333] flex items-center justify-between">
+              <h5 className="text-xs font-extrabold text-[#191D23] flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <span>📋</span> Live Work Checkpoints &amp; Telemetry
+                  <FileTextIcon className="w-4 h-4 text-[#57707A]" /> Live Work Checkpoints &amp; Telemetry
                 </span>
-                <span className="text-[10px] text-gray-400 font-semibold">
+                <span className="text-[10px] text-[#7B919C] font-semibold">
                   Timestamped Activity Feed
                 </span>
               </h5>
@@ -399,25 +431,25 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
                     key={idx}
                     className={`flex items-start gap-3 p-3 rounded-xl border transition ${
                       cp.done
-                        ? "bg-[#FAFDFB] border-[#78B77B]/30"
-                        : "bg-[#F7EEF2] border-[#EBCED6] opacity-75"
+                        ? "bg-[#F7F8F9] border-[#DEDCDC]"
+                        : "bg-white border-[#DEDCDC] opacity-75"
                     }`}
                   >
                     <div
                       className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold mt-0.5 flex-shrink-0 ${
                         cp.done
-                          ? "bg-[#5B965E] text-white"
-                          : "bg-gray-200 text-gray-500 border border-gray-300"
+                          ? "bg-[#57707A] text-white"
+                          : "bg-gray-100 text-gray-500 border border-gray-300"
                       }`}
                     >
-                      {cp.done ? "✓" : idx + 1}
+                      {cp.done ? <CheckIcon className="w-3 h-3 stroke-[3]" /> : idx + 1}
                     </div>
 
                     <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                      <span className="text-xs font-medium text-[#333333]">
+                      <span className="text-xs font-medium text-[#191D23]">
                         {cp.text}
                       </span>
-                      <span className="text-[10px] font-mono font-bold text-gray-500 whitespace-nowrap bg-white px-2 py-0.5 rounded border border-gray-200 self-start sm:self-auto">
+                      <span className="text-[10px] font-mono font-bold text-[#7B919C] whitespace-nowrap bg-white px-2 py-0.5 rounded border border-[#DEDCDC] self-start sm:self-auto">
                         {cp.time}
                       </span>
                     </div>
@@ -426,66 +458,67 @@ export default function CustomerWorkProgressBar({ customer, orderId }: CustomerW
               </div>
             </div>
 
-            {/* Right Col: Assigned Delivery Engineer Card (Just like food/grocery delivery apps) */}
-            <div className="bg-[#FAFDFB] rounded-2xl border border-[#78B77B]/40 p-4 space-y-3.5 card-floating flex flex-col justify-between">
+            {/* Right Col: Assigned Delivery Engineer Card */}
+            <div className="bg-[#F7F8F9] rounded-2xl border border-[#DEDCDC] p-4 space-y-3.5 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#5B965E]">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#57707A]">
                     Your Installation Partner
                   </span>
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-[#57707A] border border-[#C5BAC4]">
                     On Duty
                   </span>
                 </div>
 
                 {/* Engineer Profile */}
                 <div className="flex items-center gap-3 mt-3">
-                  <div className="w-12 h-12 rounded-full bg-[#78B77B] text-white flex items-center justify-center text-xl font-bold shadow-md">
-                    👷
+                  <div className="w-12 h-12 rounded-full bg-[#191D23] text-white flex items-center justify-center text-xl font-bold shadow-md">
+                    <HardHatIcon className="w-6 h-6 text-[#C5BAC4]" />
                   </div>
                   <div>
-                    <h5 className="text-xs font-bold text-[#333333] flex items-center gap-1">
+                    <h5 className="text-xs font-bold text-[#191D23] flex items-center gap-1">
                       <span>{engineer.name}</span>
-                      <span className="text-emerald-600 text-[11px]" title="Certified Engineer">✓</span>
+                      <CheckCircleIcon className="w-3.5 h-3.5 text-[#57707A] inline" />
                     </h5>
-                    <p className="text-[10px] text-gray-500 font-medium">
+                    <p className="text-[10px] text-[#7B919C] font-medium">
                       {engineer.specialization.split("&")[0]}
                     </p>
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-amber-600 mt-0.5">
-                      <span>⭐ 4.95</span>
-                      <span className="text-gray-400 font-normal">(142 rooftop plants)</span>
+                    <div className="flex items-center gap-1 text-[10px] font-bold text-[#191D23] mt-0.5">
+                      <StarIcon className="w-3 h-3 fill-[#191D23] text-[#191D23]" />
+                      <span>4.95</span>
+                      <span className="text-[#7B919C] font-normal">(142 rooftop plants)</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-3 p-2.5 bg-white rounded-xl border border-gray-200 text-[11px] text-gray-600 space-y-1">
+                <div className="mt-3 p-2.5 bg-white rounded-xl border border-[#DEDCDC] text-[11px] text-[#57707A] space-y-1">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Order Ref:</span>
-                    <span className="font-mono font-bold text-[#333333]">{customer.inverterSerial}</span>
+                    <span className="text-[#7B919C]">Order Ref:</span>
+                    <span className="font-mono font-bold text-[#191D23]">{customer.inverterSerial}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">System Spec:</span>
-                    <span className="font-semibold text-[#333333]">{customer.system}</span>
+                    <span className="text-[#7B919C]">System Spec:</span>
+                    <span className="font-semibold text-[#191D23]">{customer.system}</span>
                   </div>
                 </div>
               </div>
 
               {/* Direct Quick Action Buttons */}
-              <div className="pt-2 border-t border-gray-100 space-y-1.5">
+              <div className="pt-2 border-t border-[#DEDCDC] space-y-1.5">
                 <a
                   href={`tel:${engineer.phone.replace(/\s+/g, "")}`}
-                  className="w-full py-2 bg-[#5B965E] hover:bg-[#47774A] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition"
+                  className="w-full py-2 bg-[#191D23] hover:bg-[#57707A] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition"
                 >
-                  <span>📞</span> Call Lead Engineer
+                  <PhoneIcon className="w-3.5 h-3.5" /> Call Lead Engineer
                 </a>
 
                 <a
                   href={`https://wa.me/${engineer.phone.replace(/[^0-9]/g, "")}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-2 bg-white hover:bg-gray-50 text-[#333333] border border-gray-300 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition"
+                  className="w-full py-2 bg-white hover:bg-gray-50 text-[#191D23] border border-[#DEDCDC] rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition"
                 >
-                  <span>💬</span> WhatsApp Live Updates
+                  <MessageSquareIcon className="w-3.5 h-3.5 text-[#57707A]" /> WhatsApp Live Updates
                 </a>
               </div>
             </div>

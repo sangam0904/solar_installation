@@ -796,7 +796,7 @@ function TechnicianFieldContent() {
               </div>
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h2 className="text-lg font-bold text-white tracking-tight">My Assigned Field Tasks</h2>
+                  <h2 className="text-lg font-bold text-white !text-white tracking-tight" style={{ color: "#ffffff" }}>My Assigned Field Tasks</h2>
                   <span className="text-[10px] font-bold bg-[#FFBB94] text-[#4C1D3D] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-2xs">
                     Logged in as {currentViewTech.name}
                   </span>

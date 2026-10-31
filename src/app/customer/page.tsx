@@ -1,6 +1,22 @@
 "use client";
 
-import { SunIcon, ShieldCheckIcon, AlertCircleIcon, ChartBarIcon, CameraIcon, MessageSquareIcon } from "@/components/Icons";
+import {
+  SunIcon,
+  ShieldCheckIcon,
+  AlertCircleIcon,
+  ChartBarIcon,
+  CameraIcon,
+  MessageSquareIcon,
+  ZapIcon,
+  PackageIcon,
+  HardHatIcon,
+  PhoneIcon,
+  CheckCircleIcon,
+  CheckIcon,
+  ChevronRightIcon,
+  FileTextIcon,
+  ClockIcon,
+} from "@/components/Icons";
 
 import { useState, useEffect, useRef, Suspense } from "react";
 import Link from "next/link";
@@ -119,32 +135,16 @@ function CustomerContent() {
       panelWarranty: "Active until 12 Oct 2051 (25 Yrs)",
       progressStep: 6,
     },
-    {
-      key: "kavita",
-      name: "Kavita Joshi",
-      phone: "+91 43210 98765",
-      address: "10, Defence Colony, Jaipur",
-      system: "3 kW Off-Grid System",
-      installedDate: "Scheduled 04 Nov 2026",
-      todayGen: "0.0 kWh (Pre-Install)",
-      monthlyGen: "0 kWh",
-      lifetimeSavings: "₹0",
-      subsidyStatus: "Applied (National Portal)",
-      inverterSerial: "INV-3K-HB-7755",
-      panelSerial: "Allocated in Warehouse",
-      inverterWarranty: "5-Year Guarantee",
-      panelWarranty: "25-Year Guarantee",
-      progressStep: 3,
-    },
   ];
 
-  // Profile strictly matched to logged-in customer account
-  const current = customers.find(c => user?.name && user.name.toLowerCase().includes(c.name.split(" ")[0].toLowerCase())) || customers[0];
+  // Pick active profile strictly based on auth user phone/account
+  const current = customers.find((c) => c.phone === user?.phone) || customers[0];
 
-  // Photo upload states
+  // Uploaded Photos State
   const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([
-    { id: 1, title: "South Roof Shadow Analysis", category: "Pre-Installation Roof", date: "2026-10-21", url: "☀️", isRealFile: false },
-    { id: 2, title: "Main Three-Phase Electricity Meter", category: "Utility Meter", date: "2026-10-21", url: "🔌", isRealFile: false },
+    { id: 1, title: "South Rooftop Pre-Survey", category: "Pre-Installation Roof", date: "15 Oct 2026", url: "Roof Layout Area" },
+    { id: 2, title: "JVVNL Bidirectional Net Meter", category: "Electricity Meter", date: "22 Oct 2026", url: "Net Meter Reading" },
+    { id: 3, title: "Chemical Earthing Dual Pit", category: "Earthing Pit", date: "20 Oct 2026", url: "Earthing Pit Verification" },
   ]);
   const [newPhotoTitle, setNewPhotoTitle] = useState("");
   const [newPhotoCat, setNewPhotoCat] = useState("Pre-Installation Roof");
@@ -153,7 +153,16 @@ function CustomerContent() {
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const photoInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Complaint states
+  // Complaints / Service Ticket State
+  const [myTickets, setMyTickets] = useState<CustomerComplaintTicket[]>([
+    {
+      id: "TKT-001",
+      issue: "Inverter red alarm light blinking (Code E-04)",
+      date: "28 Oct 2026",
+      status: "In Progress",
+      cost: "Free (Warranty Covered)",
+    },
+  ]);
   const [complaintType, setComplaintType] = useState("Inverter Error (E-01/E-04)");
   const [complaintDesc, setComplaintDesc] = useState("");
   const [complaintPhoto, setComplaintPhoto] = useState<string>("");
@@ -161,92 +170,82 @@ function CustomerContent() {
   const [complaintSuccess, setComplaintSuccess] = useState(false);
   const complaintFileRef = useRef<HTMLInputElement | null>(null);
 
-  const [myTickets, setMyTickets] = useState<CustomerComplaintTicket[]>([
-    {
-      id: "TKT-088",
-      issue: "Inverter E-04 Communication Error",
-      date: "2026-10-28",
-      status: "Assigned to Rohit Meena",
-      cost: "₹0 (Free Warranty Claim)",
-    },
-  ]);
-
-  // Enquiry states & Flipkart Stepped Progress Data
+  // Enquiry / Upgrade Requests History
   const [enquirySubject, setEnquirySubject] = useState("Add Battery Backup (Off-Grid Upgrade)");
   const [enquiryMessage, setEnquiryMessage] = useState("");
   const [enquiryFile, setEnquiryFile] = useState<File | null>(null);
   const [enquiryFilePreview, setEnquiryFilePreview] = useState<string>("");
   const [enquirySuccess, setEnquirySuccess] = useState(false);
+  const [expandedEnquiryId, setExpandedEnquiryId] = useState<string>("ENQ-8821");
   const enquiryFileRef = useRef<HTMLInputElement | null>(null);
-  const [expandedEnquiryId, setExpandedEnquiryId] = useState<string>("ENQ-101");
 
   const [enquiryHistory, setEnquiryHistory] = useState<SubmittedEnquiry[]>([
     {
-      id: "ENQ-101",
-      subject: "Add Battery Backup (Off-Grid Upgrade)",
-      message: "Currently have 5 kW On-Grid system. Looking to add 10 kWh Lithium Battery Bank for power backup during grid shedding.",
+      id: "ENQ-8821",
+      subject: "Add 5.12 kWh Lithium Battery Backup",
+      message: "Want to connect hybrid battery backup to existing 5 kW solar system so we have power during night outages.",
       date: "29 Oct 2026",
-      status: "Feasibility Review in Progress",
+      status: "Engineering Feasibility Review",
       currentStep: 3,
-      consultantName: "Rohit Meena (Lead Technical Engineer)",
-      consultantPhone: "+91 98765 11111",
-      estimatedResolution: "Quotation & Proposal Expected Today by 5:30 PM",
+      consultantName: "Rohit Meena (Lead Solar Engineer)",
+      consultantPhone: "+91 98765 43210",
+      estimatedResolution: "Quotation & BOM ready by 02 Nov 2026",
       steps: [
         {
           stepNumber: 1,
-          title: "Enquiry Placed",
-          subtitle: "29 Oct, 10:15 AM",
+          title: "Enquiry Submitted",
+          subtitle: "29 Oct, 10:30 AM",
           date: "29 Oct 2026",
-          details: "Battery backup query registered on SunPower engineering portal",
+          details: "Upgrade inquiry logged on SunPower portal and assigned to Engineering Desk",
           isCompleted: true,
           isCurrent: false,
         },
         {
           stepNumber: 2,
-          title: "Assigned to Consultant",
-          subtitle: "29 Oct, 11:30 AM",
-          date: "29 Oct 2026",
-          details: "Assigned to Lead Engineer Rohit Meena • System telemetry and inverter load reviewed",
+          title: "Inverter Check",
+          subtitle: "30 Oct, 02:15 PM",
+          date: "30 Oct 2026",
+          details: "Verified INV-5K-OG-9921 hybrid inverter compatibility with Okaya 48V LiFePO4 battery",
           isCompleted: true,
           isCurrent: false,
         },
         {
           stepNumber: 3,
-          title: "Technical Feasibility",
-          subtitle: "In Progress ⚡",
-          date: "31 Oct, 02:00 PM",
-          details: "Hybrid inverter compatibility confirmed • Preparing battery rack layout & safety breaker plan",
+          title: "Technical Review",
+          subtitle: "In Progress",
+          date: "31 Oct, 11:00 AM",
+          details: "Chief Technical Officer reviewing Single Line Diagram (SLD) & DC charge controller sizing",
           isCompleted: false,
           isCurrent: true,
         },
         {
           stepNumber: 4,
-          title: "Quotation & Subsidy",
-          subtitle: "Expected Today, 5:30 PM",
-          date: "31 Oct 2026",
-          details: "Itemized BOM & formal commercial quotation proposal dispatch",
+          title: "Proposal Ready",
+          subtitle: "Expected 02 Nov",
+          date: "02 Nov 2026",
+          details: "Itemized BOM quotation with subsidy deduction sent to customer WhatsApp & portal",
           isCompleted: false,
           isCurrent: false,
         },
         {
           stepNumber: 5,
-          title: "Site Execution",
-          subtitle: "Scheduled on Confirmation",
-          date: "Nov 2026",
-          details: "Warehouse dispatch and technician installation at site",
+          title: "Site Installation",
+          subtitle: "Scheduled 05 Nov",
+          date: "05 Nov 2026",
+          details: "Field technician dispatched to bolt battery bank & test bidirectional charge transfer",
           isCompleted: false,
           isCurrent: false,
         },
       ],
     },
     {
-      id: "ENQ-092",
-      subject: "PM Surya Ghar Subsidy Follow-up",
-      message: "Wanted to confirm if the second installment of PM Surya Ghar subsidy needs meter verification.",
+      id: "ENQ-8410",
+      subject: "Government DBT Subsidy Status Tracking",
+      message: "Please share update on National Portal PM Surya Ghar ₹78,000 direct benefit bank transfer token.",
       date: "22 Oct 2026",
-      status: "Subsidy Sanction Approved",
+      status: "PFMS Bank Credit Verification",
       currentStep: 4,
-      consultantName: "Pooja Choudhary (Grid Sync Engineer)",
+      consultantName: "Vikas Sharma (Subsidy Desk Head)",
       consultantPhone: "+91 98765 88888",
       estimatedResolution: "Direct Benefit Transfer (DBT) Token Generated",
       steps: [
@@ -280,7 +279,7 @@ function CustomerContent() {
         {
           stepNumber: 4,
           title: "Bank Credit Processing",
-          subtitle: "In Progress ⚡",
+          subtitle: "In Progress",
           date: "30 Oct, 04:30 PM",
           details: "PFMS token dispatched to registered bank account",
           isCompleted: false,
@@ -318,25 +317,27 @@ function CustomerContent() {
 
   const handleUploadPhoto = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPhotoTitle) return;
+    if (!filePreview && !selectedFile) return;
 
-    const item: UploadedPhoto = {
+    const newPhoto: UploadedPhoto = {
       id: Date.now(),
-      title: newPhotoTitle,
+      title: newPhotoTitle || "Customer Roof Photo",
       category: newPhotoCat,
-      date: "2026-10-31",
-      url: filePreview || "📸",
-      isRealFile: Boolean(filePreview),
+      date: "Today",
+      url: filePreview || "Selected Photo",
+      isRealFile: true,
     };
 
-    setUploadedPhotos([item, ...uploadedPhotos]);
+    setUploadedPhotos([newPhoto, ...uploadedPhotos]);
+    setUploadSuccess(true);
     setNewPhotoTitle("");
     setSelectedFile(null);
     setFilePreview("");
     if (photoInputRef.current) photoInputRef.current.value = "";
 
-    setUploadSuccess(true);
-    setTimeout(() => setUploadSuccess(false), 2500);
+    setTimeout(() => {
+      setUploadSuccess(false);
+    }, 4000);
   };
 
   const handleComplaintFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -354,70 +355,42 @@ function CustomerContent() {
     e.preventDefault();
     if (!complaintDesc) return;
 
-    const newTktId = `TKT-${Math.floor(100 + Math.random() * 900)}`;
-
-    const formalTicket = {
-      id: newTktId,
-      customerId: current.key ? `CUST-${current.key.toUpperCase()}` : "CUST-001",
-      customerName: current.name,
-      phone: current.phone,
-      address: current.address,
-      serialNumber: current.inverterSerial,
-      productName: current.system,
-      issueType: complaintType.includes("Inverter") ? "Inverter Error" : complaintType.includes("Power") ? "Zero Power" : complaintType.includes("Battery") ? "Battery Issue" : "Low Output",
-      description: complaintDesc,
-      priority: "High" as const,
-      status: "Open" as const,
-      warrantyStatus: "Under Warranty" as const,
-      assignedTechnician: "",
-      estimatedCost: 0,
-      actualCost: 0,
-      createdAt: "2026-10-31",
-      resolvedAt: "",
-      photoProofUrl: complaintPhoto,
-      photoProofName: complaintPhotoName,
-    };
-
-    try {
-      const savedTickets = JSON.parse(localStorage.getItem("sunpower_service_tickets") || "[]");
-      const fullList = savedTickets.length > 0 ? savedTickets : defaultInitialTickets;
-      localStorage.setItem("sunpower_service_tickets", JSON.stringify([formalTicket, ...fullList]));
-    } catch {
-      // Ignore
-    }
-
-    try {
-      const notifs = JSON.parse(localStorage.getItem("sunpower_notifications") || "[]");
-      const adminNotif = {
-        id: `notif-${Date.now()}`,
-        recipientRole: "admin" as const,
-        text: `🚨 New Breakdown Complaint filed by ${current.name}: ${complaintType} (${newTktId})`,
-        time: "Just now",
-        type: "alert" as const,
-      };
-      localStorage.setItem("sunpower_notifications", JSON.stringify([adminNotif, ...notifs]));
-      window.dispatchEvent(new Event("sunpower_customer_update"));
-    } catch {
-      // Ignore
-    }
-
-    const newLocalTkt: CustomerComplaintTicket = {
-      id: newTktId,
-      issue: complaintType,
-      date: "2026-10-31",
-      status: "Open (Filed to Admin Service Desk)",
-      cost: "₹0 (Free Warranty Claim)",
+    const newTicket: CustomerComplaintTicket = {
+      id: `TKT-${Math.floor(100 + Math.random() * 900)}`,
+      issue: `${complaintType}: ${complaintDesc}`,
+      date: "Today",
+      status: "Open (Pending Admin Dispatch)",
+      cost: "₹0 (5-Year Inverter Warranty)",
       photo: complaintPhoto,
       photoName: complaintPhotoName,
     };
 
-    setMyTickets([newLocalTkt, ...myTickets]);
+    setMyTickets([newTicket, ...myTickets]);
     setComplaintSuccess(true);
+
+    try {
+      const savedNotifs = JSON.parse(localStorage.getItem("sunpower_notifications") || "[]");
+      const adminNotif = {
+        id: `notif-${Date.now()}`,
+        recipientRole: "admin" as const,
+        text: `Customer Complaint Filed: ${complaintType} from ${current.name} (${newTicket.id})`,
+        time: "Just now",
+        type: "complaint" as const,
+      };
+      localStorage.setItem("sunpower_notifications", JSON.stringify([adminNotif, ...savedNotifs]));
+      window.dispatchEvent(new Event("storage"));
+    } catch {
+      // Ignore
+    }
+
     setComplaintDesc("");
     setComplaintPhoto("");
     setComplaintPhotoName("");
     if (complaintFileRef.current) complaintFileRef.current.value = "";
-    setTimeout(() => setComplaintSuccess(false), 3500);
+
+    setTimeout(() => {
+      setComplaintSuccess(false);
+    }, 4000);
   };
 
   const handleEnquiryFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -435,117 +408,88 @@ function CustomerContent() {
     e.preventDefault();
     if (!enquiryMessage) return;
 
-    const newEnqId = `ENQ-${Math.floor(200 + Math.random() * 800)}`;
-    const newEnq: SubmittedEnquiry = {
-      id: newEnqId,
+    const newId = `ENQ-${Math.floor(1000 + Math.random() * 9000)}`;
+    const newEnquiry: SubmittedEnquiry = {
+      id: newId,
       subject: enquirySubject,
       message: enquiryMessage,
-      date: "31 Oct 2026",
+      date: "Today, Just now",
+      status: "Engineering Feasibility Check",
+      currentStep: 2,
+      consultantName: "Vikas Sharma (Solar Technical Lead)",
+      consultantPhone: "+91 98765 88888",
+      estimatedResolution: "Feasibility review within 24 hours",
       attachedPhoto: enquiryFilePreview,
       fileName: enquiryFile?.name,
-      status: "Enquiry Received • Assigning Engineer",
-      currentStep: 1,
-      consultantName: "Rohit Meena (Technical Lead)",
-      consultantPhone: "+91 98765 11111",
-      estimatedResolution: "Consultant Call & Assessment within 2 hours",
       steps: [
         {
           stepNumber: 1,
-          title: "Enquiry Placed",
-          subtitle: "Just Now • 31 Oct",
-          date: "31 Oct 2026",
-          details: "Upgrade inquiry and specifications registered on engineering portal",
+          title: "Enquiry Submitted",
+          subtitle: "Just now",
+          date: "Today",
+          details: `Enquiry logged for ${enquirySubject} with customer requirements`,
           isCompleted: true,
           isCurrent: false,
         },
         {
           stepNumber: 2,
           title: "Technical Review",
-          subtitle: "In Progress ⚡",
-          date: "Today by 4:00 PM",
-          details: "Assigned to Rohit Meena • Analyzing rooftop space, inverter capacity & SLD",
+          subtitle: "In Progress",
+          date: "Today",
+          details: "Site configuration under review by senior solar system engineer",
           isCompleted: false,
           isCurrent: true,
         },
         {
           stepNumber: 3,
-          title: "BOM & Subsidy",
-          subtitle: "Next Step",
-          date: "Expected by 5:30 PM",
-          details: "Itemized Bill of Materials & PM Surya Ghar central subsidy calculation",
+          title: "Custom BOM Ready",
+          subtitle: "Next 24h",
+          date: "Tomorrow",
+          details: "Discounted pricing, BOM bill of materials & PM Surya Ghar subsidy applied",
           isCompleted: false,
           isCurrent: false,
         },
         {
           stepNumber: 4,
-          title: "Proposal Dispatched",
-          subtitle: "Within 24 Hours",
-          date: "01 Nov 2026",
-          details: "Formal quotation document will be shared via portal and WhatsApp",
-          isCompleted: false,
-          isCurrent: false,
-        },
-        {
-          stepNumber: 5,
-          title: "Site Execution",
-          subtitle: "Final Step",
-          date: "Scheduled on Confirmation",
-          details: "Hardware allocation at warehouse and certified field technician site visit",
+          title: "Handover Signoff",
+          subtitle: "Next Step",
+          date: "Upcoming",
+          details: "Final upgrade confirmation and site dispatch scheduled",
           isCompleted: false,
           isCurrent: false,
         },
       ],
     };
 
-    setEnquiryHistory([newEnq, ...enquiryHistory]);
+    setEnquiryHistory([newEnquiry, ...enquiryHistory]);
+    setExpandedEnquiryId(newId);
+    setEnquirySuccess(true);
 
     try {
-      const savedEnqs = JSON.parse(localStorage.getItem("sunpower_customer_enquiries") || "[]");
-      const newSavedEnq = {
-        id: newEnqId,
-        type: "enquiry",
-        customerName: current.name,
-        phone: current.phone,
-        address: current.address,
-        system: current.system,
-        subject: enquirySubject,
-        message: enquiryMessage,
-        priority: "High",
-        status: "New",
-        attachedPhoto: enquiryFilePreview,
-        fileName: enquiryFile?.name,
-        createdAt: "Just now",
-        isRead: false,
-      };
-      localStorage.setItem("sunpower_customer_enquiries", JSON.stringify([newSavedEnq, ...savedEnqs]));
-    } catch {
-      // Ignore
-    }
-
-    try {
-      const notifs = JSON.parse(localStorage.getItem("sunpower_notifications") || "[]");
+      const savedNotifs = JSON.parse(localStorage.getItem("sunpower_notifications") || "[]");
       const adminNotif = {
         id: `notif-${Date.now()}`,
         recipientRole: "admin" as const,
-        text: `💬 New Customer Upgrade Enquiry from ${current.name}: "${enquirySubject}" (${newEnqId})`,
+        text: `New Upgrade Enquiry: ${enquirySubject} from ${current.name} (${newId})`,
         time: "Just now",
-        type: "lead" as const,
+        type: "enquiry" as const,
       };
-      localStorage.setItem("sunpower_notifications", JSON.stringify([adminNotif, ...notifs]));
-      window.dispatchEvent(new Event("sunpower_customer_update"));
+      localStorage.setItem("sunpower_notifications", JSON.stringify([adminNotif, ...savedNotifs]));
+      window.dispatchEvent(new Event("storage"));
     } catch {
       // Ignore
     }
-    setExpandedEnquiryId(newEnqId);
-    setEnquirySuccess(true);
+
     setEnquiryMessage("");
     setEnquiryFile(null);
     setEnquiryFilePreview("");
     if (enquiryFileRef.current) enquiryFileRef.current.value = "";
-    setTimeout(() => setEnquirySuccess(false), 3000);
+
+    setTimeout(() => {
+      setEnquirySuccess(false);
+    }, 4000);
   };
 
-  // Milestone steps definition for Main Rooftop Plant
   const progressSteps = [
     { num: 1, title: "Inquiry & Roof Pre-Qualification", desc: "Form filled & subsidy verified" },
     { num: 2, title: "Site Survey & Shading Check", desc: "Technician measured tilt & orientation" },
@@ -556,37 +500,56 @@ function CustomerContent() {
   ];
 
   const portalSections = [
-    { id: "passbook", label: "Solar Yield & Passbook", icon: "☀️", badge: "Live Yield" },
-    { id: "progress", label: "Installation Progress Report", icon: "📊", badge: `Step ${current.progressStep}/6` },
-    { id: "photos", label: `Upload Roof Photos (${uploadedPhotos.length})`, icon: "📸", badge: `${uploadedPhotos.length} Photos` },
-    { id: "complaint", label: "File Service Complaint", icon: "🚨", badge: myTickets.length > 0 ? `${myTickets.length} Active` : "Free Warranty" },
-    { id: "enquiry", label: `Ask for Enquiry / Upgrade (${enquiryHistory.length})`, icon: "💬", badge: `${enquiryHistory.length} Inquiries` },
-    { id: "warranty", label: "Digital Warranty Cards", icon: "🛡️", badge: "2 Active" },
+    { id: "passbook", label: "Solar Yield & Passbook", badge: "Live Yield" },
+    { id: "progress", label: "Installation Progress Report", badge: `Step ${current.progressStep}/6` },
+    { id: "photos", label: `Upload Roof Photos (${uploadedPhotos.length})`, badge: `${uploadedPhotos.length} Photos` },
+    { id: "complaint", label: "File Service Complaint", badge: myTickets.length > 0 ? `${myTickets.length} Active` : "Free Warranty" },
+    { id: "enquiry", label: `Ask for Enquiry / Upgrade (${enquiryHistory.length})`, badge: `${enquiryHistory.length} Inquiries` },
+    { id: "warranty", label: "Digital Warranty Cards", badge: "2 Active" },
   ];
+
+  function renderPortalSectionIcon(id: string, className = "w-5 h-5") {
+    switch (id) {
+      case "passbook":
+        return <SunIcon className={className} />;
+      case "progress":
+        return <ChartBarIcon className={className} />;
+      case "photos":
+        return <CameraIcon className={className} />;
+      case "complaint":
+        return <AlertCircleIcon className={className} />;
+      case "enquiry":
+        return <MessageSquareIcon className={className} />;
+      case "warranty":
+        return <ShieldCheckIcon className={className} />;
+      default:
+        return <SunIcon className={className} />;
+    }
+  }
 
   const currentSection = portalSections.find((s) => s.id === activeTab) || portalSections[0];
 
   if (mounted && role !== "customer") {
     return (
       <PageShell>
-        <div className="max-w-xl mx-auto my-12 bg-white rounded-3xl border border-[#EBCED6] p-8 text-center card-floating space-y-4">
-          <div className="w-16 h-16 mx-auto rounded-2xl bg-[#F7EEF2] text-[#4A355E] flex items-center justify-center text-3xl shadow-sm">
-            🔒
+        <div className="max-w-xl mx-auto my-12 bg-white rounded-3xl border border-[#DEDCDC] p-8 text-center shadow-md space-y-4">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-[#F7F8F9] text-[#191D23] flex items-center justify-center text-3xl shadow-xs border border-[#DEDCDC]">
+            <ShieldCheckIcon className="w-8 h-8 text-[#57707A]" />
           </div>
-          <h2 className="text-xl font-bold text-[#333333]">Customer Portal Access Restricted</h2>
-          <p className="text-xs sm:text-sm text-[#666666] leading-relaxed">
+          <h2 className="text-xl font-bold text-[#191D23]">Customer Portal Access Restricted</h2>
+          <p className="text-xs sm:text-sm text-[#57707A] leading-relaxed">
             Customer solar passbooks, generation history, and digital warranty records can only be accessed by logging in directly with a Customer account.
           </p>
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               href="/login"
-              className="w-full sm:w-auto px-5 py-2.5 bg-[#4A355E] hover:bg-[#372447] text-white rounded-xl text-xs font-bold transition shadow-xs"
+              className="w-full sm:w-auto px-5 py-2.5 bg-[#191D23] hover:bg-[#57707A] text-white rounded-xl text-xs font-bold transition shadow-xs"
             >
-              Log in as Customer →
+              Log in as Customer &rarr;
             </Link>
             <Link
               href="/"
-              className="w-full sm:w-auto px-5 py-2.5 bg-[#F7EEF2] hover:bg-[#EBCED6] text-[#333333] rounded-xl text-xs font-semibold transition"
+              className="w-full sm:w-auto px-5 py-2.5 bg-[#F7F8F9] hover:bg-[#DEDCDC] text-[#191D23] border border-[#DEDCDC] rounded-xl text-xs font-semibold transition"
             >
               Return to Admin Dashboard
             </Link>
@@ -601,52 +564,54 @@ function CustomerContent() {
       {/* Customer Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <SunIcon className="w-6 h-6 text-[#4A355E]" />
-            <h1 className="text-xl sm:text-2xl font-bold text-[#333333]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#191D23] to-[#57707A] flex items-center justify-center text-white shadow-xs">
+              <SunIcon className="w-5 h-5 text-white" />
+            </div>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#191D23]">
               Customer Solar Passbook
             </h1>
-            <span className="text-[10px] font-bold bg-[#EBF5EC] text-[#5B965E] px-2.5 py-0.5 rounded-full border border-[#78B77B]/40">
+            <span className="text-[10px] font-bold bg-[#F7F8F9] text-[#57707A] px-2.5 py-0.5 rounded-full border border-[#DEDCDC] uppercase tracking-wide">
               Homeowner Self-Service Portal
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-[#666666] mt-0.5">
-            Welcome, <strong>{current.name}</strong> • {current.address}
+          <p className="text-xs sm:text-sm text-[#57707A] mt-1">
+            Welcome, <strong className="text-[#191D23]">{current.name}</strong> • {current.address}
           </p>
         </div>
 
-        {/* Secured Plant Verification Badge (Profiles accessible only via login) */}
-        <div className="flex items-center gap-2 bg-white px-3.5 py-1.5 rounded-xl border border-[#EBCED6] card-floating">
-          <span className="w-2 h-2 rounded-full bg-[#78B77B] animate-pulse"></span>
-          <span className="text-[11px] font-bold text-[#333333]">
+        {/* Secured Plant Verification Badge */}
+        <div className="flex items-center gap-2.5 bg-white px-3.5 py-2 rounded-xl border border-[#DEDCDC] shadow-2xs">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span className="text-[11px] font-bold text-[#191D23]">
             {current.system}
           </span>
-          <span className="text-[10px] text-[#666666] border-l border-[#EBCED6] pl-2 font-mono">
+          <span className="text-[10px] text-[#7B919C] border-l border-[#DEDCDC] pl-2 font-mono">
             Plant ID: {current.inverterSerial}
           </span>
         </div>
       </div>
 
       {/* Hero Welcome Banner */}
-      <div className="bg-[#6D5284] rounded-2xl p-5 sm:p-6 text-white card-floating flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-[#191D23] via-[#57707A] to-[#7B919C] rounded-2xl p-5 sm:p-6 text-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="space-y-1">
-          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#4A355E] text-white border border-white/20">
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#191D23] text-white border border-white/20">
             Plant ID: {current.inverterSerial}
           </span>
-          <h2 className="text-lg sm:text-xl font-extrabold">{current.system}</h2>
-          <p className="text-xs text-white/80">{current.address} • Commissioned: {current.installedDate}</p>
+          <h2 className="text-lg sm:text-xl font-extrabold text-white">{current.system}</h2>
+          <p className="text-xs text-white/85">{current.address} • Commissioned: {current.installedDate}</p>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => switchTab("complaint")}
-            className="px-3.5 py-2 bg-white hover:bg-[#F7EEF2] text-[#4A355E] text-xs font-bold rounded-xl card-floating transition cursor-pointer"
+            className="px-3.5 py-2 bg-white hover:bg-gray-100 text-[#191D23] text-xs font-bold rounded-xl transition cursor-pointer shadow-xs"
           >
             Report Breakdown
           </button>
           <button
             onClick={() => switchTab("progress")}
-            className="px-3.5 py-2 bg-[#4A355E] hover:bg-[#372447] text-white text-xs font-bold rounded-xl card-floating transition border border-white/20 cursor-pointer"
+            className="px-3.5 py-2 bg-[#191D23] hover:bg-[#57707A] text-white text-xs font-bold rounded-xl transition border border-white/20 cursor-pointer shadow-xs"
           >
             Track Status
           </button>
@@ -654,24 +619,24 @@ function CustomerContent() {
       </div>
 
       {/* ───────────────── CUSTOMER PORTAL SECTION DROPDOWN BOX ───────────────── */}
-      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-[#EBCED6] card-floating">
+      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-[#DEDCDC] shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-xl bg-[#F7EEF2] border border-[#6D5284]/30 flex items-center justify-center text-2xl flex-shrink-0 card-floating">
-              {currentSection.icon}
+            <div className="w-11 h-11 rounded-xl bg-[#F7F8F9] border border-[#DEDCDC] flex items-center justify-center text-[#57707A] flex-shrink-0 shadow-2xs">
+              {renderPortalSectionIcon(currentSection.id, "w-5 h-5 text-[#57707A]")}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold text-[#6D5284] uppercase tracking-wider">
+                <span className="text-[10px] font-bold text-[#57707A] uppercase tracking-wider">
                   Customer Portal Section
                 </span>
                 {currentSection.badge && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FEF6EB] text-[#DA9B40] border border-[#F4B860]/40">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#F7F8F9] text-[#191D23] border border-[#DEDCDC]">
                     {currentSection.badge}
                   </span>
                 )}
               </div>
-              <h2 className="text-base sm:text-lg font-extrabold text-[#333333] mt-0.5">
+              <h2 className="text-base sm:text-lg font-extrabold text-[#191D23] mt-0.5">
                 {currentSection.label}
               </h2>
             </div>
@@ -679,24 +644,24 @@ function CustomerContent() {
 
           {/* Interactive Dropdown Box */}
           <div className="w-full sm:w-80">
-            <label htmlFor="customer-portal-dropdown-box" className="block text-[10px] font-bold text-[#666666] uppercase mb-1">
-              Select Portal View (Dropdown Box)
+            <label htmlFor="customer-portal-dropdown-box" className="block text-[10px] font-bold text-[#7B919C] uppercase mb-1 tracking-wide">
+              Select Portal View
             </label>
             <div className="relative">
               <select
                 id="customer-portal-dropdown-box"
                 value={activeTab}
                 onChange={(e) => switchTab(e.target.value as any)}
-                className="w-full appearance-none bg-[#F7EEF2] hover:bg-[#F7EEF2] text-[#333333] font-bold text-xs sm:text-sm pl-4 pr-10 py-2.5 rounded-xl border border-[#D8DCE3] focus:border-[#4A355E] focus:ring-2 focus:ring-[#4A355E]/20 focus:outline-none cursor-pointer transition card-floating"
+                className="w-full appearance-none bg-[#F7F8F9] hover:bg-gray-100 text-[#191D23] font-bold text-xs sm:text-sm pl-4 pr-10 py-2.5 rounded-xl border border-[#DEDCDC] focus:border-[#57707A] focus:ring-2 focus:ring-[#57707A]/20 focus:outline-none cursor-pointer transition shadow-2xs"
               >
-                <option value="passbook">☀️ Solar Yield &amp; Passbook</option>
-                <option value="progress">📊 Installation Progress Report</option>
-                <option value="photos">📸 Upload Roof Photos ({uploadedPhotos.length})</option>
-                <option value="complaint">🚨 File Service Complaint</option>
-                <option value="enquiry">💬 Ask for Enquiry / Upgrade ({enquiryHistory.length})</option>
-                <option value="warranty">🛡️ Digital Warranty Cards</option>
+                <option value="passbook">Solar Yield &amp; Passbook</option>
+                <option value="progress">Installation Progress Report</option>
+                <option value="photos">Upload Roof Photos ({uploadedPhotos.length})</option>
+                <option value="complaint">File Service Complaint</option>
+                <option value="enquiry">Ask for Enquiry / Upgrade ({enquiryHistory.length})</option>
+                <option value="warranty">Digital Warranty Cards</option>
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-[#4A355E]">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-[#57707A]">
                 <span className="text-xs font-bold">▼</span>
               </div>
             </div>
@@ -708,28 +673,30 @@ function CustomerContent() {
       {activeTab === "passbook" && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#F4B860] card-floating">
-              <span className="text-[10px] font-bold text-[#666666] uppercase">Today&apos;s Generation</span>
-              <p className="text-2xl font-extrabold text-[#DA9B40] mt-1">{current.todayGen}</p>
-              <span className="text-[11px] text-[#5B965E] font-bold">☀️ 5.4 Peak Sun Hours</span>
+            <div className="bg-white p-5 rounded-2xl border border-[#DEDCDC] border-l-4 border-l-[#57707A] shadow-xs">
+              <span className="text-[10px] font-bold text-[#7B919C] uppercase tracking-wide">Today&apos;s Generation</span>
+              <p className="text-2xl font-extrabold text-[#191D23] mt-1">{current.todayGen}</p>
+              <span className="text-[11px] text-emerald-600 font-bold flex items-center gap-1 mt-1">
+                <SunIcon className="w-3.5 h-3.5 text-emerald-600" /> 5.4 Peak Sun Hours
+              </span>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#6D5284] card-floating">
-              <span className="text-[10px] font-bold text-[#666666] uppercase">This Month</span>
-              <p className="text-2xl font-extrabold text-[#4A355E] mt-1">{current.monthlyGen}</p>
-              <span className="text-[11px] text-[#666666]">Replaced 94% of grid bill</span>
+            <div className="bg-white p-5 rounded-2xl border border-[#DEDCDC] border-l-4 border-l-[#7B919C] shadow-xs">
+              <span className="text-[10px] font-bold text-[#7B919C] uppercase tracking-wide">This Month</span>
+              <p className="text-2xl font-extrabold text-[#57707A] mt-1">{current.monthlyGen}</p>
+              <span className="text-[11px] text-[#7B919C] block mt-1">Replaced 94% of grid bill</span>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#78B77B] card-floating">
-              <span className="text-[10px] font-bold text-[#666666] uppercase">Cumulative Bill Savings</span>
-              <p className="text-2xl font-extrabold text-[#78B77B] mt-1">{current.lifetimeSavings}</p>
-              <span className="text-[11px] text-[#5B965E] font-bold">₹7.20 / unit grid tariff saved</span>
+            <div className="bg-white p-5 rounded-2xl border border-[#DEDCDC] border-l-4 border-l-emerald-600 shadow-xs">
+              <span className="text-[10px] font-bold text-[#7B919C] uppercase tracking-wide">Cumulative Bill Savings</span>
+              <p className="text-2xl font-extrabold text-emerald-600 mt-1">{current.lifetimeSavings}</p>
+              <span className="text-[11px] text-emerald-600 font-bold block mt-1">₹7.20 / unit grid tariff saved</span>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] border-l-4 border-l-[#4A355E] card-floating">
-              <span className="text-[10px] font-bold text-[#666666] uppercase">Govt DBT Subsidy</span>
-              <p className="text-lg font-extrabold text-[#4A355E] mt-1">{current.subsidyStatus}</p>
-              <span className="text-[11px] text-[#666666]">PM-Surya Ghar Scheme</span>
+            <div className="bg-white p-5 rounded-2xl border border-[#DEDCDC] border-l-4 border-l-[#191D23] shadow-xs">
+              <span className="text-[10px] font-bold text-[#7B919C] uppercase tracking-wide">Govt DBT Subsidy</span>
+              <p className="text-lg font-extrabold text-[#191D23] mt-1">{current.subsidyStatus}</p>
+              <span className="text-[11px] text-[#7B919C] block mt-1">PM-Surya Ghar Scheme</span>
             </div>
           </div>
 
@@ -737,62 +704,74 @@ function CustomerContent() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div
               onClick={() => switchTab("progress")}
-              className="bg-white p-5 rounded-2xl border border-[#EBCED6] card-floating hover:border-[#78B77B] cursor-pointer transition space-y-2"
+              className="bg-white p-5 rounded-2xl border border-[#DEDCDC] shadow-xs hover:border-[#57707A] cursor-pointer transition space-y-2 group"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xl">📊</span>
-                <span className="text-xs font-bold text-[#78B77B]">View Timeline ➔</span>
+                <div className="w-9 h-9 rounded-xl bg-[#F7F8F9] flex items-center justify-center text-[#57707A]">
+                  <ChartBarIcon className="w-5 h-5 text-[#57707A]" />
+                </div>
+                <span className="text-xs font-bold text-[#57707A] flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                  View Timeline &rarr;
+                </span>
               </div>
-              <h4 className="text-sm font-bold text-[#333333]">Installation Progress Report</h4>
-              <p className="text-xs text-[#666666]">
+              <h4 className="text-sm font-bold text-[#191D23]">Installation Progress Report</h4>
+              <p className="text-xs text-[#57707A] leading-relaxed">
                 Track all 6 milestone stages from survey to grid commissioning &amp; subsidy transfer.
               </p>
             </div>
 
             <div
               onClick={() => switchTab("photos")}
-              className="bg-white p-5 rounded-2xl border border-[#EBCED6] card-floating hover:border-[#F4B860] cursor-pointer transition space-y-2"
+              className="bg-white p-5 rounded-2xl border border-[#DEDCDC] shadow-xs hover:border-[#57707A] cursor-pointer transition space-y-2 group"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xl">📸</span>
-                <span className="text-xs font-bold text-[#DA9B40]">Upload Photos ➔</span>
+                <div className="w-9 h-9 rounded-xl bg-[#F7F8F9] flex items-center justify-center text-[#57707A]">
+                  <CameraIcon className="w-5 h-5 text-[#57707A]" />
+                </div>
+                <span className="text-xs font-bold text-[#57707A] flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                  Upload Photos &rarr;
+                </span>
               </div>
-              <h4 className="text-sm font-bold text-[#333333]">Rooftop Photo Proof</h4>
-              <p className="text-xs text-[#666666]">
+              <h4 className="text-sm font-bold text-[#191D23]">Rooftop Photo Proof</h4>
+              <p className="text-xs text-[#57707A] leading-relaxed">
                 Upload pictures of your roof, utility meter, or physical conditions for team review.
               </p>
             </div>
 
             <div
               onClick={() => switchTab("complaint")}
-              className="bg-white p-5 rounded-2xl border border-[#EBCED6] card-floating hover:border-[#DC2626] cursor-pointer transition space-y-2"
+              className="bg-white p-5 rounded-2xl border border-[#DEDCDC] shadow-xs hover:border-red-600 cursor-pointer transition space-y-2 group"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xl">🚨</span>
-                <span className="text-xs font-bold text-[#DC2626]">File Ticket ➔</span>
+                <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center text-red-600">
+                  <AlertCircleIcon className="w-5 h-5 text-red-600" />
+                </div>
+                <span className="text-xs font-bold text-red-600 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                  File Ticket &rarr;
+                </span>
               </div>
-              <h4 className="text-sm font-bold text-[#333333]">Breakdown &amp; Service Call</h4>
-              <p className="text-xs text-[#666666]">
+              <h4 className="text-sm font-bold text-[#191D23]">Breakdown &amp; Service Call</h4>
+              <p className="text-xs text-[#57707A] leading-relaxed">
                 Inverter fault code or zero power? Log instant breakdown with ₹0 auto warranty guarantee.
               </p>
             </div>
           </div>
 
           {/* Plant Hardware Specs Card */}
-          <div className="bg-white rounded-2xl border border-[#EBCED6] p-5 card-floating">
-            <h4 className="text-xs font-bold text-[#333333] uppercase tracking-wider mb-3">
+          <div className="bg-white rounded-2xl border border-[#DEDCDC] p-5 shadow-xs">
+            <h4 className="text-xs font-bold text-[#191D23] uppercase tracking-wider mb-3">
               Installed Equipment &amp; Serial Tagging
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="p-3 bg-[#F7EEF2] rounded-xl border border-[#EBCED6] space-y-1">
-                <span className="text-[10px] font-bold text-[#4A355E] uppercase">Smart Grid Inverter</span>
-                <p className="font-mono font-bold text-[#333333]">{current.inverterSerial}</p>
-                <p className="text-[#5B965E] font-medium">{current.inverterWarranty}</p>
+              <div className="p-3.5 bg-[#F7F8F9] rounded-xl border border-[#DEDCDC] space-y-1">
+                <span className="text-[10px] font-bold text-[#57707A] uppercase tracking-wide">Smart Grid Inverter</span>
+                <p className="font-mono font-bold text-[#191D23]">{current.inverterSerial}</p>
+                <p className="text-emerald-600 font-medium">{current.inverterWarranty}</p>
               </div>
-              <div className="p-3 bg-[#F7EEF2] rounded-xl border border-[#EBCED6] space-y-1">
-                <span className="text-[10px] font-bold text-[#78B77B] uppercase">Solar PV Modules</span>
-                <p className="font-mono font-bold text-[#333333]">{current.panelSerial}</p>
-                <p className="text-[#5B965E] font-medium">{current.panelWarranty}</p>
+              <div className="p-3.5 bg-[#F7F8F9] rounded-xl border border-[#DEDCDC] space-y-1">
+                <span className="text-[10px] font-bold text-[#57707A] uppercase tracking-wide">Solar PV Modules</span>
+                <p className="font-mono font-bold text-[#191D23]">{current.panelSerial}</p>
+                <p className="text-emerald-600 font-medium">{current.panelWarranty}</p>
               </div>
             </div>
           </div>
@@ -804,14 +783,14 @@ function CustomerContent() {
         <div className="space-y-6">
           <CustomerWorkProgressBar customer={current} />
 
-          <div className="bg-white rounded-2xl border border-[#EBCED6] p-6 card-floating space-y-6">
-            <div className="flex items-center justify-between border-b border-[#EBCED6] pb-3">
+          <div className="bg-white rounded-2xl border border-[#DEDCDC] p-6 shadow-xs space-y-6">
+            <div className="flex items-center justify-between border-b border-[#DEDCDC] pb-3">
               <div>
-                <span className="text-[10px] font-bold text-[#78B77B] uppercase tracking-wider">Live Status Report</span>
-                <h3 className="text-base font-bold text-[#333333]">Rooftop Plant Implementation Tracker</h3>
-                <p className="text-xs text-[#666666]">Order: {current.inverterSerial} • Current Stage: Step {current.progressStep} of 6</p>
+                <span className="text-[10px] font-bold text-[#57707A] uppercase tracking-wider">Live Status Report</span>
+                <h3 className="text-base font-bold text-[#191D23]">Rooftop Plant Implementation Tracker</h3>
+                <p className="text-xs text-[#57707A]">Order: {current.inverterSerial} • Current Stage: Step {current.progressStep} of 6</p>
               </div>
-              <span className="px-3 py-1 bg-[#EBF5EC] text-[#5B965E] font-bold text-xs rounded-full border border-[#78B77B]/40">
+              <span className="px-3 py-1 bg-[#F7F8F9] text-[#191D23] font-bold text-xs rounded-full border border-[#DEDCDC]">
                 {current.progressStep === 6 ? "100% Complete" : "85% Commissioned"}
               </span>
             </div>
@@ -825,31 +804,31 @@ function CustomerContent() {
                     <div
                       className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 border-2 transition ${
                         isCompleted
-                          ? "bg-[#78B77B] text-white border-[#78B77B]"
+                          ? "bg-[#57707A] text-white border-[#57707A]"
                           : isCurrent
-                          ? "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860] animate-pulse"
-                          : "bg-[#F7EEF2] text-gray-400 border-[#EBCED6]"
+                          ? "bg-[#191D23] text-white border-[#191D23] animate-pulse"
+                          : "bg-[#F7F8F9] text-gray-400 border-[#DEDCDC]"
                       }`}
                     >
-                      {isCompleted ? "✓" : step.num}
+                      {isCompleted ? <CheckIcon className="w-4 h-4 text-white stroke-[3]" /> : step.num}
                     </div>
 
-                    <div className="flex-1 bg-[#F7EEF2] p-3.5 rounded-xl border border-[#EBCED6] card-floating">
+                    <div className="flex-1 bg-[#F7F8F9] p-3.5 rounded-xl border border-[#DEDCDC]">
                       <div className="flex items-center justify-between">
-                        <h4 className="text-xs font-bold text-[#333333]">{step.title}</h4>
+                        <h4 className="text-xs font-bold text-[#191D23]">{step.title}</h4>
                         <span
                           className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                             isCompleted
-                              ? "bg-[#EBF5EC] text-[#5B965E]"
+                              ? "bg-emerald-100 text-emerald-800"
                               : isCurrent
-                              ? "bg-[#FEF6EB] text-[#DA9B40]"
+                              ? "bg-white text-[#191D23] border border-[#DEDCDC]"
                               : "bg-gray-200 text-gray-600"
                           }`}
                         >
-                          {isCompleted ? "Completed ✓" : isCurrent ? "Active In Progress ⚡" : "Pending Next"}
+                          {isCompleted ? "Completed" : isCurrent ? "Active In Progress" : "Pending Next"}
                         </span>
                       </div>
-                      <p className="text-[11px] text-[#666666] mt-1">{step.desc}</p>
+                      <p className="text-[11px] text-[#57707A] mt-1">{step.desc}</p>
                     </div>
                   </div>
                 );
@@ -862,11 +841,11 @@ function CustomerContent() {
       {/* ───────────────── SECTION 3: UPLOAD ROOF PHOTOS ───────────────── */}
       {activeTab === "photos" && (
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl border border-[#EBCED6] p-6 card-floating space-y-4">
+          <div className="bg-white rounded-2xl border border-[#DEDCDC] p-6 shadow-xs space-y-4">
             <div>
-              <span className="text-[10px] font-bold text-[#DA9B40] uppercase tracking-wider">Site Transparency</span>
-              <h3 className="text-base font-bold text-[#333333]">Upload Rooftop &amp; Meter Photos</h3>
-              <p className="text-xs text-[#666666]">
+              <span className="text-[10px] font-bold text-[#57707A] uppercase tracking-wider">Site Transparency</span>
+              <h3 className="text-base font-bold text-[#191D23]">Upload Rooftop &amp; Meter Photos</h3>
+              <p className="text-xs text-[#57707A]">
                 Upload high-resolution images of your rooftop space, utility electric meter, or inverter installation.
               </p>
             </div>
@@ -874,22 +853,22 @@ function CustomerContent() {
             <form onSubmit={handleUploadPhoto} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] font-bold text-[#666666] uppercase">Photo Caption / Note</label>
+                  <label className="text-[11px] font-bold text-[#7B919C] uppercase">Photo Caption / Note</label>
                   <input
                     type="text"
                     placeholder="e.g. South Rooftop Clear View (Morning)"
                     value={newPhotoTitle}
                     onChange={(e) => setNewPhotoTitle(e.target.value)}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-semibold focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#DEDCDC] rounded-xl text-xs font-semibold focus:ring-2 focus:ring-[#57707A]/30 focus:outline-none"
                     required
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-bold text-[#666666] uppercase">Category</label>
+                  <label className="text-[11px] font-bold text-[#7B919C] uppercase">Category</label>
                   <select
                     value={newPhotoCat}
                     onChange={(e) => setNewPhotoCat(e.target.value)}
-                    className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-semibold"
+                    className="w-full mt-1 px-3 py-1.5 border border-[#DEDCDC] rounded-xl text-xs font-semibold bg-white"
                   >
                     <option value="Pre-Installation Roof">Pre-Installation Roof Layout</option>
                     <option value="Electricity Meter">Utility Net-Meter</option>
@@ -911,36 +890,36 @@ function CustomerContent() {
               {!filePreview ? (
                 <div
                   onClick={() => photoInputRef.current?.click()}
-                  className="border-2 border-dashed border-[#6D5284]/40 hover:border-[#4A355E] rounded-xl p-6 text-center bg-[#F7EEF2] hover:bg-[#F7EEF2] cursor-pointer transition group card-floating"
+                  className="border-2 border-dashed border-[#C5BAC4] hover:border-[#57707A] rounded-xl p-6 text-center bg-[#F7F8F9] hover:bg-gray-100 cursor-pointer transition group"
                 >
-                  <span className="text-3xl block mb-1 group-hover:scale-110 transition-transform">📸</span>
-                  <span className="text-xs font-bold text-[#4A355E] block">
+                  <CameraIcon className="w-8 h-8 text-[#57707A] mx-auto mb-1 group-hover:scale-110 transition-transform" />
+                  <span className="text-xs font-bold text-[#191D23] block">
                     Click to select photo or take picture with camera
                   </span>
-                  <p className="text-[10px] text-[#666666] mt-0.5">
+                  <p className="text-[10px] text-[#7B919C] mt-0.5">
                     Supports JPG, PNG, WEBP, HEIC (Max 15MB)
                   </p>
                 </div>
               ) : (
-                <div className="bg-[#F7EEF2] border border-[#6D5284]/30 rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4 card-floating">
-                  <div className="w-24 h-24 rounded-lg overflow-hidden border border-[#EBCED6] flex-shrink-0 bg-white">
+                <div className="bg-[#F7F8F9] border border-[#DEDCDC] rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4">
+                  <div className="w-24 h-24 rounded-lg overflow-hidden border border-[#DEDCDC] flex-shrink-0 bg-white">
                     <img src={filePreview} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                   <div className="flex-1 text-center sm:text-left">
-                    <span className="text-[10px] font-bold bg-[#EBF5EC] text-[#5B965E] px-2 py-0.5 rounded-full border border-[#78B77B]/40">
-                      ✓ Ready for Upload
+                    <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-300 inline-flex items-center gap-1">
+                      <CheckCircleIcon className="w-3 h-3 text-emerald-700" /> Ready for Upload
                     </span>
-                    <h5 className="text-xs font-bold text-[#333333] mt-1 truncate max-w-xs">
+                    <h5 className="text-xs font-bold text-[#191D23] mt-1 truncate max-w-xs">
                       {selectedFile?.name || "Selected Image"}
                     </h5>
-                    <p className="text-[10px] text-[#666666]">
+                    <p className="text-[10px] text-[#7B919C]">
                       {selectedFile ? `${(selectedFile.size / 1024).toFixed(1)} KB` : "Image preview"}
                     </p>
                     <div className="flex items-center justify-center sm:justify-start gap-2 mt-2">
                       <button
                         type="button"
                         onClick={() => photoInputRef.current?.click()}
-                        className="text-[11px] font-bold text-[#4A355E] hover:underline cursor-pointer"
+                        className="text-[11px] font-bold text-[#57707A] hover:underline cursor-pointer"
                       >
                         Change Photo ⇄
                       </button>
@@ -961,15 +940,15 @@ function CustomerContent() {
               )}
 
               {uploadSuccess && (
-                <div className="p-2.5 bg-[#EBF5EC] text-[#5B965E] text-xs font-bold rounded-xl border border-[#78B77B] text-center animate-in fade-in">
-                  ✓ Photo uploaded successfully and synchronized with SunPower engineering team!
+                <div className="p-2.5 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-300 text-center animate-in fade-in flex items-center justify-center gap-1.5">
+                  <CheckCircleIcon className="w-4 h-4 text-emerald-700" /> Photo uploaded successfully and synchronized with SunPower engineering team!
                 </div>
               )}
 
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#4A355E] hover:bg-[#372447] text-white font-bold rounded-xl text-xs card-floating transition cursor-pointer"
+                  className="px-5 py-2 bg-[#191D23] hover:bg-[#57707A] text-white font-bold rounded-xl text-xs transition cursor-pointer shadow-xs"
                 >
                   Upload &amp; Tag Photo
                 </button>
@@ -977,15 +956,15 @@ function CustomerContent() {
             </form>
           </div>
 
-          <div className="bg-white rounded-2xl border border-[#EBCED6] p-5 card-floating space-y-3">
-            <h4 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
+          <div className="bg-white rounded-2xl border border-[#DEDCDC] p-5 shadow-xs space-y-3">
+            <h4 className="text-xs font-bold text-[#191D23] uppercase tracking-wider">
               My Uploaded Photos ({uploadedPhotos.length})
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {uploadedPhotos.map((photo) => (
-                <div key={photo.id} className="p-3 bg-[#F7EEF2] rounded-xl border border-[#EBCED6] card-floating space-y-2">
-                  <div className="h-32 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-[#EBCED6]">
+                <div key={photo.id} className="p-3 bg-[#F7F8F9] rounded-xl border border-[#DEDCDC] space-y-2">
+                  <div className="h-32 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-[#DEDCDC]">
                     {photo.isRealFile || photo.url.startsWith("data:") ? (
                       <img
                         src={photo.url}
@@ -994,13 +973,13 @@ function CustomerContent() {
                         onClick={() => window.open(photo.url, "_blank")}
                       />
                     ) : (
-                      <span className="text-4xl">{photo.url}</span>
+                      <CameraIcon className="w-8 h-8 text-[#57707A]" />
                     )}
                   </div>
                   <div>
-                    <span className="text-[10px] font-bold text-[#4A355E] uppercase">{photo.category}</span>
-                    <h5 className="text-xs font-bold text-[#333333] mt-0.5 truncate">{photo.title}</h5>
-                    <p className="text-[10px] text-[#666666]">Uploaded on {photo.date}</p>
+                    <span className="text-[10px] font-bold text-[#57707A] uppercase">{photo.category}</span>
+                    <h5 className="text-xs font-bold text-[#191D23] mt-0.5 truncate">{photo.title}</h5>
+                    <p className="text-[10px] text-[#7B919C]">Uploaded on {photo.date}</p>
                   </div>
                 </div>
               ))}
@@ -1012,29 +991,32 @@ function CustomerContent() {
       {/* ───────────────── SECTION 4: FILE COMPLAINT ───────────────── */}
       {activeTab === "complaint" && (
         <div className="space-y-6 max-w-2xl mx-auto">
-          <div className="bg-white rounded-2xl border border-[#EBCED6] p-6 card-floating space-y-4">
-            <div className="border-b border-[#EBCED6] pb-3">
-              <span className="text-[10px] font-bold text-[#DC2626] uppercase tracking-wider">Helpdesk Dispatch</span>
-              <h3 className="text-base font-bold text-[#333333] mt-0.5">Report Plant Issue / Breakdown to Admin</h3>
-              <p className="text-xs text-[#666666]">
+          <div className="bg-white rounded-2xl border border-[#DEDCDC] p-6 shadow-xs space-y-4">
+            <div className="border-b border-[#DEDCDC] pb-3">
+              <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider">Helpdesk Dispatch</span>
+              <h3 className="text-base font-bold text-[#191D23] mt-0.5">Report Plant Issue / Breakdown to Admin</h3>
+              <p className="text-xs text-[#57707A]">
                 Your complaint and uploaded photos will be dispatched directly to the Admin Service Desk.
               </p>
             </div>
 
-            <div className="bg-[#EBF5EC] border border-[#78B77B]/40 rounded-xl p-3 text-xs text-[#5B965E] font-semibold flex items-center justify-between card-floating">
-              <span>🛡️ <strong>Under Active 5-Year Warranty:</strong> Diagnostic visit and replacement parts are <strong>₹0 (100% Free)</strong>.</span>
-              <span className="font-extrabold text-[10px] bg-white px-2 py-0.5 rounded border border-[#78B77B]">
+            <div className="bg-[#F7F8F9] border border-[#DEDCDC] rounded-xl p-3 text-xs text-[#191D23] font-semibold flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <ShieldCheckIcon className="w-4 h-4 text-[#57707A]" />
+                <span><strong>Under Active 5-Year Warranty:</strong> Diagnostic visit and replacement parts are <strong>₹0 (100% Free)</strong>.</span>
+              </span>
+              <span className="font-extrabold text-[10px] bg-white text-[#191D23] px-2 py-0.5 rounded border border-[#DEDCDC]">
                 FREE REPAIR
               </span>
             </div>
 
             <form onSubmit={handleFileComplaint} className="space-y-3.5">
               <div>
-                <label className="text-[11px] font-bold text-[#666666] uppercase">Issue Symptom / Fault Code</label>
+                <label className="text-[11px] font-bold text-[#7B919C] uppercase">Issue Symptom / Fault Code</label>
                 <select
                   value={complaintType}
                   onChange={(e) => setComplaintType(e.target.value)}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-semibold bg-white"
+                  className="w-full mt-1 px-3 py-1.5 border border-[#DEDCDC] rounded-xl text-xs font-semibold bg-white"
                 >
                   <option value="Inverter Error (E-01/E-04)">Inverter Error Code (E-01 / E-04)</option>
                   <option value="Zero Power Generation">Zero Power Generation on Grid</option>
@@ -1045,19 +1027,19 @@ function CustomerContent() {
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-[#666666] uppercase">Complaint Description</label>
+                <label className="text-[11px] font-bold text-[#7B919C] uppercase">Complaint Description</label>
                 <textarea
                   rows={3}
                   placeholder="Describe when the issue started and any error lights visible..."
                   value={complaintDesc}
                   onChange={(e) => setComplaintDesc(e.target.value)}
-                  className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none"
+                  className="w-full mt-1 px-3 py-1.5 border border-[#DEDCDC] rounded-xl text-xs focus:ring-2 focus:ring-[#57707A]/30 focus:outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-[#666666] uppercase block">
+                <label className="text-[11px] font-bold text-[#7B919C] uppercase block">
                   Attach Breakdown Photo / Inverter Display / Damage Proof
                 </label>
                 <input
@@ -1071,15 +1053,15 @@ function CustomerContent() {
                   <button
                     type="button"
                     onClick={() => complaintFileRef.current?.click()}
-                    className="mt-1 w-full border border-dashed border-[#EBCED6] hover:border-[#DC2626] rounded-xl py-3 px-4 text-xs font-semibold text-[#666666] hover:text-[#DC2626] bg-[#F7EEF2] transition flex items-center justify-center gap-2 cursor-pointer card-floating"
+                    className="mt-1 w-full border border-dashed border-[#C5BAC4] hover:border-[#191D23] rounded-xl py-3 px-4 text-xs font-semibold text-[#57707A] hover:text-[#191D23] bg-[#F7F8F9] transition flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <span>📷</span> Attach Inverter Error Photo / Damage Proof
+                    <CameraIcon className="w-4 h-4 text-[#57707A]" /> Attach Inverter Error Photo / Damage Proof
                   </button>
                 ) : (
-                  <div className="mt-1 p-2 bg-[#F7EEF2] border border-[#6D5284]/30 rounded-xl flex items-center justify-between text-xs card-floating">
+                  <div className="mt-1 p-2 bg-[#F7F8F9] border border-[#DEDCDC] rounded-xl flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
-                      <img src={complaintPhoto} alt="Proof" className="w-10 h-10 object-cover rounded-lg border border-[#EBCED6]" />
-                      <span className="font-semibold text-[#333333] truncate max-w-xs">{complaintPhotoName}</span>
+                      <img src={complaintPhoto} alt="Proof" className="w-10 h-10 object-cover rounded-lg border border-[#DEDCDC]" />
+                      <span className="font-semibold text-[#191D23] truncate max-w-xs">{complaintPhotoName}</span>
                     </div>
                     <button
                       type="button"
@@ -1090,22 +1072,22 @@ function CustomerContent() {
                       }}
                       className="text-xs text-red-600 font-bold hover:underline cursor-pointer"
                     >
-                      ✕ Remove
+                      &times; Remove
                     </button>
                   </div>
                 )}
               </div>
 
               {complaintSuccess && (
-                <div className="p-3 bg-[#EBF5EC] text-[#5B965E] text-xs font-bold rounded-xl border border-[#78B77B] text-center animate-in fade-in">
-                  ✓ Breakdown complaint &amp; uploaded photo proof filed to Admin! Status: Open on Operations Desk.
+                <div className="p-3 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-300 text-center animate-in fade-in flex items-center justify-center gap-1.5">
+                  <CheckCircleIcon className="w-4 h-4 text-emerald-700" /> Breakdown complaint &amp; uploaded photo proof filed to Admin! Status: Open on Operations Desk.
                 </div>
               )}
 
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#DC2626] hover:bg-red-700 text-white font-bold rounded-xl text-xs card-floating transition cursor-pointer"
+                  className="px-5 py-2 bg-[#191D23] hover:bg-[#57707A] text-white font-bold rounded-xl text-xs transition cursor-pointer shadow-xs"
                 >
                   Submit Breakdown Ticket to Admin (Free)
                 </button>
@@ -1114,28 +1096,28 @@ function CustomerContent() {
           </div>
 
           {/* Ticket History */}
-          <div className="bg-white rounded-2xl border border-[#EBCED6] p-5 card-floating space-y-3">
-            <h4 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
+          <div className="bg-white rounded-2xl border border-[#DEDCDC] p-5 shadow-xs space-y-3">
+            <h4 className="text-xs font-bold text-[#191D23] uppercase tracking-wider">
               My Service Ticket History ({myTickets.length})
             </h4>
 
             <div className="space-y-2">
               {myTickets.map((tkt) => (
-                <div key={tkt.id} className="p-3.5 bg-[#F7EEF2] rounded-xl border border-[#EBCED6] card-floating text-xs space-y-1.5">
+                <div key={tkt.id} className="p-3.5 bg-[#F7F8F9] rounded-xl border border-[#DEDCDC] text-xs space-y-1.5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-[#DA9B40]">{tkt.id}</span>
-                      <span className="font-bold text-[#333333]">{tkt.issue}</span>
+                      <span className="font-mono font-bold text-[#57707A]">{tkt.id}</span>
+                      <span className="font-bold text-[#191D23]">{tkt.issue}</span>
                     </div>
-                    <span className="px-2.5 py-0.5 bg-[#EBF5EC] text-[#5B965E] font-bold text-[10px] rounded-full border border-[#78B77B]/40">
+                    <span className="px-2.5 py-0.5 bg-white text-[#191D23] font-bold text-[10px] rounded-full border border-[#DEDCDC]">
                       {tkt.status}
                     </span>
                   </div>
-                  <p className="text-[11px] text-[#666666]">Filed: {tkt.date} • {tkt.cost}</p>
+                  <p className="text-[11px] text-[#7B919C]">Filed: {tkt.date} • {tkt.cost}</p>
                   {tkt.photo && (
                     <div className="flex items-center gap-2 pt-1">
-                      <img src={tkt.photo} alt="Attached Proof" className="w-8 h-8 rounded object-cover border border-[#EBCED6]" />
-                      <span className="text-[10px] text-[#4A355E] font-semibold">{tkt.photoName || "Photo Proof Filed to Admin"}</span>
+                      <img src={tkt.photo} alt="Attached Proof" className="w-8 h-8 rounded object-cover border border-[#DEDCDC]" />
+                      <span className="text-[10px] text-[#57707A] font-semibold">{tkt.photoName || "Photo Proof Filed to Admin"}</span>
                     </div>
                   )}
                 </div>
@@ -1149,15 +1131,15 @@ function CustomerContent() {
       {activeTab === "enquiry" && (
         <div className="space-y-6 max-w-4xl mx-auto">
           {/* New Enquiry Form Card */}
-          <div className="bg-white rounded-2xl border border-[#EBCED6] p-6 card-floating space-y-4">
-            <div className="border-b border-[#EBCED6] pb-3">
-              <span className="text-[10px] font-bold text-[#4A355E] uppercase tracking-wider">
+          <div className="bg-white rounded-2xl border border-[#DEDCDC] p-6 shadow-xs space-y-4">
+            <div className="border-b border-[#DEDCDC] pb-3">
+              <span className="text-[10px] font-bold text-[#57707A] uppercase tracking-wider">
                 Client Inquiries &amp; System Upgrades
               </span>
-              <h3 className="text-base font-bold text-[#333333] mt-0.5">
+              <h3 className="text-base font-bold text-[#191D23] mt-0.5">
                 Submit New Solar Enquiry / Upgrade Request
               </h3>
-              <p className="text-xs text-[#666666]">
+              <p className="text-xs text-[#57707A]">
                 Submit questions regarding battery expansion, additional panels, subsidy disbursement, or upload roof photos for an upgrade proposal.
               </p>
             </div>
@@ -1165,11 +1147,11 @@ function CustomerContent() {
             <form onSubmit={handleSendEnquiry} className="space-y-3.5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] font-bold text-[#666666] uppercase">Enquiry Subject</label>
+                  <label className="text-[11px] font-bold text-[#7B919C] uppercase">Enquiry Subject</label>
                   <select
                     value={enquirySubject}
                     onChange={(e) => setEnquirySubject(e.target.value)}
-                    className="w-full mt-1 px-3 py-2 border border-[#EBCED6] rounded-xl text-xs font-semibold bg-white"
+                    className="w-full mt-1 px-3 py-2 border border-[#DEDCDC] rounded-xl text-xs font-semibold bg-white"
                   >
                     <option value="Add Battery Backup (Off-Grid Upgrade)">Add Battery Backup (Off-Grid Upgrade)</option>
                     <option value="Capacity Expansion (e.g. 3kW to 5kW)">Expand Capacity (Add more solar panels)</option>
@@ -1180,30 +1162,30 @@ function CustomerContent() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-[11px] font-bold text-[#666666] uppercase">Homeowner / Account</label>
+                  <label className="text-[11px] font-bold text-[#7B919C] uppercase">Homeowner / Account</label>
                   <input
                     type="text"
                     disabled
                     value={`${current.name} • ${current.system}`}
-                    className="w-full mt-1 px-3 py-2 border border-[#EBCED6] rounded-xl text-xs font-semibold bg-[#F7EEF2] text-[#666666]"
+                    className="w-full mt-1 px-3 py-2 border border-[#DEDCDC] rounded-xl text-xs font-semibold bg-[#F7F8F9] text-[#57707A]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-[#666666] uppercase">Your Message / Requirements</label>
+                <label className="text-[11px] font-bold text-[#7B919C] uppercase">Your Message / Requirements</label>
                 <textarea
                   rows={2}
                   placeholder="Tell us what you need (e.g. want 5kWh lithium battery storage for nighttime backup)..."
                   value={enquiryMessage}
                   onChange={(e) => setEnquiryMessage(e.target.value)}
-                  className="w-full mt-1 px-3.5 py-2 border border-[#EBCED6] rounded-xl text-xs focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none"
+                  className="w-full mt-1 px-3.5 py-2 border border-[#DEDCDC] rounded-xl text-xs focus:ring-2 focus:ring-[#57707A]/30 focus:outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-[#666666] uppercase block">
+                <label className="text-[11px] font-bold text-[#7B919C] uppercase block">
                   Upload Photo or File with Enquiry (e.g. Electricity Bill, Rooftop, Meter)
                 </label>
                 <input
@@ -1218,21 +1200,23 @@ function CustomerContent() {
                   <button
                     type="button"
                     onClick={() => enquiryFileRef.current?.click()}
-                    className="mt-1 w-full border border-dashed border-[#EBCED6] hover:border-[#4A355E] rounded-xl py-2.5 px-4 text-xs font-semibold text-[#4A355E] bg-[#F7EEF2] hover:bg-[#F7EEF2] transition flex items-center justify-center gap-2 cursor-pointer card-floating"
+                    className="mt-1 w-full border border-dashed border-[#C5BAC4] hover:border-[#191D23] rounded-xl py-2.5 px-4 text-xs font-semibold text-[#57707A] bg-[#F7F8F9] hover:bg-gray-100 transition flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <span>📎</span> Click to upload file / photo for this inquiry
+                    <FileTextIcon className="w-4 h-4 text-[#57707A]" /> Click to upload file / photo for this inquiry
                   </button>
                 ) : (
-                  <div className="mt-1 p-2.5 bg-[#F7EEF2] border border-[#6D5284]/30 rounded-xl flex items-center justify-between text-xs card-floating">
+                  <div className="mt-1 p-2.5 bg-[#F7F8F9] border border-[#DEDCDC] rounded-xl flex items-center justify-between text-xs">
                     <div className="flex items-center gap-3">
                       {enquiryFilePreview.startsWith("data:image") ? (
-                        <img src={enquiryFilePreview} alt="Attached" className="w-12 h-12 object-cover rounded-lg border border-[#EBCED6]" />
+                        <img src={enquiryFilePreview} alt="Attached" className="w-12 h-12 object-cover rounded-lg border border-[#DEDCDC]" />
                       ) : (
-                        <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center text-xl border border-[#EBCED6]">📄</div>
+                        <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center border border-[#DEDCDC]">
+                          <FileTextIcon className="w-6 h-6 text-[#57707A]" />
+                        </div>
                       )}
                       <div>
-                        <p className="font-bold text-[#333333] truncate max-w-xs">{enquiryFile?.name || "Attached File"}</p>
-                        <p className="text-[10px] text-[#666666]">
+                        <p className="font-bold text-[#191D23] truncate max-w-xs">{enquiryFile?.name || "Attached File"}</p>
+                        <p className="text-[10px] text-[#7B919C]">
                           {enquiryFile ? `${(enquiryFile.size / 1024).toFixed(1)} KB` : "Attached file"}
                         </p>
                       </div>
@@ -1246,25 +1230,25 @@ function CustomerContent() {
                       }}
                       className="text-xs text-red-600 font-bold hover:underline cursor-pointer"
                     >
-                      ✕ Remove
+                      &times; Remove
                     </button>
                   </div>
                 )}
               </div>
 
               {enquirySuccess && (
-                <div className="p-3 bg-[#EBF5EC] text-[#5B965E] text-xs font-bold rounded-xl border border-[#78B77B] text-center animate-in fade-in">
-                  ✓ Enquiry submitted! Live Flipkart-style progress tracker generated below.
+                <div className="p-3 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-300 text-center animate-in fade-in flex items-center justify-center gap-1.5">
+                  <CheckCircleIcon className="w-4 h-4 text-emerald-700" /> Enquiry submitted! Live Flipkart-style progress tracker generated below.
                 </div>
               )}
 
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-[#4A355E] hover:bg-[#372447] text-white font-bold rounded-xl text-xs card-floating transition cursor-pointer flex items-center gap-2"
+                  className="px-5 py-2.5 bg-[#191D23] hover:bg-[#57707A] text-white font-bold rounded-xl text-xs transition cursor-pointer flex items-center gap-1.5 shadow-xs"
                 >
                   <span>Submit Enquiry &amp; Track</span>
-                  <span>➔</span>
+                  <ChevronRightIcon className="w-3.5 h-3.5" />
                 </button>
               </div>
             </form>
@@ -1274,14 +1258,14 @@ function CustomerContent() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-sm font-extrabold text-[#333333] uppercase tracking-wider flex items-center gap-2">
-                  <span>📦</span> Track My Enquiries &amp; Work Progress
+                <h4 className="text-sm font-extrabold text-[#191D23] uppercase tracking-wider flex items-center gap-2">
+                  <PackageIcon className="w-4 h-4 text-[#57707A]" /> Track My Enquiries &amp; Work Progress
                 </h4>
-                <p className="text-xs text-[#666666]">
+                <p className="text-xs text-[#57707A]">
                   Real-time stepped milestone timeline showing exactly how far your solar upgrade has progressed
                 </p>
               </div>
-              <span className="text-xs font-bold px-2.5 py-1 bg-[#EBF5EC] text-[#5B965E] rounded-full border border-[#78B77B]/40">
+              <span className="text-xs font-bold px-2.5 py-1 bg-[#F7F8F9] text-[#191D23] rounded-full border border-[#DEDCDC]">
                 {enquiryHistory.length} Active Tracks
               </span>
             </div>
@@ -1293,24 +1277,24 @@ function CustomerContent() {
               return (
                 <div
                   key={enq.id}
-                  className="bg-white rounded-2xl border border-[#EBCED6] card-floating overflow-hidden transition-all"
+                  className="bg-white rounded-2xl border border-[#DEDCDC] shadow-xs overflow-hidden transition-all"
                 >
                   {/* Top Header Card */}
-                  <div className="p-4 sm:p-5 border-b border-[#EBCED6] bg-[#F7EEF2]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="p-4 sm:p-5 border-b border-[#DEDCDC] bg-[#F7F8F9] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-mono font-bold text-xs bg-white text-[#4A355E] px-2.5 py-0.5 rounded-md border border-[#6D5284]/30 shadow-2xs">
+                        <span className="font-mono font-bold text-xs bg-white text-[#191D23] px-2.5 py-0.5 rounded-md border border-[#DEDCDC] shadow-2xs">
                           {enq.id}
                         </span>
-                        <h4 className="text-sm font-extrabold text-[#333333]">
+                        <h4 className="text-sm font-extrabold text-[#191D23]">
                           {enq.subject}
                         </h4>
-                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#FEF6EB] text-[#DA9B40] border border-[#F4B860]/40 flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#DA9B40] animate-ping" />
+                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-white text-[#57707A] border border-[#C5BAC4] flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
                           {enq.status}
                         </span>
                       </div>
-                      <p className="text-xs text-[#666666] mt-1.5 line-clamp-2">
+                      <p className="text-xs text-[#57707A] mt-1.5 line-clamp-2">
                         &ldquo;{enq.message}&rdquo;
                       </p>
                     </div>
@@ -1318,7 +1302,7 @@ function CustomerContent() {
                     <div className="flex items-center gap-2 sm:text-right flex-shrink-0">
                       <button
                         onClick={() => setExpandedEnquiryId(isExpanded ? "" : enq.id)}
-                        className="px-3 py-1.5 bg-white hover:bg-[#F7EEF2] text-[#4A355E] text-xs font-bold rounded-xl border border-[#6D5284]/30 transition card-floating cursor-pointer flex items-center gap-1.5"
+                        className="px-3 py-1.5 bg-white hover:bg-gray-100 text-[#191D23] text-xs font-bold rounded-xl border border-[#DEDCDC] transition cursor-pointer flex items-center gap-1.5 shadow-2xs"
                       >
                         <span>{isExpanded ? "Hide Details" : "Track Details"}</span>
                         <span className="text-[10px]">{isExpanded ? "▲" : "▼"}</span>
@@ -1327,15 +1311,15 @@ function CustomerContent() {
                   </div>
 
                   {/* Flipkart-Style Progress Notice Banner */}
-                  <div className="bg-[#EBF5EC] border-b border-[#78B77B]/30 px-4 py-2.5 text-xs text-[#333333] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="bg-[#F7F8F9] border-b border-[#DEDCDC] px-4 py-2.5 text-xs text-[#191D23] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-base">🚚</span>
+                      <PackageIcon className="w-4 h-4 text-[#57707A]" />
                       <span>
                         <strong>Current Status:</strong> {currentStepObj?.details}
                       </span>
                     </div>
-                    <span className="text-[11px] font-bold text-[#5B965E] bg-white px-2.5 py-0.5 rounded-full border border-[#78B77B]/40 flex-shrink-0">
-                      ⏱️ {enq.estimatedResolution}
+                    <span className="text-[11px] font-bold text-[#57707A] bg-white px-2.5 py-0.5 rounded-full border border-[#DEDCDC] flex-shrink-0 flex items-center gap-1">
+                      <ClockIcon className="w-3 h-3 text-[#57707A]" /> {enq.estimatedResolution}
                     </span>
                   </div>
 
@@ -1345,11 +1329,11 @@ function CustomerContent() {
                       {/* Step Icons & Connecting Line Bar */}
                       <div className="relative flex items-center justify-between">
                         {/* Continuous Background Track Line */}
-                        <div className="absolute top-4 left-4 right-4 h-1 bg-[#EBCED6] -translate-y-1/2 z-0" />
+                        <div className="absolute top-4 left-4 right-4 h-1 bg-[#DEDCDC] -translate-y-1/2 z-0" />
 
                         {/* Completed Active Track Line (calculated by currentStep progress) */}
                         <div
-                          className="absolute top-4 left-4 h-1 bg-[#78B77B] -translate-y-1/2 z-0 transition-all duration-700"
+                          className="absolute top-4 left-4 h-1 bg-gradient-to-r from-[#191D23] via-[#57707A] to-[#7B919C] -translate-y-1/2 z-0 transition-all duration-700"
                           style={{
                             width: `${Math.min(100, Math.max(0, ((enq.currentStep - 1) / (enq.steps.length - 1)) * 100))}%`,
                           }}
@@ -1361,15 +1345,15 @@ function CustomerContent() {
                             <div key={st.stepNumber} className="relative z-10 flex flex-col items-center">
                               {/* Step Node Circle */}
                               <div
-                                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-sm ${
+                                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-xs ${
                                   st.isCompleted
-                                    ? "bg-[#78B77B] text-white ring-4 ring-[#EBF5EC]"
+                                    ? "bg-[#57707A] text-white ring-4 ring-[#DEDCDC]"
                                     : st.isCurrent
-                                    ? "bg-[#DA9B40] text-white ring-4 ring-[#FEF6EB] animate-pulse"
-                                    : "bg-white border-2 border-[#D8DCE3] text-[#999999]"
+                                    ? "bg-[#191D23] text-white ring-4 ring-[#C5BAC4] animate-pulse"
+                                    : "bg-white border-2 border-[#DEDCDC] text-[#989DAA]"
                                 }`}
                               >
-                                {st.isCompleted ? "✓" : st.isCurrent ? "⚡" : st.stepNumber}
+                                {st.isCompleted ? <CheckIcon className="w-3.5 h-3.5 stroke-[3]" /> : st.isCurrent ? <ZapIcon className="w-3.5 h-3.5" /> : st.stepNumber}
                               </div>
 
                               {/* Step Details Beneath Node */}
@@ -1377,15 +1361,15 @@ function CustomerContent() {
                                 <p
                                   className={`text-[11px] font-extrabold leading-tight ${
                                     st.isCompleted
-                                      ? "text-[#333333]"
+                                      ? "text-[#191D23]"
                                       : st.isCurrent
-                                      ? "text-[#DA9B40]"
+                                      ? "text-[#57707A]"
                                       : "text-gray-400"
                                   }`}
                                 >
                                   {st.title}
                                 </p>
-                                <p className="text-[10px] text-[#666666] font-medium mt-0.5">
+                                <p className="text-[10px] text-[#7B919C] font-medium mt-0.5">
                                   {st.subtitle}
                                 </p>
                               </div>
@@ -1396,42 +1380,42 @@ function CustomerContent() {
                     </div>
                   </div>
 
-                  {/* Expandable Activity Log & Consultant Contact Details (Flipkart 'See all updates') */}
+                  {/* Expandable Activity Log & Consultant Contact Details */}
                   {isExpanded && (
-                    <div className="p-4 sm:p-5 bg-[#F7EEF2] border-t border-[#EBCED6] space-y-4 animate-in fade-in">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-[#EBCED6] card-floating">
+                    <div className="p-4 sm:p-5 bg-[#F7F8F9] border-t border-[#DEDCDC] space-y-4 animate-in fade-in">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-[#DEDCDC]">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full bg-[#F7EEF2] text-[#4A355E] flex items-center justify-center font-bold text-sm">
-                            👷
+                          <div className="w-9 h-9 rounded-full bg-[#191D23] text-[#C5BAC4] flex items-center justify-center font-bold text-sm">
+                            <HardHatIcon className="w-5 h-5 text-white" />
                           </div>
                           <div>
-                            <span className="text-[10px] font-bold text-[#666666] uppercase">
+                            <span className="text-[10px] font-bold text-[#7B919C] uppercase tracking-wide">
                               Dedicated Solar Consultant
                             </span>
-                            <h5 className="text-xs font-bold text-[#333333]">{enq.consultantName}</h5>
-                            <p className="text-[11px] text-[#78B77B] font-semibold">{enq.consultantPhone}</p>
+                            <h5 className="text-xs font-bold text-[#191D23]">{enq.consultantName}</h5>
+                            <p className="text-[11px] text-[#57707A] font-semibold">{enq.consultantPhone}</p>
                           </div>
                         </div>
 
                         <div className="flex items-center gap-2">
                           <a
                             href={`tel:${enq.consultantPhone}`}
-                            className="px-3 py-1.5 bg-[#78B77B] hover:bg-[#5B965E] text-white text-xs font-bold rounded-xl card-floating transition flex items-center gap-1.5"
+                            className="px-3 py-1.5 bg-[#191D23] hover:bg-[#57707A] text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-2xs"
                           >
-                            <span>📞</span> Call Engineer
+                            <PhoneIcon className="w-3.5 h-3.5" /> Call Engineer
                           </a>
                           <button
                             onClick={() => switchTab("complaint")}
-                            className="px-3 py-1.5 bg-white hover:bg-[#F7EEF2] text-[#4A355E] border border-[#6D5284]/30 text-xs font-bold rounded-xl card-floating transition cursor-pointer"
+                            className="px-3 py-1.5 bg-white hover:bg-[#F7F8F9] text-[#191D23] border border-[#DEDCDC] text-xs font-bold rounded-xl transition cursor-pointer"
                           >
-                            💬 Send Message
+                            <MessageSquareIcon className="w-3.5 h-3.5 text-[#57707A] inline mr-1" /> Send Message
                           </button>
                         </div>
                       </div>
 
                       {/* Timeline Detail Log */}
                       <div className="space-y-2">
-                        <h5 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
+                        <h5 className="text-xs font-bold text-[#191D23] uppercase tracking-wider">
                           Full Activity Milestone Log
                         </h5>
                         <div className="space-y-2">
@@ -1440,28 +1424,28 @@ function CustomerContent() {
                               key={st.stepNumber}
                               className={`p-3 rounded-xl border text-xs flex items-start justify-between gap-3 ${
                                 st.isCompleted
-                                  ? "bg-white border-[#EBCED6]"
+                                  ? "bg-white border-[#DEDCDC]"
                                   : st.isCurrent
-                                  ? "bg-[#FEF6EB] border-[#F4B860]/40 font-medium"
-                                  : "bg-[#F7EEF2] border-[#EBCED6]/60 opacity-60"
+                                  ? "bg-white border-[#57707A] font-medium"
+                                  : "bg-[#F7F8F9] border-[#DEDCDC]/60 opacity-60"
                               }`}
                             >
                               <div className="flex items-start gap-2.5">
                                 <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5 ${
                                   st.isCompleted
-                                    ? "bg-[#78B77B] text-white"
+                                    ? "bg-[#57707A] text-white"
                                     : st.isCurrent
-                                    ? "bg-[#DA9B40] text-white"
+                                    ? "bg-[#191D23] text-white"
                                     : "bg-gray-200 text-gray-500"
                                 }`}>
-                                  {st.isCompleted ? "✓" : st.stepNumber}
+                                  {st.isCompleted ? <CheckIcon className="w-3 h-3 stroke-[3]" /> : st.stepNumber}
                                 </span>
                                 <div>
-                                  <p className="font-bold text-[#333333]">{st.title}</p>
-                                  <p className="text-[11px] text-[#666666] mt-0.5">{st.details}</p>
+                                  <p className="font-bold text-[#191D23]">{st.title}</p>
+                                  <p className="text-[11px] text-[#57707A] mt-0.5">{st.details}</p>
                                 </div>
                               </div>
-                              <span className="text-[10px] font-mono font-semibold text-[#6D5284] flex-shrink-0">
+                              <span className="text-[10px] font-mono font-semibold text-[#7B919C] flex-shrink-0">
                                 {st.date}
                               </span>
                             </div>
@@ -1471,24 +1455,24 @@ function CustomerContent() {
 
                       {/* Attached File/Photo Preview if any */}
                       {enq.attachedPhoto && (
-                        <div className="p-3 bg-white rounded-xl border border-[#EBCED6] flex items-center gap-3">
+                        <div className="p-3 bg-white rounded-xl border border-[#DEDCDC] flex items-center gap-3">
                           <img
                             src={enq.attachedPhoto}
                             alt="Attachment"
-                            className="w-12 h-12 object-cover rounded-lg border border-[#EBCED6]"
+                            className="w-12 h-12 object-cover rounded-lg border border-[#DEDCDC]"
                           />
                           <div>
-                            <span className="text-[10px] font-bold text-[#4A355E] uppercase">
+                            <span className="text-[10px] font-bold text-[#57707A] uppercase">
                               Attached Document / Roof Image
                             </span>
-                            <p className="text-xs font-bold text-[#333333]">{enq.fileName || "Uploaded Site File"}</p>
+                            <p className="text-xs font-bold text-[#191D23]">{enq.fileName || "Uploaded Site File"}</p>
                             <a
                               href={enq.attachedPhoto}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-[11px] text-[#4A355E] font-bold hover:underline"
+                              className="text-[11px] text-[#57707A] font-bold hover:underline"
                             >
-                              View Full Size ↗
+                              View Full Size &rarr;
                             </a>
                           </div>
                         </div>
@@ -1506,63 +1490,69 @@ function CustomerContent() {
       {activeTab === "warranty" && (
         <div className="space-y-4 max-w-3xl mx-auto">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
+            <h3 className="text-xs font-bold text-[#191D23] uppercase tracking-wider">
               Active Digital Equipment Warranty Certificates
             </h3>
-            <span className="text-xs text-[#5B965E] font-bold">100% Guaranteed</span>
+            <span className="text-xs text-emerald-700 font-bold flex items-center gap-1">
+              <ShieldCheckIcon className="w-3.5 h-3.5 text-emerald-700" /> 100% Guaranteed
+            </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] card-floating space-y-3">
+            <div className="bg-white p-5 rounded-2xl border border-[#DEDCDC] shadow-xs space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#4A355E] bg-[#F7EEF2] px-2 py-0.5 rounded-full border border-[#6D5284]/30">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#191D23] bg-[#F7F8F9] px-2 py-0.5 rounded-full border border-[#DEDCDC]">
                     5-Year Inverter Warranty
                   </span>
-                  <h4 className="text-sm font-bold text-[#333333] mt-1">Smart Solar Grid Inverter</h4>
+                  <h4 className="text-sm font-bold text-[#191D23] mt-1">Smart Solar Grid Inverter</h4>
                 </div>
-                <span className="text-2xl">⚡</span>
+                <div className="w-8 h-8 rounded-lg bg-[#F7F8F9] flex items-center justify-center text-[#57707A]">
+                  <ZapIcon className="w-5 h-5 text-[#57707A]" />
+                </div>
               </div>
 
-              <div className="space-y-1.5 text-xs text-[#666666]">
+              <div className="space-y-1.5 text-xs text-[#57707A]">
                 <div className="flex justify-between">
                   <span>Serial Number:</span>
-                  <span className="font-mono font-bold text-[#333333]">{current.inverterSerial}</span>
+                  <span className="font-mono font-bold text-[#191D23]">{current.inverterSerial}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Status:</span>
-                  <span className="font-bold text-[#5B965E]">{current.inverterWarranty}</span>
+                  <span className="font-bold text-emerald-600">{current.inverterWarranty}</span>
                 </div>
-                <div className="flex justify-between border-t border-[#EBCED6] pt-1.5">
+                <div className="flex justify-between border-t border-[#DEDCDC] pt-1.5">
                   <span>Customer Replacement Cost:</span>
-                  <span className="font-extrabold text-[#5B965E]">₹0 (Free Coverage)</span>
+                  <span className="font-extrabold text-emerald-600">₹0 (Free Coverage)</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] card-floating space-y-3">
+            <div className="bg-white p-5 rounded-2xl border border-[#DEDCDC] shadow-xs space-y-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#5B965E] bg-[#EBF5EC] px-2 py-0.5 rounded-full border border-[#78B77B]/40">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#57707A] bg-[#F7F8F9] px-2 py-0.5 rounded-full border border-[#DEDCDC]">
                     25-Year Panel Performance
                   </span>
-                  <h4 className="text-sm font-bold text-[#333333] mt-1">Mono PERC Half-Cut Panels</h4>
+                  <h4 className="text-sm font-bold text-[#191D23] mt-1">Mono PERC Half-Cut Panels</h4>
                 </div>
-                <span className="text-2xl">☀️</span>
+                <div className="w-8 h-8 rounded-lg bg-[#F7F8F9] flex items-center justify-center text-[#57707A]">
+                  <SunIcon className="w-5 h-5 text-[#57707A]" />
+                </div>
               </div>
 
-              <div className="space-y-1.5 text-xs text-[#666666]">
+              <div className="space-y-1.5 text-xs text-[#57707A]">
                 <div className="flex justify-between">
                   <span>Batch Serials:</span>
-                  <span className="font-mono font-bold text-[#333333]">{current.panelSerial}</span>
+                  <span className="font-mono font-bold text-[#191D23]">{current.panelSerial}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Status:</span>
-                  <span className="font-bold text-[#5B965E]">{current.panelWarranty}</span>
+                  <span className="font-bold text-emerald-600">{current.panelWarranty}</span>
                 </div>
-                <div className="flex justify-between border-t border-[#EBCED6] pt-1.5">
+                <div className="flex justify-between border-t border-[#DEDCDC] pt-1.5">
                   <span>Linear Output Degradation:</span>
-                  <span className="font-extrabold text-[#78B77B]">&lt; 0.5% / Year</span>
+                  <span className="font-extrabold text-[#191D23]">&lt; 0.5% / Year</span>
                 </div>
               </div>
             </div>
@@ -1575,7 +1565,7 @@ function CustomerContent() {
 
 export default function CustomerPortalPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-xs text-[#666666]">Loading Customer Portal...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-xs text-[#7B919C]">Loading Customer Portal...</div>}>
       <CustomerContent />
     </Suspense>
   );
