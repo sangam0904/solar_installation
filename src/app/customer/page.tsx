@@ -1,0 +1,748 @@
+"use client";
+
+import { useState, useEffect, Suspense } from "react";
+import PageShell from "@/components/PageShell";
+import { useAuth } from "@/context/AuthContext";
+import { useSearchParams } from "next/navigation";
+
+function CustomerContent() {
+  const { user, loginAsCustomer } = useAuth();
+  const searchParams = useSearchParams();
+
+  // Tab state: 'passbook' | 'progress' | 'photos' | 'complaint' | 'enquiry' | 'warranty'
+  const initialTab = (searchParams.get("tab") as any) || "passbook";
+  const [activeTab, setActiveTab] = useState<"passbook" | "progress" | "photos" | "complaint" | "enquiry" | "warranty">(initialTab);
+
+  useEffect(() => {
+    const tabParam = searchParams.get("tab") as any;
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
+
+  // Customer profiles
+  const customers = [
+    {
+      key: "rajesh",
+      name: "Rajesh Gupta",
+      phone: "+91 99887 76655",
+      address: "12, Vaishali Nagar, Jaipur",
+      system: "5 kW On-Grid System",
+      installedDate: "22 Oct 2026",
+      todayGen: "21.4 kWh",
+      monthlyGen: "580 kWh",
+      lifetimeSavings: "₹18,400",
+      subsidyStatus: "Processing (₹78,000)",
+      inverterSerial: "INV-5K-OG-9921",
+      panelSerial: "SP-MONO-2026-4201 (10 Panels)",
+      inverterWarranty: "Active until 22 Oct 2031 (5 Yrs)",
+      panelWarranty: "Active until 22 Oct 2051 (25 Yrs)",
+      progressStep: 5,
+    },
+    {
+      key: "mohan",
+      name: "Mohan Lal",
+      phone: "+91 77665 54433",
+      address: "67, Mansarovar, Jaipur",
+      system: "3 kW On-Grid System",
+      installedDate: "12 Oct 2026",
+      todayGen: "13.8 kWh",
+      monthlyGen: "390 kWh",
+      lifetimeSavings: "₹12,100",
+      subsidyStatus: "Credited (₹78,000)",
+      inverterSerial: "INV-3K-OG-8832",
+      panelSerial: "SP-MONO-2026-3101 (6 Panels)",
+      inverterWarranty: "Active until 12 Oct 2031 (5 Yrs)",
+      panelWarranty: "Active until 12 Oct 2051 (25 Yrs)",
+      progressStep: 6,
+    },
+    {
+      key: "kavita",
+      name: "Kavita Joshi",
+      phone: "+91 43210 98765",
+      address: "10, Defence Colony, Jaipur",
+      system: "3 kW Off-Grid System",
+      installedDate: "Scheduled 04 Nov 2026",
+      todayGen: "0.0 kWh (Pre-Install)",
+      monthlyGen: "0 kWh",
+      lifetimeSavings: "₹0",
+      subsidyStatus: "Applied (National Portal)",
+      inverterSerial: "INV-3K-HB-7755",
+      panelSerial: "Allocated in Warehouse",
+      inverterWarranty: "5-Year Guarantee",
+      panelWarranty: "25-Year Guarantee",
+      progressStep: 3,
+    },
+  ];
+
+  // Pick customer based on logged in user or default to Rajesh
+  const activeCustomerKey = user?.name ? (customers.find(c => user.name.includes(c.name.split(" ")[0]))?.key || "rajesh") : "rajesh";
+  const [selectedCustKey, setSelectedCustKey] = useState(activeCustomerKey);
+
+  const current = customers.find((c) => c.key === selectedCustKey) || customers[0];
+
+  // Photo upload states
+  const [uploadedPhotos, setUploadedPhotos] = useState<Array<{ id: number; title: string; category: string; date: string; url: string }>>([
+    { id: 1, title: "South Roof Shadow Analysis", category: "Pre-Installation Roof", date: "2026-10-21", url: "☀️" },
+    { id: 2, title: "Main Three-Phase Electricity Meter", category: "Utility Meter", date: "2026-10-21", url: "🔌" },
+  ]);
+  const [newPhotoTitle, setNewPhotoTitle] = useState("");
+  const [newPhotoCat, setNewPhotoCat] = useState("Roof Layout");
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+
+  // Complaint states
+  const [complaintType, setComplaintType] = useState("Inverter Error (E-01/E-04)");
+  const [complaintDesc, setComplaintDesc] = useState("");
+  const [complaintSuccess, setComplaintSuccess] = useState(false);
+  const [myTickets, setMyTickets] = useState([
+    {
+      id: "TKT-088",
+      issue: "Inverter E-04 Communication Error",
+      date: "2026-10-28",
+      status: "Assigned to Rohit Meena",
+      cost: "₹0 (Free Warranty Claim)",
+    },
+  ]);
+
+  // Enquiry states
+  const [enquirySubject, setEnquirySubject] = useState("Add Battery Backup (Off-Grid Upgrade)");
+  const [enquiryMessage, setEnquiryMessage] = useState("");
+  const [enquirySuccess, setEnquirySuccess] = useState(false);
+
+  const handleUploadPhoto = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPhotoTitle) return;
+    const item = {
+      id: Date.now(),
+      title: newPhotoTitle,
+      category: newPhotoCat,
+      date: "2026-10-31",
+      url: "📸",
+    };
+    setUploadedPhotos([item, ...uploadedPhotos]);
+    setNewPhotoTitle("");
+    setUploadSuccess(true);
+    setTimeout(() => setUploadSuccess(false), 2500);
+  };
+
+  const handleFileComplaint = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!complaintDesc) return;
+    const newTkt = {
+      id: `TKT-${Math.floor(100 + Math.random() * 900)}`,
+      issue: complaintType,
+      date: "2026-10-31",
+      status: "Assigned to Rohit Meena (Dispatched)",
+      cost: "₹0 (Free Warranty Claim)",
+    };
+    setMyTickets([newTkt, ...myTickets]);
+    setComplaintSuccess(true);
+    setComplaintDesc("");
+    setTimeout(() => setComplaintSuccess(false), 3000);
+  };
+
+  const handleSendEnquiry = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!enquiryMessage) return;
+    setEnquirySuccess(true);
+    setEnquiryMessage("");
+    setTimeout(() => setEnquirySuccess(false), 3000);
+  };
+
+  // Milestone steps definition
+  const progressSteps = [
+    { num: 1, title: "Inquiry & Roof Pre-Qualification", desc: "Form filled & subsidy verified" },
+    { num: 2, title: "Site Survey & Shading Check", desc: "Technician measured tilt & orientation" },
+    { num: 3, title: "Hardware Dispatch & Serial Tagging", desc: "Inverter & panels scanned at warehouse" },
+    { num: 4, title: "Mounting, Wiring & Earthing", desc: "Rooftop hardware installed" },
+    { num: 5, title: "Commissioning & Grid Net-Meter", desc: "Live yield test & Discom meter sync" },
+    { num: 6, title: "PM Surya Ghar Subsidy Disbursed", desc: "₹78,000 credited to bank account" },
+  ];
+
+  return (
+    <PageShell>
+      {/* Customer Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-xl">☀️</span>
+            <h1 className="text-xl sm:text-2xl font-bold text-[#333333]">
+              Customer Solar Passbook
+            </h1>
+            <span className="text-[10px] font-bold bg-[#EBF5EC] text-[#5B965E] px-2.5 py-0.5 rounded-full border border-[#78B77B]/40">
+              Homeowner Self-Service Portal
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-[#666666] mt-0.5">
+            Welcome, <strong>{current.name}</strong> • {current.address}
+          </p>
+        </div>
+
+        {/* Demo Switcher */}
+        <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-[#E4E7EB] shadow-xs">
+          <span className="text-[11px] font-bold text-[#666666] uppercase">Account:</span>
+          <select
+            value={selectedCustKey}
+            onChange={(e) => {
+              setSelectedCustKey(e.target.value);
+              loginAsCustomer(e.target.value);
+            }}
+            className="text-xs font-bold text-[#734960] bg-transparent focus:outline-none cursor-pointer"
+          >
+            {customers.map((c) => (
+              <option key={c.key} value={c.key}>
+                {c.name} ({c.system})
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Hero Welcome Banner */}
+      <div className="bg-[#8E687F] rounded-2xl p-5 sm:p-6 text-white shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#734960] text-white border border-white/20">
+            Plant ID: {current.inverterSerial}
+          </span>
+          <h2 className="text-lg sm:text-xl font-extrabold">{current.system}</h2>
+          <p className="text-xs text-white/80">{current.address} • Commissioned: {current.installedDate}</p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveTab("complaint")}
+            className="px-3.5 py-2 bg-white hover:bg-[#FAF4F7] text-[#734960] text-xs font-bold rounded-xl shadow-xs transition"
+          >
+            🚨 Report Breakdown
+          </button>
+          <button
+            onClick={() => setActiveTab("progress")}
+            className="px-3.5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white text-xs font-bold rounded-xl shadow-xs transition border border-white/20"
+          >
+            📊 Track Status
+          </button>
+        </div>
+      </div>
+
+      {/* Navigation Tabs */}
+      <div className="flex items-center gap-2 border-b border-[#E4E7EB] pb-2 overflow-x-auto">
+        <button
+          onClick={() => setActiveTab("passbook")}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap border ${
+            activeTab === "passbook"
+              ? "bg-[#734960] text-white border-[#734960] shadow-xs"
+              : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
+          }`}
+        >
+          <span>☀️</span> Solar Yield &amp; Passbook
+        </button>
+
+        <button
+          onClick={() => setActiveTab("progress")}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap border ${
+            activeTab === "progress"
+              ? "bg-[#78B77B] text-white border-[#78B77B] shadow-xs"
+              : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
+          }`}
+        >
+          <span>📊</span> Installation Progress Report
+        </button>
+
+        <button
+          onClick={() => setActiveTab("photos")}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap border ${
+            activeTab === "photos"
+              ? "bg-[#F4B860] text-[#333333] border-[#F4B860] shadow-xs"
+              : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
+          }`}
+        >
+          <span>📸</span> Upload Roof Photos ({uploadedPhotos.length})
+        </button>
+
+        <button
+          onClick={() => setActiveTab("complaint")}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap border ${
+            activeTab === "complaint"
+              ? "bg-[#DC2626] text-white border-[#DC2626] shadow-xs"
+              : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
+          }`}
+        >
+          <span>🚨</span> File Service Complaint
+        </button>
+
+        <button
+          onClick={() => setActiveTab("enquiry")}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap border ${
+            activeTab === "enquiry"
+              ? "bg-[#8E687F] text-white border-[#8E687F] shadow-xs"
+              : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
+          }`}
+        >
+          <span>💬</span> Ask for Enquiry / Upgrade
+        </button>
+
+        <button
+          onClick={() => setActiveTab("warranty")}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap border ${
+            activeTab === "warranty"
+              ? "bg-[#734960] text-white border-[#734960] shadow-xs"
+              : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
+          }`}
+        >
+          <span>🛡️</span> Digital Warranty Cards
+        </button>
+      </div>
+
+      {/* ───────────────── TAB 1: PASSBOOK OVERVIEW ───────────────── */}
+      {activeTab === "passbook" && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#F4B860] shadow-xs">
+              <span className="text-[10px] font-bold text-[#666666] uppercase">Today&apos;s Generation</span>
+              <p className="text-2xl font-extrabold text-[#DA9B40] mt-1">{current.todayGen}</p>
+              <span className="text-[11px] text-[#5B965E] font-bold">☀️ 5.4 Peak Sun Hours</span>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#8E687F] shadow-xs">
+              <span className="text-[10px] font-bold text-[#666666] uppercase">This Month</span>
+              <p className="text-2xl font-extrabold text-[#734960] mt-1">{current.monthlyGen}</p>
+              <span className="text-[11px] text-[#666666]">Replaced 94% of grid bill</span>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#78B77B] shadow-xs">
+              <span className="text-[10px] font-bold text-[#666666] uppercase">Cumulative Bill Savings</span>
+              <p className="text-2xl font-extrabold text-[#78B77B] mt-1">{current.lifetimeSavings}</p>
+              <span className="text-[11px] text-[#5B965E] font-bold">₹7.20 / unit grid tariff saved</span>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#734960] shadow-xs">
+              <span className="text-[10px] font-bold text-[#666666] uppercase">Govt DBT Subsidy</span>
+              <p className="text-lg font-extrabold text-[#734960] mt-1">{current.subsidyStatus}</p>
+              <span className="text-[11px] text-[#666666]">PM-Surya Ghar Scheme</span>
+            </div>
+          </div>
+
+          {/* Quick Shortcuts */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div
+              onClick={() => setActiveTab("progress")}
+              className="bg-white p-5 rounded-2xl border border-[#E4E7EB] shadow-xs hover:border-[#78B77B] cursor-pointer transition space-y-2"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xl">📊</span>
+                <span className="text-xs font-bold text-[#78B77B]">View Timeline ➔</span>
+              </div>
+              <h4 className="text-sm font-bold text-[#333333]">Installation Progress Report</h4>
+              <p className="text-xs text-[#666666]">
+                Track all 6 milestone stages from survey to grid commissioning &amp; subsidy transfer.
+              </p>
+            </div>
+
+            <div
+              onClick={() => setActiveTab("photos")}
+              className="bg-white p-5 rounded-2xl border border-[#E4E7EB] shadow-xs hover:border-[#F4B860] cursor-pointer transition space-y-2"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xl">📸</span>
+                <span className="text-xs font-bold text-[#DA9B40]">Upload Photos ➔</span>
+              </div>
+              <h4 className="text-sm font-bold text-[#333333]">Rooftop Photo Proof</h4>
+              <p className="text-xs text-[#666666]">
+                Upload pictures of your roof, utility meter, or physical conditions for team review.
+              </p>
+            </div>
+
+            <div
+              onClick={() => setActiveTab("complaint")}
+              className="bg-white p-5 rounded-2xl border border-[#E4E7EB] shadow-xs hover:border-[#DC2626] cursor-pointer transition space-y-2"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xl">🚨</span>
+                <span className="text-xs font-bold text-[#DC2626]">File Ticket ➔</span>
+              </div>
+              <h4 className="text-sm font-bold text-[#333333]">Breakdown &amp; Service Call</h4>
+              <p className="text-xs text-[#666666]">
+                Inverter fault code or zero power? Log instant breakdown with ₹0 auto warranty guarantee.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ───────────────── TAB 2: INSTALLATION PROGRESS REPORT ───────────────── */}
+      {activeTab === "progress" && (
+        <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 shadow-xs space-y-6">
+          <div className="flex items-center justify-between border-b border-[#E4E7EB] pb-3">
+            <div>
+              <span className="text-[10px] font-bold text-[#78B77B] uppercase tracking-wider">Live Status Report</span>
+              <h3 className="text-base font-bold text-[#333333]">Rooftop Plant Implementation Tracker</h3>
+              <p className="text-xs text-[#666666]">Order: {current.inverterSerial} • Current Stage: Step {current.progressStep} of 6</p>
+            </div>
+            <span className="px-3 py-1 bg-[#EBF5EC] text-[#5B965E] font-bold text-xs rounded-full border border-[#78B77B]/40">
+              {current.progressStep === 6 ? "100% Complete" : "85% Commissioned"}
+            </span>
+          </div>
+
+          {/* Interactive Step Timeline */}
+          <div className="space-y-4">
+            {progressSteps.map((step) => {
+              const isCompleted = step.num < current.progressStep;
+              const isCurrent = step.num === current.progressStep;
+              return (
+                <div key={step.num} className="flex items-start gap-4">
+                  {/* Step Icon / Circle */}
+                  <div
+                    className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 border-2 transition ${
+                      isCompleted
+                        ? "bg-[#78B77B] text-white border-[#78B77B]"
+                        : isCurrent
+                        ? "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860] animate-pulse"
+                        : "bg-[#F5F7FA] text-gray-400 border-[#E4E7EB]"
+                    }`}
+                  >
+                    {isCompleted ? "✓" : step.num}
+                  </div>
+
+                  {/* Step Content */}
+                  <div className="flex-1 bg-[#F5F7FA] p-3.5 rounded-xl border border-[#E4E7EB]">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-bold text-[#333333]">{step.title}</h4>
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          isCompleted
+                            ? "bg-[#EBF5EC] text-[#5B965E]"
+                            : isCurrent
+                            ? "bg-[#FEF6EB] text-[#DA9B40]"
+                            : "bg-gray-200 text-gray-600"
+                        }`}
+                      >
+                        {isCompleted ? "Completed ✓" : isCurrent ? "Active In Progress ⚡" : "Pending Next"}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-[#666666] mt-1">{step.desc}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ───────────────── TAB 3: UPLOAD ROOF PHOTOS ───────────────── */}
+      {activeTab === "photos" && (
+        <div className="space-y-6">
+          {/* Upload Form Box */}
+          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 shadow-xs space-y-4">
+            <div>
+              <span className="text-[10px] font-bold text-[#DA9B40] uppercase tracking-wider">Site Transparency</span>
+              <h3 className="text-base font-bold text-[#333333]">Upload Rooftop &amp; Meter Photos</h3>
+              <p className="text-xs text-[#666666]">
+                Upload images of your rooftop space, electrical meter, or inverter installation for verification.
+              </p>
+            </div>
+
+            <form onSubmit={handleUploadPhoto} className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-bold text-[#666666] uppercase">Photo Caption / Note</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. South Rooftop Clear View (Morning)"
+                    value={newPhotoTitle}
+                    onChange={(e) => setNewPhotoTitle(e.target.value)}
+                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] font-bold text-[#666666] uppercase">Category</label>
+                  <select
+                    value={newPhotoCat}
+                    onChange={(e) => setNewPhotoCat(e.target.value)}
+                    className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold"
+                  >
+                    <option value="Pre-Installation Roof">Pre-Installation Roof Layout</option>
+                    <option value="Electricity Meter">Utility Net-Meter</option>
+                    <option value="Earthing Pit">Earthing Connection</option>
+                    <option value="Fault Proof">Inverter Fault Proof</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Drag Drop Simulator Area */}
+              <div className="border-2 border-dashed border-[#E4E7EB] hover:border-[#734960] rounded-xl p-6 text-center bg-[#F5F7FA] cursor-pointer transition">
+                <span className="text-3xl block mb-1">📸</span>
+                <span className="text-xs font-bold text-[#734960]">Click to select photos or drag &amp; drop</span>
+                <p className="text-[10px] text-[#666666] mt-0.5">Supports PNG, JPG, HEIC up to 15MB</p>
+              </div>
+
+              {uploadSuccess && (
+                <div className="p-2.5 bg-[#EBF5EC] text-[#5B965E] text-xs font-bold rounded-xl border border-[#78B77B] text-center animate-in fade-in">
+                  ✓ Photo uploaded successfully and synchronized with SunPower engineering team!
+                </div>
+              )}
+
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs shadow-xs transition"
+                >
+                  Upload &amp; Tag Photo
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Photo Gallery Grid */}
+          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 shadow-xs space-y-3">
+            <h4 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
+              My Uploaded Photos ({uploadedPhotos.length})
+            </h4>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {uploadedPhotos.map((photo) => (
+                <div key={photo.id} className="p-4 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] space-y-2">
+                  <div className="h-28 bg-white rounded-lg flex items-center justify-center text-3xl border border-[#E4E7EB]">
+                    {photo.url}
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-[#734960] uppercase">{photo.category}</span>
+                    <h5 className="text-xs font-bold text-[#333333] mt-0.5">{photo.title}</h5>
+                    <p className="text-[10px] text-[#666666]">Uploaded on {photo.date}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ───────────────── TAB 4: FILE COMPLAINT ───────────────── */}
+      {activeTab === "complaint" && (
+        <div className="space-y-6 max-w-2xl mx-auto">
+          {/* Complaint Form */}
+          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 shadow-xs space-y-4">
+            <div className="border-b border-[#E4E7EB] pb-3">
+              <span className="text-[10px] font-bold text-[#DC2626] uppercase tracking-wider">Helpdesk Dispatch</span>
+              <h3 className="text-base font-bold text-[#333333] mt-0.5">Report Plant Issue / Breakdown</h3>
+              <p className="text-xs text-[#666666]">
+                Your registered inverter serial ({current.inverterSerial}) is active under 5-year warranty.
+              </p>
+            </div>
+
+            {/* 60s Rule Banner */}
+            <div className="bg-[#EBF5EC] border border-[#78B77B]/40 rounded-xl p-3 text-xs text-[#5B965E] font-semibold flex items-center justify-between">
+              <span>🛡️ <strong>Under Active 5-Year Warranty:</strong> Diagnostic visit and replacement parts are <strong>₹0 (100% Free)</strong>.</span>
+              <span className="font-extrabold text-[10px] bg-white px-2 py-0.5 rounded border border-[#78B77B]">
+                FREE REPAIR
+              </span>
+            </div>
+
+            <form onSubmit={handleFileComplaint} className="space-y-3">
+              <div>
+                <label className="text-[11px] font-bold text-[#666666] uppercase">Issue Symptom / Fault Code</label>
+                <select
+                  value={complaintType}
+                  onChange={(e) => setComplaintType(e.target.value)}
+                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold"
+                >
+                  <option value="Inverter Error (E-01/E-04)">Inverter Error Code (E-01 / E-04)</option>
+                  <option value="Zero Power Generation">Zero Power Generation on Grid</option>
+                  <option value="Battery Not Holding Charge">Battery Not Holding Charge (Off-Grid)</option>
+                  <option value="Solar Yield Below Expected">Yield Lower than Expected</option>
+                  <option value="Storm / Hail Physical Damage">Storm / Physical Hail Damage</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold text-[#666666] uppercase">Complaint Description</label>
+                <textarea
+                  rows={3}
+                  placeholder="Describe when the issue started and any error lights visible..."
+                  value={complaintDesc}
+                  onChange={(e) => setComplaintDesc(e.target.value)}
+                  className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                  required
+                />
+              </div>
+
+              {complaintSuccess && (
+                <div className="p-3 bg-[#EBF5EC] text-[#5B965E] text-xs font-bold rounded-xl border border-[#78B77B] text-center animate-in fade-in">
+                  ✓ Breakdown Ticket Logged! Assigned to technician Rohit Meena. You will receive an arrival call.
+                </div>
+              )}
+
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-[#DC2626] hover:bg-red-700 text-white font-bold rounded-xl text-xs shadow-xs transition"
+                >
+                  Submit Breakdown Ticket (Free)
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Ticket History */}
+          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 shadow-xs space-y-3">
+            <h4 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
+              My Service Ticket History
+            </h4>
+
+            <div className="space-y-2">
+              {myTickets.map((tkt) => (
+                <div key={tkt.id} className="p-3.5 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] text-xs flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-[#DA9B40]">{tkt.id}</span>
+                      <span className="font-bold text-[#333333]">{tkt.issue}</span>
+                    </div>
+                    <p className="text-[11px] text-[#666666] mt-0.5">Filed: {tkt.date} • {tkt.cost}</p>
+                  </div>
+                  <span className="px-2.5 py-1 bg-[#EBF5EC] text-[#5B965E] font-bold text-[10px] rounded-full border border-[#78B77B]/40">
+                    {tkt.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ───────────────── TAB 5: ASK FOR ENQUIRY ───────────────── */}
+      {activeTab === "enquiry" && (
+        <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 shadow-xs max-w-xl mx-auto space-y-4">
+          <div className="border-b border-[#E4E7EB] pb-3">
+            <span className="text-[10px] font-bold text-[#734960] uppercase tracking-wider">Client Inquiries</span>
+            <h3 className="text-base font-bold text-[#333333] mt-0.5">Ask for System Upgrade or Service</h3>
+            <p className="text-xs text-[#666666]">
+              Request additional capacity, battery storage backup, or schedule professional rooftop cleaning.
+            </p>
+          </div>
+
+          <form onSubmit={handleSendEnquiry} className="space-y-3">
+            <div>
+              <label className="text-[11px] font-bold text-[#666666] uppercase">Enquiry Subject</label>
+              <select
+                value={enquirySubject}
+                onChange={(e) => setEnquirySubject(e.target.value)}
+                className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs font-semibold"
+              >
+                <option value="Add Battery Backup (Off-Grid Upgrade)">Add Battery Backup (Off-Grid Upgrade)</option>
+                <option value="Capacity Expansion (e.g. 3kW to 5kW)">Expand Capacity (Add more solar panels)</option>
+                <option value="Rooftop Panel Deep Cleaning Service">Book Panel Deep Cleaning Service</option>
+                <option value="Annual Maintenance Contract (AMC)">Annual Maintenance Contract (AMC)</option>
+                <option value="Subsidy Follow-up Question">Government Subsidy Disbursement Question</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-[11px] font-bold text-[#666666] uppercase">Your Message / Requirements</label>
+              <textarea
+                rows={3}
+                placeholder="Let us know what you would like to add or know about your plant..."
+                value={enquiryMessage}
+                onChange={(e) => setEnquiryMessage(e.target.value)}
+                className="w-full mt-1 px-3 py-1.5 border border-[#E4E7EB] rounded-xl text-xs focus:ring-2 focus:ring-[#734960]/30 focus:outline-none"
+                required
+              />
+            </div>
+
+            {enquirySuccess && (
+              <div className="p-3 bg-[#EBF5EC] text-[#5B965E] text-xs font-bold rounded-xl border border-[#78B77B] text-center animate-in fade-in">
+                ✓ Enquiry Received! Our solar consultant will call you within 2 hours with an estimate.
+              </div>
+            )}
+
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                className="px-5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs shadow-xs transition"
+              >
+                Send Enquiry ➔
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* ───────────────── TAB 6: DIGITAL WARRANTY CARDS ───────────────── */}
+      {activeTab === "warranty" && (
+        <div className="space-y-4 max-w-3xl mx-auto">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
+              Active Digital Equipment Warranty Certificates
+            </h3>
+            <span className="text-xs text-[#5B965E] font-bold">100% Guaranteed</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Inverter Card */}
+            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#734960] bg-[#FAF4F7] px-2 py-0.5 rounded-full border border-[#8E687F]/30">
+                    5-Year Inverter Warranty
+                  </span>
+                  <h4 className="text-sm font-bold text-[#333333] mt-1">Smart Solar Grid Inverter</h4>
+                </div>
+                <span className="text-2xl">⚡</span>
+              </div>
+
+              <div className="space-y-1.5 text-xs text-[#666666]">
+                <div className="flex justify-between">
+                  <span>Serial Number:</span>
+                  <span className="font-mono font-bold text-[#333333]">{current.inverterSerial}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Status:</span>
+                  <span className="font-bold text-[#5B965E]">{current.inverterWarranty}</span>
+                </div>
+                <div className="flex justify-between border-t border-[#E4E7EB] pt-1.5">
+                  <span>Customer Replacement Cost:</span>
+                  <span className="font-extrabold text-[#5B965E]">₹0 (Free Coverage)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Solar Panels Card */}
+            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#5B965E] bg-[#EBF5EC] px-2 py-0.5 rounded-full border border-[#78B77B]/40">
+                    25-Year Panel Performance
+                  </span>
+                  <h4 className="text-sm font-bold text-[#333333] mt-1">Mono PERC Half-Cut Panels</h4>
+                </div>
+                <span className="text-2xl">☀️</span>
+              </div>
+
+              <div className="space-y-1.5 text-xs text-[#666666]">
+                <div className="flex justify-between">
+                  <span>Batch Serials:</span>
+                  <span className="font-mono font-bold text-[#333333]">{current.panelSerial}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Status:</span>
+                  <span className="font-bold text-[#5B965E]">{current.panelWarranty}</span>
+                </div>
+                <div className="flex justify-between border-t border-[#E4E7EB] pt-1.5">
+                  <span>Linear Output Degradation:</span>
+                  <span className="font-extrabold text-[#78B77B]">&lt; 0.5% / Year</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </PageShell>
+  );
+}
+
+export default function CustomerPortalPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-xs text-[#666666]">Loading Customer Portal...</div>}>
+      <CustomerContent />
+    </Suspense>
+  );
+}
