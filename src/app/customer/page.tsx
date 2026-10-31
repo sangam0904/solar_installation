@@ -43,6 +43,15 @@ function CustomerContent() {
   const initialTab = (searchParams.get("tab") as "passbook" | "progress" | "photos" | "complaint" | "enquiry" | "warranty") || "passbook";
   const [activeTab, setActiveTab] = useState<"passbook" | "progress" | "photos" | "complaint" | "enquiry" | "warranty">(initialTab);
 
+  const switchTab = (tab: "passbook" | "progress" | "photos" | "complaint" | "enquiry" | "warranty") => {
+    setActiveTab(tab);
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("tab", tab);
+      window.history.pushState({}, "", url.toString());
+    }
+  };
+
   useEffect(() => {
     const tabParam = searchParams.get("tab") as "passbook" | "progress" | "photos" | "complaint" | "enquiry" | "warranty" | null;
     if (tabParam) {
@@ -215,7 +224,6 @@ function CustomerContent() {
 
     const newTktId = `TKT-${Math.floor(100 + Math.random() * 900)}`;
 
-    // Build formal Service Ticket to file to Admin
     const formalTicket = {
       id: newTktId,
       customerId: current.key ? `CUST-${current.key.toUpperCase()}` : "CUST-001",
@@ -224,10 +232,10 @@ function CustomerContent() {
       address: current.address,
       serialNumber: current.inverterSerial,
       productName: current.system,
-      issueType: complaintType.includes("Inverter") ? "Inverter Error" : complaintType.includes("Power") ? "No Power" : complaintType.includes("Battery") ? "Battery Issue" : "Low Output",
+      issueType: complaintType.includes("Inverter") ? "Inverter Error" : complaintType.includes("Power") ? "Zero Power" : complaintType.includes("Battery") ? "Battery Issue" : "Low Output",
       description: complaintDesc,
       priority: "High" as const,
-      status: "Open" as const, // Open on Admin Operations Desk
+      status: "Open" as const,
       warrantyStatus: "Under Warranty" as const,
       assignedTechnician: "",
       estimatedCost: 0,
@@ -238,7 +246,6 @@ function CustomerContent() {
       photoProofName: complaintPhotoName,
     };
 
-    // Save ticket into shared localStorage for Admin Service Desk
     try {
       const savedTickets = JSON.parse(localStorage.getItem("sunpower_service_tickets") || "[]");
       const fullList = savedTickets.length > 0 ? savedTickets : defaultInitialTickets;
@@ -247,7 +254,6 @@ function CustomerContent() {
       // Ignore
     }
 
-    // Push real-time notification to Admin Operations Desk
     try {
       const notifs = JSON.parse(localStorage.getItem("sunpower_notifications") || "[]");
       const adminNotif = {
@@ -262,7 +268,6 @@ function CustomerContent() {
       // Ignore
     }
 
-    // Add to local customer view
     const newLocalTkt: CustomerComplaintTicket = {
       id: newTktId,
       issue: complaintType,
@@ -326,6 +331,17 @@ function CustomerContent() {
     { num: 6, title: "PM Surya Ghar Subsidy Disbursed", desc: "₹78,000 credited to bank account" },
   ];
 
+  const portalSections = [
+    { id: "passbook", label: "Solar Yield & Passbook", icon: "☀️", badge: "Live Yield" },
+    { id: "progress", label: "Installation Progress Report", icon: "📊", badge: `Step ${current.progressStep}/6` },
+    { id: "photos", label: `Upload Roof Photos (${uploadedPhotos.length})`, icon: "📸", badge: `${uploadedPhotos.length} Photos` },
+    { id: "complaint", label: "File Service Complaint", icon: "🚨", badge: myTickets.length > 0 ? `${myTickets.length} Active` : "Free Warranty" },
+    { id: "enquiry", label: `Ask for Enquiry / Upgrade (${enquiryHistory.length})`, icon: "💬", badge: `${enquiryHistory.length} Inquiries` },
+    { id: "warranty", label: "Digital Warranty Cards", icon: "🛡️", badge: "2 Active" },
+  ];
+
+  const currentSection = portalSections.find((s) => s.id === activeTab) || portalSections[0];
+
   return (
     <PageShell>
       {/* Customer Header */}
@@ -346,7 +362,7 @@ function CustomerContent() {
         </div>
 
         {/* Demo Switcher */}
-        <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-[#E4E7EB] shadow-xs">
+        <div className="flex items-center gap-2 bg-white px-3.5 py-1.5 rounded-xl border border-[#E4E7EB] card-floating">
           <span className="text-[11px] font-bold text-[#666666] uppercase">Account:</span>
           <select
             value={selectedCustKey}
@@ -366,7 +382,7 @@ function CustomerContent() {
       </div>
 
       {/* Hero Welcome Banner */}
-      <div className="bg-[#8E687F] rounded-2xl p-5 sm:p-6 text-white shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="bg-[#8E687F] rounded-2xl p-5 sm:p-6 text-white card-floating flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="space-y-1">
           <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#734960] text-white border border-white/20">
             Plant ID: {current.inverterSerial}
@@ -377,112 +393,94 @@ function CustomerContent() {
 
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setActiveTab("complaint")}
-            className="px-3.5 py-2 bg-white hover:bg-[#FAF4F7] text-[#734960] text-xs font-bold rounded-xl shadow-xs transition"
+            onClick={() => switchTab("complaint")}
+            className="px-3.5 py-2 bg-white hover:bg-[#FAF4F7] text-[#734960] text-xs font-bold rounded-xl card-floating transition cursor-pointer"
           >
             🚨 Report Breakdown
           </button>
           <button
-            onClick={() => setActiveTab("progress")}
-            className="px-3.5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white text-xs font-bold rounded-xl shadow-xs transition border border-white/20"
+            onClick={() => switchTab("progress")}
+            className="px-3.5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white text-xs font-bold rounded-xl card-floating transition border border-white/20 cursor-pointer"
           >
             📊 Track Status
           </button>
         </div>
       </div>
 
-      {/* Navigation Tabs (Customer selects whatever they need from the top) */}
-      <div className="flex items-center gap-2 border-b border-[#E4E7EB] pb-2 overflow-x-auto">
-        <button
-          onClick={() => setActiveTab("passbook")}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap border ${
-            activeTab === "passbook"
-              ? "bg-[#734960] text-white border-[#734960] shadow-xs"
-              : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
-          }`}
-        >
-          <span>☀️</span> Solar Yield &amp; Passbook
-        </button>
+      {/* ───────────────── CUSTOMER PORTAL SECTION DROPDOWN BOX ───────────────── */}
+      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-[#E4E7EB] card-floating">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-[#FAF4F7] border border-[#8E687F]/30 flex items-center justify-center text-2xl flex-shrink-0 card-floating">
+              {currentSection.icon}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold text-[#8E687F] uppercase tracking-wider">
+                  Customer Portal Section
+                </span>
+                {currentSection.badge && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FEF6EB] text-[#DA9B40] border border-[#F4B860]/40">
+                    {currentSection.badge}
+                  </span>
+                )}
+              </div>
+              <h2 className="text-base sm:text-lg font-extrabold text-[#333333] mt-0.5">
+                {currentSection.label}
+              </h2>
+            </div>
+          </div>
 
-        <button
-          onClick={() => setActiveTab("progress")}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap border ${
-            activeTab === "progress"
-              ? "bg-[#78B77B] text-white border-[#78B77B] shadow-xs"
-              : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
-          }`}
-        >
-          <span>📊</span> Installation Progress Report
-        </button>
-
-        <button
-          onClick={() => setActiveTab("photos")}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap border ${
-            activeTab === "photos"
-              ? "bg-[#F4B860] text-[#333333] border-[#F4B860] shadow-xs"
-              : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
-          }`}
-        >
-          <span>📸</span> Upload Roof Photos ({uploadedPhotos.length})
-        </button>
-
-        <button
-          onClick={() => setActiveTab("complaint")}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap border ${
-            activeTab === "complaint"
-              ? "bg-[#DC2626] text-white border-[#DC2626] shadow-xs"
-              : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
-          }`}
-        >
-          <span>🚨</span> File Service Complaint
-        </button>
-
-        <button
-          onClick={() => setActiveTab("enquiry")}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap border ${
-            activeTab === "enquiry"
-              ? "bg-[#8E687F] text-white border-[#8E687F] shadow-xs"
-              : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
-          }`}
-        >
-          <span>💬</span> Ask for Enquiry / Upgrade ({enquiryHistory.length})
-        </button>
-
-        <button
-          onClick={() => setActiveTab("warranty")}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition whitespace-nowrap border ${
-            activeTab === "warranty"
-              ? "bg-[#734960] text-white border-[#734960] shadow-xs"
-              : "bg-white text-[#666666] border-[#E4E7EB] hover:bg-[#F5F7FA]"
-          }`}
-        >
-          <span>🛡️</span> Digital Warranty Cards
-        </button>
+          {/* Interactive Dropdown Box */}
+          <div className="w-full sm:w-80">
+            <label htmlFor="customer-portal-dropdown-box" className="block text-[10px] font-bold text-[#666666] uppercase mb-1">
+              Select Portal View (Dropdown Box)
+            </label>
+            <div className="relative">
+              <select
+                id="customer-portal-dropdown-box"
+                value={activeTab}
+                onChange={(e) => switchTab(e.target.value as any)}
+                className="w-full appearance-none bg-[#F5F7FA] hover:bg-[#FAF4F7] text-[#333333] font-bold text-xs sm:text-sm pl-4 pr-10 py-2.5 rounded-xl border border-[#D8DCE3] focus:border-[#734960] focus:ring-2 focus:ring-[#734960]/20 focus:outline-none cursor-pointer transition card-floating"
+              >
+                <option value="passbook">☀️ Solar Yield &amp; Passbook</option>
+                <option value="progress">📊 Installation Progress Report</option>
+                <option value="photos">📸 Upload Roof Photos ({uploadedPhotos.length})</option>
+                <option value="complaint">🚨 File Service Complaint</option>
+                <option value="enquiry">💬 Ask for Enquiry / Upgrade ({enquiryHistory.length})</option>
+                <option value="warranty">🛡️ Digital Warranty Cards</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-[#734960]">
+                <span className="text-xs font-bold">▼</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* ───────────────── TAB 1: PASSBOOK OVERVIEW ───────────────── */}
+      {/* ───────────────── SECTION 1: PASSBOOK OVERVIEW ───────────────── */}
       {activeTab === "passbook" && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#F4B860] shadow-xs">
+            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#F4B860] card-floating">
               <span className="text-[10px] font-bold text-[#666666] uppercase">Today&apos;s Generation</span>
               <p className="text-2xl font-extrabold text-[#DA9B40] mt-1">{current.todayGen}</p>
               <span className="text-[11px] text-[#5B965E] font-bold">☀️ 5.4 Peak Sun Hours</span>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#8E687F] shadow-xs">
+            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#8E687F] card-floating">
               <span className="text-[10px] font-bold text-[#666666] uppercase">This Month</span>
               <p className="text-2xl font-extrabold text-[#734960] mt-1">{current.monthlyGen}</p>
               <span className="text-[11px] text-[#666666]">Replaced 94% of grid bill</span>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#78B77B] shadow-xs">
+            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#78B77B] card-floating">
               <span className="text-[10px] font-bold text-[#666666] uppercase">Cumulative Bill Savings</span>
               <p className="text-2xl font-extrabold text-[#78B77B] mt-1">{current.lifetimeSavings}</p>
               <span className="text-[11px] text-[#5B965E] font-bold">₹7.20 / unit grid tariff saved</span>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#734960] shadow-xs">
+            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] border-l-4 border-l-[#734960] card-floating">
               <span className="text-[10px] font-bold text-[#666666] uppercase">Govt DBT Subsidy</span>
               <p className="text-lg font-extrabold text-[#734960] mt-1">{current.subsidyStatus}</p>
               <span className="text-[11px] text-[#666666]">PM-Surya Ghar Scheme</span>
@@ -492,8 +490,8 @@ function CustomerContent() {
           {/* Quick Shortcuts */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div
-              onClick={() => setActiveTab("progress")}
-              className="bg-white p-5 rounded-2xl border border-[#E4E7EB] shadow-xs hover:border-[#78B77B] cursor-pointer transition space-y-2"
+              onClick={() => switchTab("progress")}
+              className="bg-white p-5 rounded-2xl border border-[#E4E7EB] card-floating hover:border-[#78B77B] cursor-pointer transition space-y-2"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xl">📊</span>
@@ -506,8 +504,8 @@ function CustomerContent() {
             </div>
 
             <div
-              onClick={() => setActiveTab("photos")}
-              className="bg-white p-5 rounded-2xl border border-[#E4E7EB] shadow-xs hover:border-[#F4B860] cursor-pointer transition space-y-2"
+              onClick={() => switchTab("photos")}
+              className="bg-white p-5 rounded-2xl border border-[#E4E7EB] card-floating hover:border-[#F4B860] cursor-pointer transition space-y-2"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xl">📸</span>
@@ -520,8 +518,8 @@ function CustomerContent() {
             </div>
 
             <div
-              onClick={() => setActiveTab("complaint")}
-              className="bg-white p-5 rounded-2xl border border-[#E4E7EB] shadow-xs hover:border-[#DC2626] cursor-pointer transition space-y-2"
+              onClick={() => switchTab("complaint")}
+              className="bg-white p-5 rounded-2xl border border-[#E4E7EB] card-floating hover:border-[#DC2626] cursor-pointer transition space-y-2"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xl">🚨</span>
@@ -533,12 +531,31 @@ function CustomerContent() {
               </p>
             </div>
           </div>
+
+          {/* Plant Hardware Specs Card */}
+          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 card-floating">
+            <h4 className="text-xs font-bold text-[#333333] uppercase tracking-wider mb-3">
+              Installed Equipment &amp; Serial Tagging
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              <div className="p-3 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] space-y-1">
+                <span className="text-[10px] font-bold text-[#734960] uppercase">Smart Grid Inverter</span>
+                <p className="font-mono font-bold text-[#333333]">{current.inverterSerial}</p>
+                <p className="text-[#5B965E] font-medium">{current.inverterWarranty}</p>
+              </div>
+              <div className="p-3 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] space-y-1">
+                <span className="text-[10px] font-bold text-[#78B77B] uppercase">Solar PV Modules</span>
+                <p className="font-mono font-bold text-[#333333]">{current.panelSerial}</p>
+                <p className="text-[#5B965E] font-medium">{current.panelWarranty}</p>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
-      {/* ───────────────── TAB 2: INSTALLATION PROGRESS REPORT ───────────────── */}
+      {/* ───────────────── SECTION 2: INSTALLATION PROGRESS REPORT ───────────────── */}
       {activeTab === "progress" && (
-        <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 shadow-xs space-y-6">
+        <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 card-floating space-y-6">
           <div className="flex items-center justify-between border-b border-[#E4E7EB] pb-3">
             <div>
               <span className="text-[10px] font-bold text-[#78B77B] uppercase tracking-wider">Live Status Report</span>
@@ -568,7 +585,7 @@ function CustomerContent() {
                     {isCompleted ? "✓" : step.num}
                   </div>
 
-                  <div className="flex-1 bg-[#F5F7FA] p-3.5 rounded-xl border border-[#E4E7EB]">
+                  <div className="flex-1 bg-[#F5F7FA] p-3.5 rounded-xl border border-[#E4E7EB] card-floating">
                     <div className="flex items-center justify-between">
                       <h4 className="text-xs font-bold text-[#333333]">{step.title}</h4>
                       <span
@@ -592,10 +609,10 @@ function CustomerContent() {
         </div>
       )}
 
-      {/* ───────────────── TAB 3: UPLOAD ROOF PHOTOS ───────────────── */}
+      {/* ───────────────── SECTION 3: UPLOAD ROOF PHOTOS ───────────────── */}
       {activeTab === "photos" && (
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 shadow-xs space-y-4">
+          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 card-floating space-y-4">
             <div>
               <span className="text-[10px] font-bold text-[#DA9B40] uppercase tracking-wider">Site Transparency</span>
               <h3 className="text-base font-bold text-[#333333]">Upload Rooftop &amp; Meter Photos</h3>
@@ -644,7 +661,7 @@ function CustomerContent() {
               {!filePreview ? (
                 <div
                   onClick={() => photoInputRef.current?.click()}
-                  className="border-2 border-dashed border-[#8E687F]/40 hover:border-[#734960] rounded-xl p-6 text-center bg-[#F5F7FA] hover:bg-[#FAF4F7] cursor-pointer transition group"
+                  className="border-2 border-dashed border-[#8E687F]/40 hover:border-[#734960] rounded-xl p-6 text-center bg-[#F5F7FA] hover:bg-[#FAF4F7] cursor-pointer transition group card-floating"
                 >
                   <span className="text-3xl block mb-1 group-hover:scale-110 transition-transform">📸</span>
                   <span className="text-xs font-bold text-[#734960] block">
@@ -655,7 +672,7 @@ function CustomerContent() {
                   </p>
                 </div>
               ) : (
-                <div className="bg-[#FAF4F7] border border-[#8E687F]/30 rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4">
+                <div className="bg-[#FAF4F7] border border-[#8E687F]/30 rounded-xl p-4 flex flex-col sm:flex-row items-center gap-4 card-floating">
                   <div className="w-24 h-24 rounded-lg overflow-hidden border border-[#E4E7EB] flex-shrink-0 bg-white">
                     <img src={filePreview} alt="Preview" className="w-full h-full object-cover" />
                   </div>
@@ -673,7 +690,7 @@ function CustomerContent() {
                       <button
                         type="button"
                         onClick={() => photoInputRef.current?.click()}
-                        className="text-[11px] font-bold text-[#734960] hover:underline"
+                        className="text-[11px] font-bold text-[#734960] hover:underline cursor-pointer"
                       >
                         Change Photo ⇄
                       </button>
@@ -684,7 +701,7 @@ function CustomerContent() {
                           setFilePreview("");
                           if (photoInputRef.current) photoInputRef.current.value = "";
                         }}
-                        className="text-[11px] font-bold text-red-600 hover:underline"
+                        className="text-[11px] font-bold text-red-600 hover:underline cursor-pointer"
                       >
                         Remove
                       </button>
@@ -702,7 +719,7 @@ function CustomerContent() {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs shadow-xs transition"
+                  className="px-5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs card-floating transition cursor-pointer"
                 >
                   Upload &amp; Tag Photo
                 </button>
@@ -710,14 +727,14 @@ function CustomerContent() {
             </form>
           </div>
 
-          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 shadow-xs space-y-3">
+          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 card-floating space-y-3">
             <h4 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
               My Uploaded Photos ({uploadedPhotos.length})
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {uploadedPhotos.map((photo) => (
-                <div key={photo.id} className="p-3 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] space-y-2">
+                <div key={photo.id} className="p-3 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] card-floating space-y-2">
                   <div className="h-32 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-[#E4E7EB]">
                     {photo.isRealFile || photo.url.startsWith("data:") ? (
                       <img
@@ -742,10 +759,10 @@ function CustomerContent() {
         </div>
       )}
 
-      {/* ───────────────── TAB 4: FILE COMPLAINT ───────────────── */}
+      {/* ───────────────── SECTION 4: FILE COMPLAINT ───────────────── */}
       {activeTab === "complaint" && (
         <div className="space-y-6 max-w-2xl mx-auto">
-          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 shadow-xs space-y-4">
+          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 card-floating space-y-4">
             <div className="border-b border-[#E4E7EB] pb-3">
               <span className="text-[10px] font-bold text-[#DC2626] uppercase tracking-wider">Helpdesk Dispatch</span>
               <h3 className="text-base font-bold text-[#333333] mt-0.5">Report Plant Issue / Breakdown to Admin</h3>
@@ -754,7 +771,7 @@ function CustomerContent() {
               </p>
             </div>
 
-            <div className="bg-[#EBF5EC] border border-[#78B77B]/40 rounded-xl p-3 text-xs text-[#5B965E] font-semibold flex items-center justify-between">
+            <div className="bg-[#EBF5EC] border border-[#78B77B]/40 rounded-xl p-3 text-xs text-[#5B965E] font-semibold flex items-center justify-between card-floating">
               <span>🛡️ <strong>Under Active 5-Year Warranty:</strong> Diagnostic visit and replacement parts are <strong>₹0 (100% Free)</strong>.</span>
               <span className="font-extrabold text-[10px] bg-white px-2 py-0.5 rounded border border-[#78B77B]">
                 FREE REPAIR
@@ -789,7 +806,6 @@ function CustomerContent() {
                 />
               </div>
 
-              {/* Real Photo Attachment for Complaint */}
               <div>
                 <label className="text-[11px] font-bold text-[#666666] uppercase block">
                   Attach Breakdown Photo / Inverter Display / Damage Proof
@@ -805,12 +821,12 @@ function CustomerContent() {
                   <button
                     type="button"
                     onClick={() => complaintFileRef.current?.click()}
-                    className="mt-1 w-full border border-dashed border-[#E4E7EB] hover:border-[#DC2626] rounded-xl py-3 px-4 text-xs font-semibold text-[#666666] hover:text-[#DC2626] bg-[#F5F7FA] transition flex items-center justify-center gap-2"
+                    className="mt-1 w-full border border-dashed border-[#E4E7EB] hover:border-[#DC2626] rounded-xl py-3 px-4 text-xs font-semibold text-[#666666] hover:text-[#DC2626] bg-[#F5F7FA] transition flex items-center justify-center gap-2 cursor-pointer card-floating"
                   >
                     <span>📷</span> Attach Inverter Error Photo / Damage Proof
                   </button>
                 ) : (
-                  <div className="mt-1 p-2 bg-[#FAF4F7] border border-[#8E687F]/30 rounded-xl flex items-center justify-between text-xs">
+                  <div className="mt-1 p-2 bg-[#FAF4F7] border border-[#8E687F]/30 rounded-xl flex items-center justify-between text-xs card-floating">
                     <div className="flex items-center gap-2">
                       <img src={complaintPhoto} alt="Proof" className="w-10 h-10 object-cover rounded-lg border border-[#E4E7EB]" />
                       <span className="font-semibold text-[#333333] truncate max-w-xs">{complaintPhotoName}</span>
@@ -822,7 +838,7 @@ function CustomerContent() {
                         setComplaintPhotoName("");
                         if (complaintFileRef.current) complaintFileRef.current.value = "";
                       }}
-                      className="text-xs text-red-600 font-bold hover:underline"
+                      className="text-xs text-red-600 font-bold hover:underline cursor-pointer"
                     >
                       ✕ Remove
                     </button>
@@ -839,7 +855,7 @@ function CustomerContent() {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#DC2626] hover:bg-red-700 text-white font-bold rounded-xl text-xs shadow-xs transition"
+                  className="px-5 py-2 bg-[#DC2626] hover:bg-red-700 text-white font-bold rounded-xl text-xs card-floating transition cursor-pointer"
                 >
                   Submit Breakdown Ticket to Admin (Free)
                 </button>
@@ -848,14 +864,14 @@ function CustomerContent() {
           </div>
 
           {/* Ticket History */}
-          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 shadow-xs space-y-3">
+          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 card-floating space-y-3">
             <h4 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
               My Service Ticket History ({myTickets.length})
             </h4>
 
             <div className="space-y-2">
               {myTickets.map((tkt) => (
-                <div key={tkt.id} className="p-3.5 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] text-xs space-y-1.5">
+                <div key={tkt.id} className="p-3.5 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] card-floating text-xs space-y-1.5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="font-mono font-bold text-[#DA9B40]">{tkt.id}</span>
@@ -879,10 +895,10 @@ function CustomerContent() {
         </div>
       )}
 
-      {/* ───────────────── TAB 5: ASK FOR ENQUIRY ───────────────── */}
+      {/* ───────────────── SECTION 5: ASK FOR ENQUIRY ───────────────── */}
       {activeTab === "enquiry" && (
         <div className="space-y-6 max-w-xl mx-auto">
-          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 shadow-xs space-y-4">
+          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 card-floating space-y-4">
             <div className="border-b border-[#E4E7EB] pb-3">
               <span className="text-[10px] font-bold text-[#734960] uppercase tracking-wider">Client Inquiries &amp; Upgrades</span>
               <h3 className="text-base font-bold text-[#333333] mt-0.5">Ask for System Upgrade, Subsidy, or Enquiry</h3>
@@ -936,12 +952,12 @@ function CustomerContent() {
                   <button
                     type="button"
                     onClick={() => enquiryFileRef.current?.click()}
-                    className="mt-1 w-full border border-dashed border-[#E4E7EB] hover:border-[#734960] rounded-xl py-3 px-4 text-xs font-semibold text-[#734960] bg-[#F5F7FA] hover:bg-[#FAF4F7] transition flex items-center justify-center gap-2"
+                    className="mt-1 w-full border border-dashed border-[#E4E7EB] hover:border-[#734960] rounded-xl py-3 px-4 text-xs font-semibold text-[#734960] bg-[#F5F7FA] hover:bg-[#FAF4F7] transition flex items-center justify-center gap-2 cursor-pointer card-floating"
                   >
                     <span>📎</span> Click to upload file / photo for this inquiry
                   </button>
                 ) : (
-                  <div className="mt-1 p-2.5 bg-[#FAF4F7] border border-[#8E687F]/30 rounded-xl flex items-center justify-between text-xs">
+                  <div className="mt-1 p-2.5 bg-[#FAF4F7] border border-[#8E687F]/30 rounded-xl flex items-center justify-between text-xs card-floating">
                     <div className="flex items-center gap-3">
                       {enquiryFilePreview.startsWith("data:image") ? (
                         <img src={enquiryFilePreview} alt="Attached" className="w-12 h-12 object-cover rounded-lg border border-[#E4E7EB]" />
@@ -962,7 +978,7 @@ function CustomerContent() {
                         setEnquiryFilePreview("");
                         if (enquiryFileRef.current) enquiryFileRef.current.value = "";
                       }}
-                      className="text-xs text-red-600 font-bold hover:underline"
+                      className="text-xs text-red-600 font-bold hover:underline cursor-pointer"
                     >
                       ✕ Remove
                     </button>
@@ -979,7 +995,7 @@ function CustomerContent() {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs shadow-xs transition"
+                  className="px-5 py-2 bg-[#734960] hover:bg-[#5A354A] text-white font-bold rounded-xl text-xs card-floating transition cursor-pointer"
                 >
                   Send Enquiry ➔
                 </button>
@@ -987,14 +1003,14 @@ function CustomerContent() {
             </form>
           </div>
 
-          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 shadow-xs space-y-3">
+          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-5 card-floating space-y-3">
             <h4 className="text-xs font-bold text-[#333333] uppercase tracking-wider">
               My Submitted Inquiries &amp; Quotes ({enquiryHistory.length})
             </h4>
 
             <div className="space-y-2.5">
               {enquiryHistory.map((enq) => (
-                <div key={enq.id} className="p-3.5 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] text-xs space-y-1.5">
+                <div key={enq.id} className="p-3.5 bg-[#F5F7FA] rounded-xl border border-[#E4E7EB] card-floating text-xs space-y-1.5">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-[#333333]">{enq.subject}</span>
                     <span className="text-[10px] font-mono font-bold bg-white px-2 py-0.5 rounded border border-[#E4E7EB] text-[#734960]">
@@ -1019,7 +1035,7 @@ function CustomerContent() {
         </div>
       )}
 
-      {/* ───────────────── TAB 6: DIGITAL WARRANTY CARDS ───────────────── */}
+      {/* ───────────────── SECTION 6: DIGITAL WARRANTY CARDS ───────────────── */}
       {activeTab === "warranty" && (
         <div className="space-y-4 max-w-3xl mx-auto">
           <div className="flex items-center justify-between">
@@ -1030,7 +1046,7 @@ function CustomerContent() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] shadow-xs space-y-3">
+            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] card-floating space-y-3">
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[#734960] bg-[#FAF4F7] px-2 py-0.5 rounded-full border border-[#8E687F]/30">
@@ -1057,7 +1073,7 @@ function CustomerContent() {
               </div>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] shadow-xs space-y-3">
+            <div className="bg-white p-5 rounded-2xl border border-[#E4E7EB] card-floating space-y-3">
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-[#5B965E] bg-[#EBF5EC] px-2 py-0.5 rounded-full border border-[#78B77B]/40">

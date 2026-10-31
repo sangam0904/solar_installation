@@ -1,11 +1,28 @@
 "use client";
 
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useNav } from "@/context/NavContext";
 import { useAuth } from "@/context/AuthContext";
 
-const adminMenuItems = [
+interface MenuItem {
+  name: string;
+  href: string;
+  icon: string;
+  isDropdown?: boolean;
+}
+
+const customerPortalSubItems = [
+  { name: "Solar Yield & Passbook", href: "/customer?tab=passbook", icon: "☀️", tab: "passbook" },
+  { name: "Installation Progress Report", href: "/customer?tab=progress", icon: "📊", tab: "progress" },
+  { name: "Upload Roof Photos", href: "/customer?tab=photos", icon: "📸", tab: "photos" },
+  { name: "File Service Complaint", href: "/customer?tab=complaint", icon: "🚨", tab: "complaint" },
+  { name: "Ask for Enquiry / Upgrade", href: "/customer?tab=enquiry", icon: "💬", tab: "enquiry" },
+  { name: "Digital Warranty Cards", href: "/customer?tab=warranty", icon: "🛡️", tab: "warranty" },
+];
+
+const adminMenuItems: MenuItem[] = [
   { name: "Dashboard", href: "/", icon: "📊" },
   { name: "Leads & CRM", href: "/leads", icon: "🎯" },
   { name: "Quotations", href: "/quotations", icon: "📋" },
@@ -15,24 +32,34 @@ const adminMenuItems = [
   { name: "Service Desk", href: "/service", icon: "🔧" },
   { name: "Subsidy Tracker", href: "/subsidy", icon: "🏛️" },
   { name: "Technicians", href: "/technician", icon: "👷" },
-  { name: "Customer Portal", href: "/customer", icon: "👤" },
+  { name: "Customer Portal", href: "/customer", icon: "👤", isDropdown: true },
   { name: "Settings", href: "/settings", icon: "⚙️" },
 ];
 
-const technicianMenuItems = [
+const technicianMenuItems: MenuItem[] = [
   { name: "My Assigned Tasks", href: "/technician", icon: "📋" },
   { name: "Settings", href: "/settings", icon: "⚙️" },
 ];
 
-const customerMenuItems = [
-  { name: "My Solar Portal", href: "/customer", icon: "☀️" },
+const customerMenuItems: MenuItem[] = [
+  { name: "My Solar Portal", href: "/customer", icon: "☀️", isDropdown: true },
   { name: "Settings", href: "/settings", icon: "⚙️" },
 ];
 
-export default function Sidebar() {
+function SidebarInner() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const activeTabParam = searchParams.get("tab") || "passbook";
   const { isNavOpen, toggleNav } = useNav();
   const { role, user, logout } = useAuth();
+
+  const [customerDropdownOpen, setCustomerDropdownOpen] = useState(pathname === "/customer");
+
+  useEffect(() => {
+    if (pathname === "/customer") {
+      setCustomerDropdownOpen(true);
+    }
+  }, [pathname]);
 
   const menuItems =
     role === "technician"
@@ -111,6 +138,116 @@ export default function Sidebar() {
       <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto">
         {menuItems.map((item) => {
           const isActive = pathname === item.href.split("?")[0];
+
+          // Customer Portal Dropdown Menu
+          if (item.isDropdown) {
+            return (
+              <div key={item.name} className="relative group">
+                {/* Main Customer Portal Row */}
+                <div
+                  className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium transition-all duration-200 cursor-pointer ${
+                    isActive
+                      ? "bg-[#734960] text-white font-semibold shadow-sm border border-[#5A354A]"
+                      : "text-white/85 hover:bg-white/10 hover:text-white"
+                  }`}
+                  onClick={() => {
+                    if (isNavOpen) {
+                      setCustomerDropdownOpen(!customerDropdownOpen);
+                    }
+                  }}
+                  title={!isNavOpen ? `${item.name} (Click for sections)` : undefined}
+                >
+                  <Link
+                    href={item.href}
+                    onClick={(e) => {
+                      if (isNavOpen) {
+                        e.stopPropagation();
+                        setCustomerDropdownOpen(true);
+                      }
+                    }}
+                    className="flex items-center gap-2.5 min-w-0 flex-1"
+                  >
+                    <span className="text-base flex-shrink-0">{item.icon}</span>
+                    {isNavOpen && <span className="truncate">{item.name}</span>}
+                  </Link>
+
+                  {/* Dropdown chevron when navbar is open */}
+                  {isNavOpen && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCustomerDropdownOpen(!customerDropdownOpen);
+                      }}
+                      className="p-1 text-white/70 hover:text-white focus:outline-none transition-transform"
+                      aria-label="Toggle Customer Portal Submenu"
+                    >
+                      <span className="text-[10px] block">
+                        {customerDropdownOpen ? "▲" : "▼"}
+                      </span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Expanded Sub-items (when navbar is open) */}
+                {isNavOpen && customerDropdownOpen && (
+                  <div className="ml-4 pl-2 mt-1 space-y-1 border-l-2 border-[#F4B860]/40">
+                    {customerPortalSubItems.map((sub) => {
+                      const isSubActive = pathname === "/customer" && activeTabParam === sub.tab;
+                      return (
+                        <Link
+                          key={sub.name}
+                          href={sub.href}
+                          className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition-colors ${
+                            isSubActive
+                              ? "bg-white/20 text-[#F4B860] font-bold"
+                              : "text-white/80 hover:bg-white/10 hover:text-white"
+                          }`}
+                        >
+                          <span className="text-xs flex-shrink-0">{sub.icon}</span>
+                          <span className="truncate">{sub.name}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Collapsed Navbar Flyout Dropdown (when navbar is collapsed) */}
+                {!isNavOpen && (
+                  <div className="absolute left-full top-0 ml-2 w-56 bg-[#734960] rounded-xl shadow-xl border border-[#5A354A] p-2 hidden group-hover:block z-50">
+                    <div className="px-2 py-1 border-b border-[#5A354A] mb-1 flex items-center justify-between">
+                      <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                        <span>👤</span> Customer Portal
+                      </span>
+                      <span className="text-[9px] bg-[#F4B860] text-[#333333] px-1.5 py-0.5 rounded font-extrabold uppercase">
+                        Dropdown
+                      </span>
+                    </div>
+                    <div className="space-y-0.5">
+                      {customerPortalSubItems.map((sub) => {
+                        const isSubActive = pathname === "/customer" && activeTabParam === sub.tab;
+                        return (
+                          <Link
+                            key={sub.name}
+                            href={sub.href}
+                            className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs transition ${
+                              isSubActive
+                                ? "bg-white/20 text-[#F4B860] font-bold"
+                                : "text-white/90 hover:bg-white/10 hover:text-white"
+                            }`}
+                          >
+                            <span className="text-sm">{sub.icon}</span>
+                            <span className="truncate">{sub.name}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          }
+
           return (
             <Link
               key={item.name}
@@ -162,5 +299,13 @@ export default function Sidebar() {
         </button>
       </div>
     </aside>
+  );
+}
+
+export default function Sidebar() {
+  return (
+    <Suspense fallback={<div className="w-[64px] h-screen bg-[#8E687F] fixed top-0 left-0" />}>
+      <SidebarInner />
+    </Suspense>
   );
 }
