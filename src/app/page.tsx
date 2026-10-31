@@ -1,6 +1,7 @@
 "use client";
 
 import PageShell from "@/components/PageShell";
+import AdminUserLoginLogsSection from "@/components/AdminUserLoginLogsSection";
 import { leads, orders, serviceTickets, dashboardStats } from "@/data/mockData";
 import Link from "next/link";
 import {
@@ -465,6 +466,9 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* ── ROW 5: Real-Time User Login & Activity Logs ── */}
+      <AdminUserLoginLogsSection />
     </PageShell>
   );
 }

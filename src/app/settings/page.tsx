@@ -1,6 +1,6 @@
 "use client";
 
-import { SettingsIcon, ShieldCheckIcon, UserIcon } from "@/components/Icons";
+import { SettingsIcon, ShieldCheckIcon, UserIcon, CrownIcon, HardHatIcon } from "@/components/Icons";
 
 import { useState, useRef } from "react";
 import PageShell from "@/components/PageShell";
@@ -99,9 +99,13 @@ export default function SettingsPage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-4xl select-none">
-                    {user?.avatar || (role === "technician" ? "👷" : role === "customer" ? "👤" : "👑")}
-                  </span>
+                  role === "technician" ? (
+                    <HardHatIcon className="w-12 h-12 text-[#DA9B40]" />
+                  ) : role === "customer" ? (
+                    <UserIcon className="w-12 h-12 text-[#5B965E]" />
+                  ) : (
+                    <CrownIcon className="w-12 h-12 text-[#4A355E]" />
+                  )
                 )}
               </div>
               <button

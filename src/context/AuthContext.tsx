@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { recordUserLogin } from "@/data/userLogs";
 
 export type UserRole = "admin" | "technician" | "customer";
 
@@ -22,8 +23,8 @@ interface AuthContextType {
   user: User | null;
   role: UserRole;
   loginAsAdmin: (email?: string) => void;
-  loginAsTechnician: (techId: string) => void;
-  loginAsCustomer: (identifier: string) => void;
+  loginAsTechnician: (techId: string, customEmail?: string) => void;
+  loginAsCustomer: (identifier: string, customEmail?: string) => void;
   loginWithGoogle: () => void;
   logout: () => void;
   updateProfilePhoto: (photo: string) => void;
@@ -34,7 +35,7 @@ const defaultAdmin: User = {
   name: "Rajendra Rathore (Director)",
   email: "admin@sunpower.com",
   role: "admin",
-  avatar: "👑",
+  avatar: "admin",
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -107,9 +108,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       name: "Rajendra Rathore (Director)",
       email,
       role: "admin",
-      avatar: "👑",
+      avatar: "admin",
     };
     saveUser(adminUser);
+    recordUserLogin({
+      name: adminUser.name,
+      email: adminUser.email,
+      role: "admin",
+      loginMethod: "Email & Password",
+    });
   };
 
   const loginWithGoogle = () => {
@@ -118,26 +125,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       name: "Rajendra Rathore (Google Workspace)",
       email: "rajendra@sunpower.com",
       role: "admin",
-      avatar: "🌐",
+      avatar: "google",
     };
     saveUser(googleUser);
+    recordUserLogin({
+      name: googleUser.name,
+      email: googleUser.email,
+      role: "admin",
+      loginMethod: "Google Workspace SSO",
+    });
   };
 
-  const loginAsTechnician = (techId: string) => {
+  const loginAsTechnician = (techId: string, customEmail?: string) => {
     const techInfo = ALL_16_EMPLOYEES[techId] || ALL_16_EMPLOYEES["TECH-001"];
+    const effectiveEmail = customEmail || techInfo.email;
     const techUser: User = {
       id: techId,
       techId,
       name: techInfo.name,
-      email: techInfo.email,
+      email: effectiveEmail,
       phone: techInfo.phone,
       role: "technician",
-      avatar: "👷",
+      avatar: "technician",
     };
     saveUser(techUser);
+    recordUserLogin({
+      name: techInfo.name,
+      email: effectiveEmail,
+      role: "technician",
+      loginMethod: "Staff PIN & Email",
+    });
   };
 
-  const loginAsCustomer = (identifier: string) => {
+  const loginAsCustomer = (identifier: string, customEmail?: string) => {
     const customerDirectory: Record<string, { name: string; email: string; phone: string; order: string; system: string }> = {
       "rajesh": {
         name: "Rajesh Gupta",
@@ -174,18 +194,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     ) || "rajesh";
 
     const custInfo = customerDirectory[key];
+    const effectiveEmail = customEmail || (identifier.includes("@") ? identifier : custInfo.email);
     const custUser: User = {
       id: `CUST-${key.toUpperCase()}`,
       customerId: `CUST-${key.toUpperCase()}`,
       name: custInfo.name,
-      email: custInfo.email,
+      email: effectiveEmail,
       phone: custInfo.phone,
       customerOrder: custInfo.order,
       systemDetails: custInfo.system,
       role: "customer",
-      avatar: "👤",
+      avatar: "customer",
     };
     saveUser(custUser);
+    recordUserLogin({
+      name: custInfo.name,
+      email: effectiveEmail,
+      role: "customer",
+      loginMethod: identifier.includes("@") ? "Direct Email Sign-in" : "Email & OTP Sign-in",
+    });
   };
 
   const logout = () => {

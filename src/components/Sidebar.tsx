@@ -297,6 +297,14 @@ function SidebarInner() {
                     <HardHatIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
                     <span className="truncate">Technician Portal</span>
                   </Link>
+
+                  <Link
+                    href="/#user-logs"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition text-white/80 hover:bg-white/10 hover:text-white"
+                  >
+                    <UsersIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
+                    <span className="truncate">User Login Logs</span>
+                  </Link>
                 </div>
               )}
 
@@ -327,6 +335,13 @@ function SidebarInner() {
                     >
                       <HardHatIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
                       <span>Technician Portal</span>
+                    </Link>
+                    <Link
+                      href="/#user-logs"
+                      className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition text-white/90 hover:bg-white/10"
+                    >
+                      <UsersIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
+                      <span>User Login Logs</span>
                     </Link>
                   </div>
                 </div>
