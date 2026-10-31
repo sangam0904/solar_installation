@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, Suspense } from "react";
 import PageShell from "@/components/PageShell";
+import CustomerWorkProgressBar from "@/components/CustomerWorkProgressBar";
 import { useAuth } from "@/context/AuthContext";
 import { useSearchParams } from "next/navigation";
 import { serviceTickets as defaultInitialTickets } from "@/data/mockData";
@@ -387,6 +388,7 @@ function CustomerContent() {
         type: "alert" as const,
       };
       localStorage.setItem("sunpower_notifications", JSON.stringify([adminNotif, ...notifs]));
+      window.dispatchEvent(new Event("sunpower_customer_update"));
     } catch {
       // Ignore
     }
@@ -488,6 +490,44 @@ function CustomerContent() {
     };
 
     setEnquiryHistory([newEnq, ...enquiryHistory]);
+
+    try {
+      const savedEnqs = JSON.parse(localStorage.getItem("sunpower_customer_enquiries") || "[]");
+      const newSavedEnq = {
+        id: newEnqId,
+        type: "enquiry",
+        customerName: current.name,
+        phone: current.phone,
+        address: current.address,
+        system: current.system,
+        subject: enquirySubject,
+        message: enquiryMessage,
+        priority: "High",
+        status: "New",
+        attachedPhoto: enquiryFilePreview,
+        fileName: enquiryFile?.name,
+        createdAt: "Just now",
+        isRead: false,
+      };
+      localStorage.setItem("sunpower_customer_enquiries", JSON.stringify([newSavedEnq, ...savedEnqs]));
+    } catch {
+      // Ignore
+    }
+
+    try {
+      const notifs = JSON.parse(localStorage.getItem("sunpower_notifications") || "[]");
+      const adminNotif = {
+        id: `notif-${Date.now()}`,
+        recipientRole: "admin" as const,
+        text: `💬 New Customer Upgrade Enquiry from ${current.name}: "${enquirySubject}" (${newEnqId})`,
+        time: "Just now",
+        type: "lead" as const,
+      };
+      localStorage.setItem("sunpower_notifications", JSON.stringify([adminNotif, ...notifs]));
+      window.dispatchEvent(new Event("sunpower_customer_update"));
+    } catch {
+      // Ignore
+    }
     setExpandedEnquiryId(newEnqId);
     setEnquirySuccess(true);
     setEnquiryMessage("");
@@ -723,56 +763,60 @@ function CustomerContent() {
 
       {/* ───────────────── SECTION 2: INSTALLATION PROGRESS REPORT ───────────────── */}
       {activeTab === "progress" && (
-        <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 card-floating space-y-6">
-          <div className="flex items-center justify-between border-b border-[#E4E7EB] pb-3">
-            <div>
-              <span className="text-[10px] font-bold text-[#78B77B] uppercase tracking-wider">Live Status Report</span>
-              <h3 className="text-base font-bold text-[#333333]">Rooftop Plant Implementation Tracker</h3>
-              <p className="text-xs text-[#666666]">Order: {current.inverterSerial} • Current Stage: Step {current.progressStep} of 6</p>
+        <div className="space-y-6">
+          <CustomerWorkProgressBar customer={current} />
+
+          <div className="bg-white rounded-2xl border border-[#E4E7EB] p-6 card-floating space-y-6">
+            <div className="flex items-center justify-between border-b border-[#E4E7EB] pb-3">
+              <div>
+                <span className="text-[10px] font-bold text-[#78B77B] uppercase tracking-wider">Live Status Report</span>
+                <h3 className="text-base font-bold text-[#333333]">Rooftop Plant Implementation Tracker</h3>
+                <p className="text-xs text-[#666666]">Order: {current.inverterSerial} • Current Stage: Step {current.progressStep} of 6</p>
+              </div>
+              <span className="px-3 py-1 bg-[#EBF5EC] text-[#5B965E] font-bold text-xs rounded-full border border-[#78B77B]/40">
+                {current.progressStep === 6 ? "100% Complete" : "85% Commissioned"}
+              </span>
             </div>
-            <span className="px-3 py-1 bg-[#EBF5EC] text-[#5B965E] font-bold text-xs rounded-full border border-[#78B77B]/40">
-              {current.progressStep === 6 ? "100% Complete" : "85% Commissioned"}
-            </span>
-          </div>
 
-          <div className="space-y-4">
-            {progressSteps.map((step) => {
-              const isCompleted = step.num < current.progressStep;
-              const isCurrent = step.num === current.progressStep;
-              return (
-                <div key={step.num} className="flex items-start gap-4">
-                  <div
-                    className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 border-2 transition ${
-                      isCompleted
-                        ? "bg-[#78B77B] text-white border-[#78B77B]"
-                        : isCurrent
-                        ? "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860] animate-pulse"
-                        : "bg-[#F5F7FA] text-gray-400 border-[#E4E7EB]"
-                    }`}
-                  >
-                    {isCompleted ? "✓" : step.num}
-                  </div>
-
-                  <div className="flex-1 bg-[#F5F7FA] p-3.5 rounded-xl border border-[#E4E7EB] card-floating">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-xs font-bold text-[#333333]">{step.title}</h4>
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          isCompleted
-                            ? "bg-[#EBF5EC] text-[#5B965E]"
-                            : isCurrent
-                            ? "bg-[#FEF6EB] text-[#DA9B40]"
-                            : "bg-gray-200 text-gray-600"
-                        }`}
-                      >
-                        {isCompleted ? "Completed ✓" : isCurrent ? "Active In Progress ⚡" : "Pending Next"}
-                      </span>
+            <div className="space-y-4">
+              {progressSteps.map((step) => {
+                const isCompleted = step.num < current.progressStep;
+                const isCurrent = step.num === current.progressStep;
+                return (
+                  <div key={step.num} className="flex items-start gap-4">
+                    <div
+                      className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 border-2 transition ${
+                        isCompleted
+                          ? "bg-[#78B77B] text-white border-[#78B77B]"
+                          : isCurrent
+                          ? "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860] animate-pulse"
+                          : "bg-[#F5F7FA] text-gray-400 border-[#E4E7EB]"
+                      }`}
+                    >
+                      {isCompleted ? "✓" : step.num}
                     </div>
-                    <p className="text-[11px] text-[#666666] mt-1">{step.desc}</p>
+
+                    <div className="flex-1 bg-[#F5F7FA] p-3.5 rounded-xl border border-[#E4E7EB] card-floating">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-bold text-[#333333]">{step.title}</h4>
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            isCompleted
+                              ? "bg-[#EBF5EC] text-[#5B965E]"
+                              : isCurrent
+                              ? "bg-[#FEF6EB] text-[#DA9B40]"
+                              : "bg-gray-200 text-gray-600"
+                          }`}
+                        >
+                          {isCompleted ? "Completed ✓" : isCurrent ? "Active In Progress ⚡" : "Pending Next"}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-[#666666] mt-1">{step.desc}</p>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
       )}

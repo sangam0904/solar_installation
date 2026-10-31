@@ -3,6 +3,7 @@
 import React, { Suspense } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
+import AdminNotificationFloatingWindow from "@/components/AdminNotificationFloatingWindow";
 import { useNav } from "@/context/NavContext";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -81,6 +82,7 @@ export default function PageShell({ children }: PageShellProps) {
           {children}
         </main>
       </div>
+      <AdminNotificationFloatingWindow />
     </div>
   );
 }
