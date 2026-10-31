@@ -1,6 +1,22 @@
 "use client";
 
-import { HardHatIcon, WrenchIcon, CheckCircleIcon, ClockIcon } from "@/components/Icons";
+import {
+  HardHatIcon,
+  WrenchIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  PhoneIcon,
+  MapPinIcon,
+  EyeIcon,
+  StarIcon,
+  CameraIcon,
+  FileTextIcon,
+  ZapIcon,
+  AlertCircleIcon,
+  PlusIcon,
+  CheckIcon,
+  ChevronRightIcon,
+} from "@/components/Icons";
 
 import { useState, useRef, useEffect, Suspense } from "react";
 import PageShell from "@/components/PageShell";
@@ -59,7 +75,7 @@ const defaultTechTasks: Record<string, AssignedTask[]> = {
         reportedIssue: "Inverter red alarm light blinking. System output dropped to 0 kWh since morning. Display showing E-04 communication failure.",
         roofType: "RCC Flat Rooftop (2nd Floor)",
         customerNotes: "Main electric panel is in the garage. Gate code: 4421. Customer available on phone.",
-        customerPhotos: ["☀️ Inverter Error E-04", "🔌 Main Breaker Panel"],
+        customerPhotos: ["Inverter Error E-04", "Main Breaker Panel"],
       },
       adminInstructions: "Carry replacement RS485 communication cable and 1000V DC multimeter. Inspect DC surge protector and check inverter grounding resistance.",
     },
@@ -77,10 +93,10 @@ const defaultTechTasks: Record<string, AssignedTask[]> = {
         reportedIssue: "Routine post-installation commissioning check and net-meter synchronization verification.",
         roofType: "RCC Flat Rooftop, South Facing",
         customerNotes: "Customer requested physical copy of 5-year inverter warranty handbook.",
-        customerPhotos: ["☀️ Rooftop Array", "⚡ Discom Net-Meter"],
+        customerPhotos: ["Rooftop Array", "Discom Net-Meter"],
       },
       adminInstructions: "Verify grid sync on Discom meter. Take photo of active yield reading (>2,800W) and get customer sign-off.",
-      completionProofPhoto: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%2378B77B'/><text x='50' y='55' font-size='12' fill='white' text-anchor='middle'>Verified Yield</text></svg>",
+      completionProofPhoto: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%235B965E'/><text x='50' y='55' font-size='12' fill='white' text-anchor='middle'>Verified Yield</text></svg>",
       workNotes: "Voltage verified at 238V. Net-meter export functioning properly. Customer signed handover.",
       completedAt: "Today, 11:30 AM",
     },
@@ -100,7 +116,7 @@ const defaultTechTasks: Record<string, AssignedTask[]> = {
         reportedIssue: "New Installation. Hardware delivered from central warehouse yesterday.",
         roofType: "Flat Terrace (450 sq. ft.), Zero Shading between 9am-5pm",
         customerNotes: "Customer requested routing DC cables through internal duct rather than facade.",
-        customerPhotos: ["📸 Roof Terrace Layout", "📐 Meter Location"],
+        customerPhotos: ["Roof Terrace Layout", "Meter Location"],
       },
       adminInstructions: "Anchor structure with M10 hot-dip galvanized fasteners. Maintain 26° tilt angle. Earthing pit chemical compound must be packed properly.",
     },
@@ -120,7 +136,7 @@ const defaultTechTasks: Record<string, AssignedTask[]> = {
         reportedIssue: "Battery backup time decreased to 1 hour during evening load cut. Battery state of charge (SoC) indicator jumping erratically.",
         roofType: "Single Storey Bungalow",
         customerNotes: "Elderly residents at home. Please knock gently.",
-        customerPhotos: ["🔋 Battery BMS Screen"],
+        customerPhotos: ["Battery BMS Screen"],
       },
       adminInstructions: "Perform cell balancing check on Okaya 48V 100Ah battery pack. Check BMS error log using Bluetooth scanner.",
     },
@@ -247,7 +263,7 @@ function TechnicianFieldContent() {
         reportedIssue: newCustIssue || "Standard customer request scheduled by operations desk.",
         roofType: newCustRoof,
         customerNotes: newCustNotes || "Customer available at site address.",
-        customerPhotos: ["📸 Roof Layout Submitted by Customer"],
+        customerPhotos: ["Roof Layout Submitted by Customer"],
       },
       adminInstructions: newAdminInstructions || "Complete job according to MNRE safety standards. Upload photo of final work.",
     };
@@ -272,7 +288,7 @@ function TechnicianFieldContent() {
         id: `notif-${Date.now()}`,
         recipientRole: "technician" as const,
         recipientId: assignToTechId,
-        text: `🚨 New Site Job Assigned: ${newTaskType} for ${newCustName} (${task.orderId})`,
+        text: `New Site Job Assigned: ${newTaskType} for ${newCustName} (${task.orderId})`,
         time: "Just now",
         type: "task" as const,
       };
@@ -282,7 +298,7 @@ function TechnicianFieldContent() {
       // Ignore
     }
 
-    setAssignSuccessAlert(`✓ Task ${task.orderId} successfully assigned to ${techList.find((t) => t.id === assignToTechId)?.name}! Notification sent.`);
+    setAssignSuccessAlert(`Task ${task.orderId} successfully assigned to ${techList.find((t) => t.id === assignToTechId)?.name}! Notification sent.`);
 
     // Reset
     setNewCustName("");
@@ -362,18 +378,20 @@ function TechnicianFieldContent() {
       {role === "admin" && adminViewMode === "dispatch-center" && (
         <div className="space-y-6">
           {/* Admin Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#EBCED6] pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#F7CEBE] pb-4">
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xl">👷</span>
-                <h1 className="text-xl sm:text-2xl font-bold text-[#333333]">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#4C1D3D] to-[#852E4E] flex items-center justify-center text-[#FFBB94] shadow-xs">
+                  <HardHatIcon className="w-5 h-5" />
+                </div>
+                <h1 className="text-xl sm:text-2xl font-bold text-[#2E1423]">
                   Technician Task Assignment &amp; Crew Dispatch
                 </h1>
-                <span className="text-[10px] font-bold bg-[#F7EEF2] text-[#4A355E] px-2.5 py-0.5 rounded-full border border-[#6D5284]/30 uppercase">
-                  Admin Only
+                <span className="text-[10px] font-bold bg-[#FFF5EF] text-[#852E4E] px-2.5 py-0.5 rounded-full border border-[#FB9590]/40 uppercase tracking-wide">
+                  Admin Dispatch
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-[#666666] mt-0.5">
+              <p className="text-xs sm:text-sm text-[#7A4C60] mt-1">
                 Assign tasks to field technicians. Technicians only see customer details &amp; tasks you assign them.
               </p>
             </div>
@@ -381,16 +399,16 @@ function TechnicianFieldContent() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setAdminViewMode("crew-view")}
-                className="px-3.5 py-2 bg-[#F7EEF2] hover:bg-[#EBCED6] text-[#333333] text-xs font-bold rounded-xl border border-[#EBCED6] transition flex items-center gap-1.5"
+                className="px-3.5 py-2 bg-[#FFF5EF] hover:bg-[#FFE8DD] text-[#4C1D3D] text-xs font-bold rounded-xl border border-[#FB9590]/40 transition flex items-center gap-1.5 shadow-2xs"
               >
-                <span>👁️</span> Preview Technician View
+                <EyeIcon className="w-3.5 h-3.5 text-[#852E4E]" /> Preview Technician View
               </button>
 
               <button
                 onClick={() => handleOpenAssignModal()}
-                className="px-4 py-2 bg-[#4A355E] hover:bg-[#372447] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
+                className="px-4 py-2 bg-gradient-to-r from-[#4C1D3D] to-[#852E4E] hover:from-[#38132B] hover:to-[#6E243F] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
               >
-                <span>+</span> Assign Task to Technician
+                <PlusIcon className="w-3.5 h-3.5" /> Assign Task to Technician
               </button>
             </div>
           </div>
@@ -400,43 +418,51 @@ function TechnicianFieldContent() {
             {techList.map((tech) => (
               <div
                 key={tech.id}
-                className="bg-white rounded-2xl border border-[#EBCED6] p-5 shadow-xs space-y-4 hover:border-[#4A355E]/50 transition-all"
+                className="bg-white rounded-2xl border border-[#F7CEBE] p-5 shadow-xs space-y-4 hover:border-[#DC586D]/60 transition-all"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-[#F7EEF2] text-[#4A355E] flex items-center justify-center text-2xl font-bold border border-[#6D5284]/30">
-                      👷
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#FFF5EF] to-[#FFE8DD] text-[#4C1D3D] flex items-center justify-center border border-[#FB9590]/40 flex-shrink-0">
+                      <HardHatIcon className="w-6 h-6 text-[#4C1D3D]" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-bold text-[#333333]">{tech.name}</h4>
+                        <h4 className="text-sm font-bold text-[#2E1423]">{tech.name}</h4>
                         <span
                           className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                             tech.status === "Available"
                               ? "bg-[#EBF5EC] text-[#5B965E] border-[#78B77B]/40"
-                              : "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860]/40"
+                              : "bg-[#FFF0EB] text-[#DC586D] border-[#DC586D]/40"
                           }`}
                         >
                           {tech.status}
                         </span>
                       </div>
-                      <p className="text-xs text-[#666666]">{tech.specialization}</p>
-                      <p className="text-[11px] text-[#666666] mt-0.5">📞 {tech.phone} • ⭐ {tech.rating}</p>
+                      <p className="text-xs text-[#7A4C60]">{tech.specialization}</p>
+                      <p className="text-[11px] text-[#7A4C60] mt-0.5 flex items-center gap-2">
+                        <span className="inline-flex items-center gap-1">
+                          <PhoneIcon className="w-3 h-3 text-[#852E4E]" /> {tech.phone}
+                        </span>
+                        <span>•</span>
+                        <span className="inline-flex items-center gap-1 text-[#DC586D] font-bold">
+                          <StarIcon className="w-3 h-3 fill-[#DC586D] text-[#DC586D]" /> {tech.rating}
+                        </span>
+                      </p>
                     </div>
                   </div>
 
                   <button
                     onClick={() => handleOpenAssignModal(tech.id)}
-                    className="px-3 py-1.5 bg-[#4A355E] hover:bg-[#372447] text-white text-xs font-bold rounded-xl shadow-xs transition"
+                    className="px-3 py-1.5 bg-[#4C1D3D] hover:bg-[#852E4E] text-white text-xs font-bold rounded-xl shadow-xs transition"
                   >
                     + Assign Task
                   </button>
                 </div>
 
                 {/* Assigned Tasks for this tech */}
-                <div className="space-y-2 pt-2 border-t border-[#EBCED6]">
+                <div className="space-y-2 pt-2 border-t border-[#F7CEBE]">
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="font-bold text-[#666666] uppercase">
+                    <span className="font-bold text-[#7A4C60] uppercase tracking-wider">
                       Assigned Tasks ({tech.assignedTasks.length})
                     </span>
                     <button
@@ -444,9 +470,9 @@ function TechnicianFieldContent() {
                         setAdminPreviewTechId(tech.id);
                         setAdminViewMode("crew-view");
                       }}
-                      className="text-[#4A355E] hover:underline font-bold text-[11px]"
+                      className="text-[#DC586D] hover:text-[#A33757] hover:underline font-bold text-[11px] inline-flex items-center gap-0.5"
                     >
-                      View Mobile Screen ➔
+                      View Mobile Screen <ChevronRightIcon className="w-3 h-3 inline" />
                     </button>
                   </div>
 
@@ -455,45 +481,47 @@ function TechnicianFieldContent() {
                       {tech.assignedTasks.map((task) => (
                         <div
                           key={task.orderId}
-                          className="bg-[#F7EEF2] p-3 rounded-xl border border-[#EBCED6] text-xs space-y-1.5"
+                          className="bg-[#FFF7F4] p-3 rounded-xl border border-[#F7CEBE] text-xs space-y-1.5"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <span
-                                className={`px-2 py-0.5 rounded text-[9px] font-bold ${
+                                className={`px-2 py-0.5 rounded text-[9px] font-bold border ${
                                   task.type === "Installation"
-                                    ? "bg-[#F7EEF2] text-[#4A355E]"
+                                    ? "bg-[#FFF0EB] text-[#4C1D3D] border-[#FB9590]/50"
                                     : task.type === "Survey"
-                                    ? "bg-[#FEF6EB] text-[#DA9B40]"
-                                    : "bg-[#EBF5EC] text-[#5B965E]"
+                                    ? "bg-[#FFF5EF] text-[#852E4E] border-[#FFBB94]"
+                                    : "bg-[#FFE8DD] text-[#A33757] border-[#DC586D]/40"
                                 }`}
                               >
                                 {task.type}
                               </span>
-                              <span className="font-bold text-[#333333]">{task.customerName}</span>
-                              <span className="font-mono text-[10px] text-[#4A355E]">({task.orderId})</span>
+                              <span className="font-bold text-[#2E1423]">{task.customerName}</span>
+                              <span className="font-mono text-[10px] text-[#852E4E]">({task.orderId})</span>
                             </div>
 
                             <span
-                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                                 task.status === "Completed"
-                                  ? "bg-[#EBF5EC] text-[#5B965E]"
+                                  ? "bg-[#EBF5EC] text-[#5B965E] border-[#78B77B]/40"
                                   : task.status === "In Progress"
-                                  ? "bg-[#FEF6EB] text-[#DA9B40]"
-                                  : "bg-gray-200 text-gray-700"
+                                  ? "bg-[#FFF0EB] text-[#DC586D] border-[#DC586D]/40"
+                                  : "bg-gray-100 text-gray-700 border-gray-200"
                               }`}
                             >
                               {task.status}
                             </span>
                           </div>
 
-                          <p className="text-[11px] text-[#666666]">{task.address} • {task.timeSlot}</p>
-                          <p className="text-[10px] text-[#333333] bg-white p-2 rounded-lg border border-[#EBCED6]">
+                          <p className="text-[11px] text-[#7A4C60] flex items-center gap-1.5">
+                            <MapPinIcon className="w-3 h-3 text-[#852E4E] flex-shrink-0" /> {task.address} • <ClockIcon className="w-3 h-3 text-[#852E4E] flex-shrink-0" /> {task.timeSlot}
+                          </p>
+                          <p className="text-[10px] text-[#2E1423] bg-white p-2 rounded-lg border border-[#F7CEBE]">
                             <strong>Customer Issue:</strong> {task.customerDetails.reportedIssue}
                           </p>
 
                           <div className="flex items-center justify-between pt-1 text-[10px]">
-                            <span className="text-[#4A355E] font-semibold">Admin Note: {task.adminInstructions}</span>
+                            <span className="text-[#852E4E] font-semibold">Admin Note: {task.adminInstructions}</span>
                             <button
                               onClick={() => {
                                 const updatedTasks = tech.assignedTasks.filter((t) => t.orderId !== task.orderId);
@@ -517,7 +545,7 @@ function TechnicianFieldContent() {
                       ))}
                     </div>
                   ) : (
-                    <div className="p-3 bg-[#F7EEF2] rounded-xl text-center text-[11px] text-[#666666]">
+                    <div className="p-3 bg-[#FFF7F4] rounded-xl text-center text-[11px] text-[#7A4C60]">
                       No tasks assigned yet. Click &quot;+ Assign Task&quot; above to dispatch.
                     </div>
                   )}
@@ -528,32 +556,32 @@ function TechnicianFieldContent() {
 
           {/* ── MODAL: ASSIGN TASK TO TECHNICIAN ── */}
           {isAssignModalOpen && (
-            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-              <div className="bg-white rounded-2xl border border-[#EBCED6] shadow-2xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
-                <div className="flex items-center justify-between border-b border-[#EBCED6] pb-3">
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-2xs">
+              <div className="bg-white rounded-2xl border border-[#F7CEBE] shadow-2xl max-w-lg w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
+                <div className="flex items-center justify-between border-b border-[#F7CEBE] pb-3">
                   <div>
-                    <h3 className="text-base font-bold text-[#333333] flex items-center gap-2">
-                      <HardHatIcon className="w-6 h-6 text-[#4A355E]" /> Assign Task to Technician
+                    <h3 className="text-base font-bold text-[#2E1423] flex items-center gap-2">
+                      <HardHatIcon className="w-5 h-5 text-[#4C1D3D]" /> Assign Task to Technician
                     </h3>
-                    <p className="text-xs text-[#666666]">
+                    <p className="text-xs text-[#7A4C60] mt-0.5">
                       The assigned technician will only be able to view this task and customer submission details.
                     </p>
                   </div>
                   <button
                     onClick={() => setIsAssignModalOpen(false)}
-                    className="text-gray-400 hover:text-[#333333] text-lg font-bold"
+                    className="text-[#7A4C60] hover:text-[#2E1423] text-xl font-bold leading-none p-1"
                   >
-                    ✕
+                    &times;
                   </button>
                 </div>
 
                 <form onSubmit={handleAdminAssignSubmit} className="space-y-3.5 text-xs">
                   <div>
-                    <label className="text-[11px] font-bold text-[#666666] uppercase">Assign To Field Technician</label>
+                    <label className="text-[11px] font-bold text-[#7A4C60] uppercase tracking-wide">Assign To Field Technician</label>
                     <select
                       value={assignToTechId}
                       onChange={(e) => setAssignToTechId(e.target.value)}
-                      className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl font-bold text-[#4A355E] bg-white"
+                      className="w-full mt-1 px-3 py-1.5 border border-[#F7CEBE] rounded-xl font-bold text-[#4C1D3D] bg-white focus:ring-2 focus:ring-[#DC586D]/30 focus:border-[#DC586D]"
                     >
                       {techList.map((t) => (
                         <option key={t.id} value={t.id}>
@@ -565,11 +593,11 @@ function TechnicianFieldContent() {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-[11px] font-bold text-[#666666] uppercase">Task Type</label>
+                      <label className="text-[11px] font-bold text-[#7A4C60] uppercase tracking-wide">Task Type</label>
                       <select
                         value={newTaskType}
                         onChange={(e) => setNewTaskType(e.target.value as "Installation" | "Survey" | "Service")}
-                        className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl font-semibold bg-white"
+                        className="w-full mt-1 px-3 py-1.5 border border-[#F7CEBE] rounded-xl font-semibold bg-white focus:ring-2 focus:ring-[#DC586D]/30 focus:border-[#DC586D]"
                       >
                         <option value="Installation">Rooftop Installation</option>
                         <option value="Survey">Site Survey &amp; Shadow Analysis</option>
@@ -578,13 +606,13 @@ function TechnicianFieldContent() {
                     </div>
 
                     <div>
-                      <label className="text-[11px] font-bold text-[#666666] uppercase">System Capacity</label>
+                      <label className="text-[11px] font-bold text-[#7A4C60] uppercase tracking-wide">System Capacity</label>
                       <input
                         type="text"
                         value={newCapacity}
                         onChange={(e) => setNewCapacity(e.target.value)}
                         placeholder="e.g. 3 kW On-Grid System"
-                        className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl font-semibold"
+                        className="w-full mt-1 px-3 py-1.5 border border-[#F7CEBE] rounded-xl font-semibold focus:ring-2 focus:ring-[#DC586D]/30 focus:border-[#DC586D]"
                         required
                       />
                     </div>
@@ -592,95 +620,95 @@ function TechnicianFieldContent() {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-[11px] font-bold text-[#666666] uppercase">Customer Name</label>
+                      <label className="text-[11px] font-bold text-[#7A4C60] uppercase tracking-wide">Customer Name</label>
                       <input
                         type="text"
                         placeholder="e.g. Narendra Verma"
                         value={newCustName}
                         onChange={(e) => setNewCustName(e.target.value)}
-                        className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl font-semibold"
+                        className="w-full mt-1 px-3 py-1.5 border border-[#F7CEBE] rounded-xl font-semibold focus:ring-2 focus:ring-[#DC586D]/30 focus:border-[#DC586D]"
                         required
                       />
                     </div>
                     <div>
-                      <label className="text-[11px] font-bold text-[#666666] uppercase">Customer Phone</label>
+                      <label className="text-[11px] font-bold text-[#7A4C60] uppercase tracking-wide">Customer Phone</label>
                       <input
                         type="text"
                         placeholder="+91 98765 00000"
                         value={newCustPhone}
                         onChange={(e) => setNewCustPhone(e.target.value)}
-                        className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl font-semibold"
+                        className="w-full mt-1 px-3 py-1.5 border border-[#F7CEBE] rounded-xl font-semibold focus:ring-2 focus:ring-[#DC586D]/30 focus:border-[#DC586D]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-bold text-[#666666] uppercase">Customer Site Address</label>
+                    <label className="text-[11px] font-bold text-[#7A4C60] uppercase tracking-wide">Customer Site Address</label>
                     <input
                       type="text"
                       placeholder="e.g. 19, C-Scheme, Jaipur"
                       value={newAddress}
                       onChange={(e) => setNewAddress(e.target.value)}
-                      className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl font-semibold"
+                      className="w-full mt-1 px-3 py-1.5 border border-[#F7CEBE] rounded-xl font-semibold focus:ring-2 focus:ring-[#DC586D]/30 focus:border-[#DC586D]"
                       required
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-[11px] font-bold text-[#666666] uppercase">Scheduled Time Slot</label>
+                      <label className="text-[11px] font-bold text-[#7A4C60] uppercase tracking-wide">Scheduled Time Slot</label>
                       <input
                         type="text"
                         value={newTimeSlot}
                         onChange={(e) => setNewTimeSlot(e.target.value)}
-                        className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl font-semibold"
+                        className="w-full mt-1 px-3 py-1.5 border border-[#F7CEBE] rounded-xl font-semibold focus:ring-2 focus:ring-[#DC586D]/30 focus:border-[#DC586D]"
                       />
                     </div>
                     <div>
-                      <label className="text-[11px] font-bold text-[#666666] uppercase">Order / Ticket ID</label>
+                      <label className="text-[11px] font-bold text-[#7A4C60] uppercase tracking-wide">Order / Ticket ID</label>
                       <input
                         type="text"
                         value={newOrderId}
                         onChange={(e) => setNewOrderId(e.target.value)}
-                        className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl font-mono font-semibold"
+                        className="w-full mt-1 px-3 py-1.5 border border-[#F7CEBE] rounded-xl font-mono font-semibold focus:ring-2 focus:ring-[#DC586D]/30 focus:border-[#DC586D]"
                       />
                     </div>
                   </div>
 
                   {/* Customer Submitted Details */}
-                  <div className="bg-[#F7EEF2] p-3 rounded-xl border border-[#EBCED6] space-y-2">
-                    <span className="text-[10px] font-bold text-[#4A355E] uppercase block">
+                  <div className="bg-[#FFF7F4] p-3.5 rounded-xl border border-[#F7CEBE] space-y-2">
+                    <span className="text-[10px] font-bold text-[#4C1D3D] uppercase tracking-wide block">
                       Customer Submitted Details (Visible to Technician)
                     </span>
                     <div>
-                      <label className="text-[10px] text-[#666666] block">Customer Problem / Inquiry Description</label>
+                      <label className="text-[10px] text-[#7A4C60] block">Customer Problem / Inquiry Description</label>
                       <textarea
                         rows={2}
                         placeholder="What issue did the customer report..."
                         value={newCustIssue}
                         onChange={(e) => setNewCustIssue(e.target.value)}
-                        className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#EBCED6] rounded-lg text-xs"
+                        className="w-full mt-1 px-2.5 py-1.5 bg-white border border-[#F7CEBE] rounded-lg text-xs focus:ring-2 focus:ring-[#DC586D]/30 focus:border-[#DC586D]"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="text-[10px] text-[#666666] block">Roof / Site Details</label>
+                        <label className="text-[10px] text-[#7A4C60] block">Roof / Site Details</label>
                         <input
                           type="text"
                           value={newCustRoof}
                           onChange={(e) => setNewCustRoof(e.target.value)}
                           placeholder="e.g. RCC Flat 2nd floor"
-                          className="w-full mt-1 px-2.5 py-1 bg-white border border-[#EBCED6] rounded-lg text-xs"
+                          className="w-full mt-1 px-2.5 py-1 bg-white border border-[#F7CEBE] rounded-lg text-xs focus:ring-2 focus:ring-[#DC586D]/30 focus:border-[#DC586D]"
                         />
                       </div>
                       <div>
-                        <label className="text-[10px] text-[#666666] block">Special Customer Notes</label>
+                        <label className="text-[10px] text-[#7A4C60] block">Special Customer Notes</label>
                         <input
                           type="text"
                           value={newCustNotes}
                           onChange={(e) => setNewCustNotes(e.target.value)}
                           placeholder="e.g. Call 15 mins prior"
-                          className="w-full mt-1 px-2.5 py-1 bg-white border border-[#EBCED6] rounded-lg text-xs"
+                          className="w-full mt-1 px-2.5 py-1 bg-white border border-[#F7CEBE] rounded-lg text-xs focus:ring-2 focus:ring-[#DC586D]/30 focus:border-[#DC586D]"
                         />
                       </div>
                     </div>
@@ -688,7 +716,7 @@ function TechnicianFieldContent() {
 
                   {/* Admin Instructions to Technician */}
                   <div>
-                    <label className="text-[11px] font-bold text-[#4A355E] uppercase">
+                    <label className="text-[11px] font-bold text-[#852E4E] uppercase tracking-wide">
                       Admin Instructions to Field Technician
                     </label>
                     <textarea
@@ -696,29 +724,30 @@ function TechnicianFieldContent() {
                       placeholder="e.g. Bring 6mm² DC wire, replace Inverter communication cable, verify net-meter..."
                       value={newAdminInstructions}
                       onChange={(e) => setNewAdminInstructions(e.target.value)}
-                      className="w-full mt-1 px-3 py-1.5 border border-[#EBCED6] rounded-xl text-xs font-medium"
+                      className="w-full mt-1 px-3 py-1.5 border border-[#F7CEBE] rounded-xl text-xs font-medium focus:ring-2 focus:ring-[#DC586D]/30 focus:border-[#DC586D]"
                     />
                   </div>
 
                   {assignSuccessAlert && (
-                    <div className="p-2.5 bg-[#EBF5EC] text-[#5B965E] font-bold rounded-xl border border-[#78B77B] text-center animate-in fade-in">
-                      {assignSuccessAlert}
+                    <div className="p-2.5 bg-[#EBF5EC] text-[#5B965E] font-bold rounded-xl border border-[#78B77B] text-center animate-in fade-in flex items-center justify-center gap-1.5">
+                      <CheckCircleIcon className="w-4 h-4 text-[#5B965E]" /> {assignSuccessAlert}
                     </div>
                   )}
 
-                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#EBCED6]">
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#F7CEBE]">
                     <button
                       type="button"
                       onClick={() => setIsAssignModalOpen(false)}
-                      className="px-4 py-2 bg-[#F7EEF2] hover:bg-[#EBCED6] text-[#333333] font-semibold rounded-xl text-xs transition"
+                      className="px-4 py-2 bg-[#FFF5EF] hover:bg-[#FFE8DD] text-[#2E1423] font-semibold rounded-xl text-xs transition border border-[#F7CEBE]"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="px-5 py-2 bg-[#4A355E] hover:bg-[#372447] text-white font-bold rounded-xl text-xs shadow-xs transition"
+                      className="px-5 py-2 bg-gradient-to-r from-[#4C1D3D] to-[#852E4E] hover:from-[#38132B] hover:to-[#6E243F] text-white font-bold rounded-xl text-xs shadow-xs transition flex items-center gap-1.5"
                     >
-                      Dispatch Task Now ➔
+                      <span>Dispatch Task Now</span>
+                      <ChevronRightIcon className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </form>
@@ -735,15 +764,15 @@ function TechnicianFieldContent() {
         <div className="space-y-6">
           {/* Admin Back Toggle (only when Admin is previewing) */}
           {role === "admin" && (
-            <div className="bg-[#F7EEF2] border border-[#6D5284]/30 p-3 rounded-2xl flex items-center justify-between text-xs">
-              <span className="font-bold text-[#4A355E]">
-                👁️ Previewing Technician Portal as: <strong>{currentViewTech.name}</strong>
+            <div className="bg-[#FFF5EF] border border-[#FB9590]/40 p-3 rounded-2xl flex items-center justify-between text-xs">
+              <span className="font-bold text-[#4C1D3D] flex items-center gap-1.5">
+                <EyeIcon className="w-4 h-4 text-[#852E4E] inline" /> Previewing Technician Portal as: <strong className="text-[#DC586D]">{currentViewTech.name}</strong>
               </span>
               <div className="flex items-center gap-2">
                 <select
                   value={adminPreviewTechId}
                   onChange={(e) => setAdminPreviewTechId(e.target.value)}
-                  className="px-2 py-1 bg-white border border-[#EBCED6] rounded-lg font-bold text-xs"
+                  className="px-2 py-1 bg-white border border-[#F7CEBE] rounded-lg font-bold text-xs text-[#2E1423] focus:ring-2 focus:ring-[#DC586D]/30"
                 >
                   {techList.map((t) => (
                     <option key={t.id} value={t.id}>{t.name}</option>
@@ -751,41 +780,41 @@ function TechnicianFieldContent() {
                 </select>
                 <button
                   onClick={() => setAdminViewMode("dispatch-center")}
-                  className="px-3 py-1 bg-[#4A355E] text-white rounded-lg font-bold"
+                  className="px-3 py-1 bg-[#4C1D3D] hover:bg-[#852E4E] text-white rounded-lg font-bold transition flex items-center gap-1"
                 >
-                  Back to Dispatch ➔
+                  Back to Dispatch &rarr;
                 </button>
               </div>
             </div>
           )}
 
-          {/* Clean Technician Header: strictly assigned tasks only */}
-          <div className="bg-white p-5 rounded-2xl border border-[#EBCED6] shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-[#F7EEF2] text-[#4A355E] flex items-center justify-center text-2xl font-bold border border-[#6D5284]/30 flex-shrink-0">
-                👷
+          {/* Clean Technician Header: Sunset Gradient Banner */}
+          <div className="bg-gradient-to-r from-[#4C1D3D] via-[#852E4E] to-[#DC586D] rounded-2xl p-6 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-xl bg-white/15 backdrop-blur-xs flex items-center justify-center text-[#FFBB94] border border-white/20 flex-shrink-0 shadow-xs">
+                <HardHatIcon className="w-6 h-6" />
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-base font-bold text-[#333333]">My Assigned Field Tasks</h2>
-                  <span className="text-[10px] font-bold bg-[#EBF5EC] text-[#5B965E] px-2 py-0.5 rounded-full border border-[#78B77B]/40">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="text-lg font-bold text-white tracking-tight">My Assigned Field Tasks</h2>
+                  <span className="text-[10px] font-bold bg-[#FFBB94] text-[#4C1D3D] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-2xs">
                     Logged in as {currentViewTech.name}
                   </span>
                 </div>
-                <p className="text-xs text-[#666666] mt-0.5">
+                <p className="text-xs text-[#FFBB94]/90 mt-0.5">
                   Tasks dispatched and assigned to you by Admin. Review customer submissions and execute site jobs.
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2 text-xs">
-              <div className="bg-[#F7EEF2] px-3 py-1.5 rounded-xl border border-[#EBCED6] text-center">
-                <span className="text-[10px] text-[#666666] block uppercase font-bold">Assigned Queue</span>
-                <span className="text-sm font-extrabold text-[#4A355E]">{currentViewTech.assignedTasks.length} Tasks</span>
+              <div className="bg-white/10 backdrop-blur-xs px-4 py-2 rounded-xl border border-white/20 text-center min-w-[90px]">
+                <span className="text-[10px] text-[#FFBB94] block uppercase font-bold tracking-wider">Assigned Queue</span>
+                <span className="text-sm font-extrabold text-white">{currentViewTech.assignedTasks.length} Tasks</span>
               </div>
-              <div className="bg-[#F7EEF2] px-3 py-1.5 rounded-xl border border-[#EBCED6] text-center">
-                <span className="text-[10px] text-[#666666] block uppercase font-bold">Pending</span>
-                <span className="text-sm font-extrabold text-[#DA9B40]">
+              <div className="bg-white/10 backdrop-blur-xs px-4 py-2 rounded-xl border border-white/20 text-center min-w-[90px]">
+                <span className="text-[10px] text-[#FFBB94] block uppercase font-bold tracking-wider">Active Jobs</span>
+                <span className="text-sm font-extrabold text-[#FFBB94]">
                   {currentViewTech.assignedTasks.filter((t) => t.status !== "Completed").length} Active
                 </span>
               </div>
@@ -798,100 +827,120 @@ function TechnicianFieldContent() {
               {currentViewTech.assignedTasks.map((task) => (
                 <div
                   key={task.orderId}
-                  className="bg-white rounded-2xl border border-[#EBCED6] p-5 sm:p-6 shadow-xs space-y-4 hover:border-[#6D5284]/40 transition-all"
+                  className="bg-white rounded-2xl border border-[#F7CEBE] p-5 sm:p-6 shadow-xs space-y-4 hover:border-[#DC586D]/50 transition-all"
                 >
                   {/* Task Top Badges & ID */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#EBCED6] pb-3">
-                    <div className="flex items-center gap-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#F7CEBE] pb-3">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-bold border ${
                           task.type === "Installation"
-                            ? "bg-[#F7EEF2] text-[#4A355E] border-[#6D5284]/30"
+                            ? "bg-[#FFF0EB] text-[#4C1D3D] border-[#FB9590]/50"
                             : task.type === "Survey"
-                            ? "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860]/40"
-                            : "bg-[#EBF5EC] text-[#5B965E] border-[#78B77B]/40"
+                            ? "bg-[#FFF5EF] text-[#852E4E] border-[#FFBB94]"
+                            : "bg-[#FFE8DD] text-[#A33757] border-[#DC586D]/40"
                         }`}
                       >
                         {task.type}
                       </span>
-                      <span className="font-mono text-xs font-bold bg-[#F7EEF2] px-2.5 py-1 rounded-lg text-[#4A355E] border border-[#EBCED6]">
+                      <span className="font-mono text-xs font-bold bg-[#FFF5EF] px-2.5 py-1 rounded-lg text-[#4C1D3D] border border-[#F7CEBE]">
                         {task.orderId}
                       </span>
-                      <span className="text-xs text-[#666666] font-semibold">🕒 {task.timeSlot}</span>
+                      <span className="text-xs text-[#7A4C60] font-semibold inline-flex items-center gap-1">
+                        <ClockIcon className="w-3.5 h-3.5 text-[#852E4E]" /> {task.timeSlot}
+                      </span>
                     </div>
 
                     <div className="flex items-center gap-2">
                       <span
-                        className={`text-xs font-bold px-3 py-1 rounded-full border ${
+                        className={`text-xs font-bold px-3 py-1 rounded-full border inline-flex items-center gap-1.5 ${
                           task.status === "Completed"
                             ? "bg-[#EBF5EC] text-[#5B965E] border-[#78B77B]/40"
                             : task.status === "In Progress"
-                            ? "bg-[#FEF6EB] text-[#DA9B40] border-[#F4B860]/40"
+                            ? "bg-[#FFF0EB] text-[#DC586D] border-[#DC586D]/40"
                             : "bg-gray-100 text-gray-700 border-gray-200"
                         }`}
                       >
-                        {task.status === "Completed" ? "✓ Completed" : task.status === "In Progress" ? "⚡ In Progress" : "Pending Start"}
+                        {task.status === "Completed" ? (
+                          <>
+                            <CheckCircleIcon className="w-3.5 h-3.5 text-[#5B965E]" /> Completed
+                          </>
+                        ) : task.status === "In Progress" ? (
+                          <>
+                            <ZapIcon className="w-3.5 h-3.5 text-[#DC586D]" /> In Progress
+                          </>
+                        ) : (
+                          <>
+                            <ClockIcon className="w-3.5 h-3.5 text-gray-500" /> Pending Start
+                          </>
+                        )}
                       </span>
                     </div>
                   </div>
 
                   {/* Customer Information & Quick Action Buttons */}
-                  <div className="bg-[#F7EEF2] p-4 rounded-xl border border-[#EBCED6] flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="bg-[#FFF7F4] p-4 rounded-xl border border-[#F7CEBE] flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="space-y-1">
-                      <span className="text-[10px] font-bold text-[#666666] uppercase tracking-wider block">Customer Information</span>
-                      <h3 className="text-sm font-bold text-[#333333]">{task.customerName}</h3>
-                      <p className="text-xs text-[#666666]">📍 {task.address}</p>
-                      <p className="text-xs text-[#4A355E] font-semibold">⚡ System: {task.capacity}</p>
+                      <span className="text-[10px] font-bold text-[#852E4E] uppercase tracking-wider block">
+                        Customer Information
+                      </span>
+                      <h3 className="text-sm font-bold text-[#2E1423]">{task.customerName}</h3>
+                      <p className="text-xs text-[#7A4C60] flex items-center gap-1.5">
+                        <MapPinIcon className="w-3.5 h-3.5 text-[#852E4E] flex-shrink-0" /> {task.address}
+                      </p>
+                      <p className="text-xs text-[#DC586D] font-semibold flex items-center gap-1.5">
+                        <ZapIcon className="w-3.5 h-3.5 text-[#DC586D] flex-shrink-0" /> System: {task.capacity}
+                      </p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">
                       <a
                         href={`tel:${task.customerPhone}`}
-                        className="px-3.5 py-2 bg-white hover:bg-[#F7EEF2] text-[#4A355E] text-xs font-bold rounded-xl border border-[#4A355E]/30 shadow-xs transition flex items-center gap-1.5"
+                        className="px-3.5 py-2 bg-white hover:bg-[#FFF5EF] text-[#852E4E] text-xs font-bold rounded-xl border border-[#DC586D]/30 shadow-xs transition inline-flex items-center gap-1.5"
                       >
-                        <span>📞</span> Call Customer ({task.customerPhone})
+                        <PhoneIcon className="w-3.5 h-3.5 text-[#DC586D]" /> Call Customer ({task.customerPhone})
                       </a>
 
                       <button
                         onClick={() => alert(`Opening GPS navigation route to: ${task.address}`)}
-                        className="px-3.5 py-2 bg-white hover:bg-[#F7EEF2] text-[#333333] text-xs font-bold rounded-xl border border-[#EBCED6] shadow-xs transition flex items-center gap-1.5"
+                        className="px-3.5 py-2 bg-white hover:bg-[#FFF5EF] text-[#2E1423] text-xs font-bold rounded-xl border border-[#F7CEBE] shadow-xs transition inline-flex items-center gap-1.5"
                       >
-                        <span>📍</span> Navigate
+                        <MapPinIcon className="w-3.5 h-3.5 text-[#852E4E]" /> Navigate
                       </button>
 
                       <button
                         onClick={() => setSelectedTaskForDetails(task)}
-                        className="px-3.5 py-2 bg-[#4A355E] hover:bg-[#372447] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
+                        className="px-3.5 py-2 bg-gradient-to-r from-[#4C1D3D] to-[#852E4E] hover:from-[#38132B] hover:to-[#6E243F] text-white text-xs font-bold rounded-xl shadow-xs transition inline-flex items-center gap-1.5"
                       >
-                        <HardHatIcon className="w-4 h-4 text-[#6D5284]" /> View Details &amp; Execute
+                        <WrenchIcon className="w-3.5 h-3.5 text-[#FFBB94]" /> View Details &amp; Execute
                       </button>
                     </div>
                   </div>
 
                   {/* Customer Submitted Details Block */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                    <div className="bg-white p-3.5 rounded-xl border border-[#EBCED6] space-y-1">
-                      <span className="text-[10px] font-bold text-[#4A355E] uppercase block">
+                    <div className="bg-white p-3.5 rounded-xl border border-[#F7CEBE] space-y-1">
+                      <span className="text-[10px] font-bold text-[#4C1D3D] uppercase block">
                         Customer Reported Issue / Requirements
                       </span>
-                      <p className="text-xs text-[#333333] font-medium leading-relaxed">
+                      <p className="text-xs text-[#2E1423] font-medium leading-relaxed">
                         {task.customerDetails.reportedIssue || "Standard service request."}
                       </p>
                       {task.customerDetails.customerNotes && (
-                        <p className="text-[11px] text-[#666666] pt-1 border-t border-[#EBCED6]/60">
+                        <p className="text-[11px] text-[#7A4C60] pt-1 border-t border-[#F7CEBE]/60">
                           <strong>Note:</strong> {task.customerDetails.customerNotes}
                         </p>
                       )}
                     </div>
 
-                    <div className="bg-[#FEF6EB]/60 p-3.5 rounded-xl border border-[#F4B860]/40 space-y-1">
-                      <span className="text-[10px] font-bold text-[#DA9B40] uppercase block">
+                    <div className="bg-[#FFF0EB] p-3.5 rounded-xl border border-[#FB9590]/40 space-y-1">
+                      <span className="text-[10px] font-bold text-[#DC586D] uppercase block">
                         Admin Dispatch Instructions
                       </span>
-                      <p className="text-xs text-[#333333] font-medium leading-relaxed">
+                      <p className="text-xs text-[#2E1423] font-medium leading-relaxed">
                         {task.adminInstructions}
                       </p>
-                      <p className="text-[11px] text-[#DA9B40] font-semibold pt-1">
+                      <p className="text-[11px] text-[#A33757] font-semibold pt-1">
                         Roof: {task.customerDetails.roofType || "Standard terrace"}
                       </p>
                     </div>
@@ -900,16 +949,16 @@ function TechnicianFieldContent() {
                   {/* Customer Uploaded Photos Thumbnails */}
                   {task.customerDetails.customerPhotos && task.customerDetails.customerPhotos.length > 0 && (
                     <div className="pt-1">
-                      <span className="text-[10px] font-bold text-[#666666] uppercase block mb-1.5">
+                      <span className="text-[10px] font-bold text-[#7A4C60] uppercase block mb-1.5">
                         Photos Submitted by Customer ({task.customerDetails.customerPhotos.length})
                       </span>
                       <div className="flex items-center gap-2 overflow-x-auto">
                         {task.customerDetails.customerPhotos.map((photo, i) => (
                           <div
                             key={i}
-                            className="bg-[#F7EEF2] px-3 py-2 rounded-lg border border-[#EBCED6] text-xs font-semibold text-[#333333] flex items-center gap-1.5"
+                            className="bg-[#FFF5EF] px-3 py-2 rounded-lg border border-[#F7CEBE] text-xs font-semibold text-[#2E1423] flex items-center gap-1.5 shadow-2xs"
                           >
-                            <span>📷</span>
+                            <CameraIcon className="w-3.5 h-3.5 text-[#852E4E]" />
                             <span>{photo}</span>
                           </div>
                         ))}
@@ -918,11 +967,11 @@ function TechnicianFieldContent() {
                   )}
 
                   {/* Task Work Status Controls */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#EBCED6]">
-                    <div className="text-xs text-[#666666]">
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#F7CEBE]">
+                    <div className="text-xs text-[#7A4C60]">
                       {task.status === "Completed" ? (
-                        <span className="text-[#5B965E] font-bold">
-                          ✓ Completed ({task.completedAt || "Signed off"})
+                        <span className="text-[#5B965E] font-bold flex items-center gap-1.5">
+                          <CheckCircleIcon className="w-4 h-4 text-[#5B965E]" /> Completed ({task.completedAt || "Signed off"})
                         </span>
                       ) : (
                         <span>Update work progress as you execute this assignment</span>
@@ -933,25 +982,25 @@ function TechnicianFieldContent() {
                       {task.status === "Pending" && (
                         <button
                           onClick={() => handleUpdateTaskStatus(task.orderId, "In Progress")}
-                          className="px-4 py-2 bg-[#DA9B40] hover:bg-[#B88030] text-white text-xs font-bold rounded-xl shadow-xs transition"
+                          className="px-4 py-2 bg-gradient-to-r from-[#DC586D] to-[#A33757] hover:from-[#A33757] hover:to-[#852E4E] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
                         >
-                          ⚡ Start Job (Mark In Progress)
+                          <ZapIcon className="w-3.5 h-3.5 text-white" /> Start Job (Mark In Progress)
                         </button>
                       )}
 
                       {task.status === "In Progress" && (
                         <button
                           onClick={() => setSelectedTaskForDetails(task)}
-                          className="px-4 py-2 bg-[#78B77B] hover:bg-[#5B965E] text-white text-xs font-bold rounded-xl shadow-xs transition"
+                          className="px-4 py-2 bg-[#5B965E] hover:bg-[#48794B] text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center gap-1.5"
                         >
-                          ✓ Complete Job &amp; Upload Photo Proof
+                          <CheckCircleIcon className="w-3.5 h-3.5 text-white" /> Complete Job &amp; Upload Photo Proof
                         </button>
                       )}
 
                       {task.status === "Completed" && (
                         <button
                           onClick={() => handleUpdateTaskStatus(task.orderId, "In Progress")}
-                          className="text-xs text-[#4A355E] hover:underline font-semibold"
+                          className="text-xs text-[#DC586D] hover:text-[#A33757] hover:underline font-semibold"
                         >
                           Reopen Job ↺
                         </button>
@@ -962,10 +1011,12 @@ function TechnicianFieldContent() {
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-2xl border border-[#EBCED6] p-12 text-center space-y-2">
-              <span className="text-4xl block">📋</span>
-              <h3 className="text-sm font-bold text-[#333333]">No Tasks Currently Assigned</h3>
-              <p className="text-xs text-[#666666] max-w-sm mx-auto">
+            <div className="bg-white rounded-2xl border border-[#F7CEBE] p-12 text-center space-y-3">
+              <div className="w-16 h-16 rounded-2xl bg-[#FFF5EF] text-[#852E4E] flex items-center justify-center mx-auto border border-[#FB9590]/40 shadow-xs">
+                <FileTextIcon className="w-8 h-8 text-[#852E4E]" />
+              </div>
+              <h3 className="text-sm font-bold text-[#2E1423]">No Tasks Currently Assigned</h3>
+              <p className="text-xs text-[#7A4C60] max-w-sm mx-auto leading-relaxed">
                 You do not have any tasks dispatched for today. When Admin assigns a new site job to you, it will appear here immediately.
               </p>
             </div>
@@ -973,34 +1024,36 @@ function TechnicianFieldContent() {
 
           {/* ── MODAL: TASK DETAIL & COMPLETION PROOF ── */}
           {selectedTaskForDetails && (
-            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-              <div className="bg-white rounded-2xl border border-[#EBCED6] shadow-2xl max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
-                <div className="flex items-center justify-between border-b border-[#EBCED6] pb-3">
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-2xs">
+              <div className="bg-white rounded-2xl border border-[#F7CEBE] shadow-2xl max-w-xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto animate-in zoom-in-95">
+                <div className="flex items-center justify-between border-b border-[#F7CEBE] pb-3">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-[#4A355E] bg-[#F7EEF2] px-2 py-0.5 rounded border border-[#6D5284]/30">
+                      <span className="font-mono text-xs font-bold text-[#4C1D3D] bg-[#FFF5EF] px-2.5 py-0.5 rounded border border-[#FB9590]/40">
                         {selectedTaskForDetails.orderId}
                       </span>
-                      <h3 className="text-base font-bold text-[#333333]">
+                      <h3 className="text-base font-bold text-[#2E1423]">
                         {selectedTaskForDetails.customerName}
                       </h3>
                     </div>
-                    <p className="text-xs text-[#666666] mt-0.5">{selectedTaskForDetails.address}</p>
+                    <p className="text-xs text-[#7A4C60] mt-0.5 flex items-center gap-1.5">
+                      <MapPinIcon className="w-3 h-3 text-[#852E4E] flex-shrink-0" /> {selectedTaskForDetails.address}
+                    </p>
                   </div>
                   <button
                     onClick={() => setSelectedTaskForDetails(null)}
-                    className="text-gray-400 hover:text-[#333333] text-lg font-bold"
+                    className="text-[#7A4C60] hover:text-[#2E1423] text-xl font-bold leading-none p-1"
                   >
-                    ✕
+                    &times;
                   </button>
                 </div>
 
                 {/* Customer Details Box */}
-                <div className="bg-[#F7EEF2] p-4 rounded-xl border border-[#EBCED6] space-y-2 text-xs">
-                  <h4 className="text-[11px] font-bold text-[#4A355E] uppercase tracking-wider">
+                <div className="bg-[#FFF7F4] p-4 rounded-xl border border-[#F7CEBE] space-y-2 text-xs text-[#2E1423]">
+                  <h4 className="text-[11px] font-bold text-[#4C1D3D] uppercase tracking-wider">
                     Customer Submitted Details
                   </h4>
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     <p><strong>System Capacity:</strong> {selectedTaskForDetails.capacity}</p>
                     <p><strong>Reported Issue:</strong> {selectedTaskForDetails.customerDetails.reportedIssue}</p>
                     <p><strong>Roof Specification:</strong> {selectedTaskForDetails.customerDetails.roofType}</p>
@@ -1011,16 +1064,16 @@ function TechnicianFieldContent() {
                 </div>
 
                 {/* Admin Instructions Box */}
-                <div className="bg-[#FEF6EB] p-4 rounded-xl border border-[#F4B860]/40 text-xs space-y-1">
-                  <h4 className="text-[11px] font-bold text-[#DA9B40] uppercase tracking-wider">
+                <div className="bg-[#FFF0EB] p-4 rounded-xl border border-[#FB9590]/40 text-xs space-y-1">
+                  <h4 className="text-[11px] font-bold text-[#DC586D] uppercase tracking-wider">
                     Admin Instructions for This Task
                   </h4>
-                  <p className="text-[#333333] font-medium">{selectedTaskForDetails.adminInstructions}</p>
+                  <p className="text-[#2E1423] font-medium leading-relaxed">{selectedTaskForDetails.adminInstructions}</p>
                 </div>
 
                 {/* Upload Work / Completion Photo Proof */}
                 <div className="space-y-2 text-xs">
-                  <label className="text-[11px] font-bold text-[#666666] uppercase block">
+                  <label className="text-[11px] font-bold text-[#7A4C60] uppercase block tracking-wide">
                     Upload On-Site Work / Completion Photo Proof
                   </label>
                   <input
@@ -1035,23 +1088,25 @@ function TechnicianFieldContent() {
                     <button
                       type="button"
                       onClick={() => proofFileInputRef.current?.click()}
-                      className="w-full border-2 border-dashed border-[#6D5284]/40 hover:border-[#4A355E] rounded-xl p-4 text-center bg-[#F7EEF2] hover:bg-[#F7EEF2] transition flex flex-col items-center justify-center gap-1 text-[#4A355E] font-bold"
+                      className="w-full border-2 border-dashed border-[#FB9590]/60 hover:border-[#DC586D] rounded-xl p-4 text-center bg-[#FFF7F4] hover:bg-[#FFF0EB] transition flex flex-col items-center justify-center gap-1.5 text-[#4C1D3D] font-bold"
                     >
-                      <span className="text-2xl">📸</span>
+                      <CameraIcon className="w-7 h-7 text-[#DC586D]" />
                       <span>Snap or Upload Photo of Completed Work</span>
-                      <span className="text-[10px] text-[#666666] font-normal">Takes high-res photo for Admin &amp; Customer records</span>
+                      <span className="text-[10px] text-[#7A4C60] font-normal">Takes high-res photo for Admin &amp; Customer records</span>
                     </button>
                   ) : (
-                    <div className="p-3 bg-[#F7EEF2] border border-[#6D5284]/30 rounded-xl flex items-center justify-between">
+                    <div className="p-3 bg-[#FFF7F4] border border-[#FB9590]/40 rounded-xl flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <img
                           src={uploadProofPhoto || selectedTaskForDetails.completionProofPhoto}
                           alt="Proof"
-                          className="w-16 h-16 object-cover rounded-lg border border-[#EBCED6] bg-white"
+                          className="w-16 h-16 object-cover rounded-lg border border-[#F7CEBE] bg-white"
                         />
                         <div>
-                          <p className="font-bold text-[#333333]">{uploadProofName || "Completion Proof Attached"}</p>
-                          <span className="text-[10px] font-bold text-[#5B965E]">✓ Verified Photo Attached</span>
+                          <p className="font-bold text-[#2E1423]">{uploadProofName || "Completion Proof Attached"}</p>
+                          <span className="text-[10px] font-bold text-[#5B965E] flex items-center gap-1 mt-0.5">
+                            <CheckCircleIcon className="w-3.5 h-3.5 text-[#5B965E]" /> Verified Photo Attached
+                          </span>
                         </div>
                       </div>
                       <button
@@ -1071,7 +1126,7 @@ function TechnicianFieldContent() {
 
                 {/* Technician Notes */}
                 <div className="space-y-1 text-xs">
-                  <label className="text-[11px] font-bold text-[#666666] uppercase block">
+                  <label className="text-[11px] font-bold text-[#7A4C60] uppercase block tracking-wide">
                     Technician Work Notes (What was done)
                   </label>
                   <textarea
@@ -1079,16 +1134,16 @@ function TechnicianFieldContent() {
                     placeholder="e.g. Inverter communication cable replaced. Measured AC voltage at 238V. Net-meter sync verified."
                     value={workNotesInput || selectedTaskForDetails.workNotes || ""}
                     onChange={(e) => setWorkNotesInput(e.target.value)}
-                    className="w-full px-3 py-1.5 border border-[#EBCED6] rounded-xl focus:ring-2 focus:ring-[#4A355E]/30 focus:outline-none"
+                    className="w-full px-3 py-1.5 border border-[#F7CEBE] rounded-xl focus:ring-2 focus:ring-[#DC586D]/30 focus:border-[#DC586D] focus:outline-none text-[#2E1423]"
                   />
                 </div>
 
                 {/* Modal Action Buttons */}
-                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#EBCED6]">
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#F7CEBE]">
                   <button
                     type="button"
                     onClick={() => setSelectedTaskForDetails(null)}
-                    className="px-4 py-2 bg-[#F7EEF2] hover:bg-[#EBCED6] text-[#333333] font-semibold rounded-xl text-xs transition"
+                    className="px-4 py-2 bg-[#FFF5EF] hover:bg-[#FFE8DD] text-[#2E1423] font-semibold rounded-xl text-xs transition border border-[#F7CEBE]"
                   >
                     Close
                   </button>
@@ -1097,13 +1152,13 @@ function TechnicianFieldContent() {
                     <button
                       type="button"
                       onClick={() => handleUpdateTaskStatus(selectedTaskForDetails.orderId, "Completed")}
-                      className="px-5 py-2 bg-[#78B77B] hover:bg-[#5B965E] text-white font-bold rounded-xl text-xs shadow-xs transition"
+                      className="px-5 py-2 bg-[#5B965E] hover:bg-[#48794B] text-white font-bold rounded-xl text-xs shadow-xs transition flex items-center gap-1.5"
                     >
-                      ✓ Mark Task Completed &amp; Submit Proof
+                      <CheckCircleIcon className="w-4 h-4 text-white" /> Mark Task Completed &amp; Submit Proof
                     </button>
                   ) : (
-                    <span className="text-xs font-bold text-[#5B965E] px-3 py-2 bg-[#EBF5EC] rounded-xl border border-[#78B77B]/40">
-                      ✓ Job Already Completed
+                    <span className="text-xs font-bold text-[#5B965E] px-3 py-2 bg-[#EBF5EC] rounded-xl border border-[#78B77B]/40 flex items-center gap-1.5">
+                      <CheckCircleIcon className="w-4 h-4 text-[#5B965E]" /> Job Already Completed
                     </span>
                   )}
                 </div>
@@ -1118,7 +1173,7 @@ function TechnicianFieldContent() {
 
 export default function TechnicianFieldPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-xs text-[#666666]">Loading Field Portal...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-xs text-[#7A4C60]">Loading Field Portal...</div>}>
       <TechnicianFieldContent />
     </Suspense>
   );
