@@ -1,9 +1,15 @@
 import https from "https";
 
+export interface EmailAttachment {
+  filename: string;
+  content: string; // Base64 encoded string or raw buffer
+}
+
 export interface SendEmailParams {
   to: string;
   subject: string;
   html: string;
+  attachments?: EmailAttachment[];
 }
 
 export interface SendEmailResult {
@@ -17,6 +23,7 @@ export async function sendEmailViaResend({
   to,
   subject,
   html,
+  attachments,
 }: SendEmailParams): Promise<SendEmailResult> {
   const apiKey = process.env.RESEND_API_KEY;
 
@@ -27,12 +34,18 @@ export async function sendEmailViaResend({
     };
   }
 
-  const payload = JSON.stringify({
+  const payloadObj: Record<string, any> = {
     from: "SunPower Solar <onboarding@resend.dev>",
     to: [to],
     subject,
     html,
-  });
+  };
+
+  if (attachments && attachments.length > 0) {
+    payloadObj.attachments = attachments;
+  }
+
+  const payload = JSON.stringify(payloadObj);
 
   return new Promise((resolve) => {
     try {
