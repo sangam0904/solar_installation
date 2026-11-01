@@ -26,6 +26,15 @@ interface AuthContextType {
   loginAsTechnician: (techId: string, customEmail?: string) => void;
   loginAsCustomer: (identifier: string, customEmail?: string) => void;
   loginWithOtp: (email: string, role: UserRole, customName?: string) => void;
+  registerUser: (details: {
+    name: string;
+    email: string;
+    phone?: string;
+    password?: string;
+    role: UserRole;
+    systemDetails?: string;
+    address?: string;
+  }) => void;
   resetPassword: (email: string, newPassword: string) => void;
   getUserPassword: (email: string) => string;
   loginWithGoogle: () => void;
@@ -48,6 +57,7 @@ const AuthContext = createContext<AuthContextType>({
   loginAsTechnician: () => {},
   loginAsCustomer: () => {},
   loginWithOtp: () => {},
+  registerUser: () => {},
   resetPassword: () => {},
   getUserPassword: () => "••••••••",
   loginWithGoogle: () => {},
@@ -85,6 +95,7 @@ export const ALL_16_EMPLOYEES: Record<string, { name: string; email: string; pho
   "TECH-027": { name: "Bharat Singh", email: "bharat.s@sunpower.com", phone: "+91 98765 29292", specialization: "Industrial HT Substation Engineer" },
   "TECH-028": { name: "Devendra Joshi", email: "devendra.j@sunpower.com", phone: "+91 98765 30303", specialization: "Rapid Response Breakdown Engineer" },
 };
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(defaultAdmin);
 
@@ -232,6 +243,69 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  const registerUser = (details: {
+    name: string;
+    email: string;
+    phone?: string;
+    password?: string;
+    role: UserRole;
+    systemDetails?: string;
+    address?: string;
+  }) => {
+    const cleanEmail = details.email.trim().toLowerCase();
+
+    // Persist password
+    if (details.password) {
+      try {
+        const saved = JSON.parse(localStorage.getItem("sunpower_user_passwords") || "{}");
+        saved[cleanEmail] = details.password;
+        localStorage.setItem("sunpower_user_passwords", JSON.stringify(saved));
+      } catch {}
+    }
+
+    let userId = "";
+    let customerOrder: string | undefined;
+
+    if (details.role === "technician") {
+      userId = `TECH-${Math.floor(100 + Math.random() * 900)}`;
+    } else if (details.role === "admin") {
+      userId = `ADM-${Math.floor(100 + Math.random() * 900)}`;
+    } else {
+      userId = `CUST-${Math.floor(1000 + Math.random() * 9000)}`;
+      customerOrder = `ORD-${Math.floor(100 + Math.random() * 900)}`;
+    }
+
+    const newUser: User = {
+      id: userId,
+      name: details.name.trim(),
+      email: cleanEmail,
+      phone: details.phone || "+91 98290 12345",
+      role: details.role,
+      avatar: details.role,
+      customerId: details.role === "customer" ? userId : undefined,
+      techId: details.role === "technician" ? userId : undefined,
+      customerOrder,
+      systemDetails:
+        details.systemDetails ||
+        (details.role === "customer" ? "3 kW On-Grid System (PM Surya Ghar)" : undefined),
+    };
+
+    saveUser(newUser);
+
+    try {
+      const regList = JSON.parse(localStorage.getItem("sunpower_registered_users") || "[]");
+      regList.push({ ...newUser, registeredAt: new Date().toISOString() });
+      localStorage.setItem("sunpower_registered_users", JSON.stringify(regList));
+    } catch {}
+
+    recordUserLogin({
+      name: newUser.name,
+      email: newUser.email,
+      role: newUser.role,
+      loginMethod: "Direct Account Registration",
+    });
+  };
+
   const loginWithOtp = (email: string, targetRole: UserRole, customName?: string) => {
     let name = customName;
     let userId = "";
@@ -355,6 +429,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loginAsTechnician,
         loginAsCustomer,
         loginWithOtp,
+        registerUser,
         resetPassword,
         getUserPassword,
         loginWithGoogle,

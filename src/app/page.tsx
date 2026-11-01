@@ -136,8 +136,8 @@ export default function IntroductionLandingPage() {
               <>
                 {/* Sign Up Option */}
                 <Link
-                  href="/login?tab=customer"
-                  className="hidden sm:inline-flex px-3.5 py-2 text-xs font-bold text-[#4A355E] hover:text-[#372447] bg-[#F7EEF2] hover:bg-[#EBCED6] border border-[#EBCED6] rounded-xl transition cursor-pointer"
+                  href="/login?mode=signup"
+                  className="inline-flex px-3.5 py-2 text-xs font-bold text-[#4A355E] hover:text-[#372447] bg-[#F7EEF2] hover:bg-[#EBCED6] border border-[#EBCED6] rounded-xl transition cursor-pointer shadow-xs"
                 >
                   Sign Up
                 </Link>
@@ -234,7 +234,7 @@ export default function IntroductionLandingPage() {
               <div className="relative rounded-3xl overflow-hidden border-2 border-[#EBCED6] shadow-xl bg-white p-2">
                 <div className="relative h-72 sm:h-96 rounded-2xl overflow-hidden">
                   <img
-                    src="https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=1200&q=80"
+                    src="/images/solar/hero-rooftop.jpg"
                     alt="Solar Rooftop Installation"
                     className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
                   />
@@ -574,10 +574,10 @@ export default function IntroductionLandingPage() {
               <img
                 src={
                   activeTechTab === "ongrid"
-                    ? "https://images.unsplash.com/photo-1508873696983-2df5293cb395?auto=format&fit=crop&w=800&q=80"
+                    ? "/images/solar/ongrid-rooftop.jpg"
                     : activeTechTab === "hybrid"
-                    ? "https://images.unsplash.com/photo-1558441719-8b489c63f749?auto=format&fit=crop&w=800&q=80"
-                    : "https://images.unsplash.com/photo-1559302504-64aae6ca6b6f?auto=format&fit=crop&w=800&q=80"
+                    ? "/images/solar/hybrid-storage.jpg"
+                    : "/images/solar/offgrid-farm.jpg"
                 }
                 alt="Solar Technology"
                 className="w-full h-full object-cover"
@@ -709,7 +709,7 @@ export default function IntroductionLandingPage() {
             <div className="bg-white rounded-3xl overflow-hidden border border-[#EBCED6] shadow-xs group">
               <div className="h-52 overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1509391365360-2e959784a276?auto=format&fit=crop&w=600&q=80"
+                  src="/images/solar/gallery-residential.jpg"
                   alt="Jaipur Rooftop Solar Array"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -724,7 +724,7 @@ export default function IntroductionLandingPage() {
             <div className="bg-white rounded-3xl overflow-hidden border border-[#EBCED6] shadow-xs group">
               <div className="h-52 overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1548337138-e87d889cc369?auto=format&fit=crop&w=600&q=80"
+                  src="/images/solar/gallery-wiring.jpg"
                   alt="Inverter & AC DB Wiring"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -739,7 +739,7 @@ export default function IntroductionLandingPage() {
             <div className="bg-white rounded-3xl overflow-hidden border border-[#EBCED6] shadow-xs group">
               <div className="h-52 overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1559302504-64aae6ca6b6f?auto=format&fit=crop&w=600&q=80"
+                  src="/images/solar/gallery-commercial.jpg"
                   alt="Commercial Hospital Rooftop"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -763,11 +763,11 @@ export default function IntroductionLandingPage() {
             ☀️
           </div>
 
-          <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight text-white drop-shadow-md">
             Ready to Transition to Clean, Free Solar Energy?
           </h2>
 
-          <p className="text-xs sm:text-sm text-white/80 max-w-xl mx-auto leading-relaxed">
+          <p className="text-xs sm:text-sm text-white/90 max-w-xl mx-auto leading-relaxed">
             Join 45+ happy homeowners across Rajasthan. Log in to track your installation progress, view your live solar passbook, or explore crew assignments.
           </p>
 
@@ -777,6 +777,12 @@ export default function IntroductionLandingPage() {
               className="w-full sm:w-auto px-8 py-3.5 bg-[#DA9B40] hover:bg-[#F4B860] text-black font-extrabold text-xs sm:text-sm rounded-2xl shadow-lg transition cursor-pointer"
             >
               Log In to Portal Now →
+            </Link>
+            <Link
+              href="/login?mode=signup"
+              className="w-full sm:w-auto px-8 py-3.5 bg-white/10 hover:bg-white/20 text-white font-extrabold text-xs sm:text-sm rounded-2xl border border-white/25 shadow-lg transition cursor-pointer"
+            >
+              Sign Up for Free ✨
             </Link>
 
             <Link
