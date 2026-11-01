@@ -107,7 +107,7 @@ export default function LoginPage() {
 
     if (activeTab === "admin") {
       loginAsAdmin(email);
-      router.push("/");
+      router.push("/dashboard");
     } else if (activeTab === "technician") {
       loginAsTechnician(selectedTechId, email);
       router.push("/technician");
@@ -194,7 +194,7 @@ export default function LoginPage() {
       // Success: Sign in user session
       loginWithOtp(email.trim().toLowerCase(), activeTab);
 
-      if (activeTab === "admin") router.push("/");
+      if (activeTab === "admin") router.push("/dashboard");
       else if (activeTab === "technician") router.push("/technician");
       else router.push("/customer");
     } catch {
@@ -818,7 +818,7 @@ export default function LoginPage() {
                     setShowForgotModal(false);
                     setPassword(newPassword);
                     loginWithOtp(forgotEmail, activeTab);
-                    if (activeTab === "admin") router.push("/");
+                    if (activeTab === "admin") router.push("/dashboard");
                     else if (activeTab === "technician") router.push("/technician");
                     else router.push("/customer");
                   }}

@@ -54,7 +54,7 @@ function SidebarInner() {
   const { role, user, logout } = useAuth();
 
   // Auto-open dropdowns depending on active path
-  const isDashboardArea = pathname === "/" || pathname === "/technician";
+  const isDashboardArea = pathname === "/dashboard" || pathname === "/technician";
   const isCrmArea = ["/leads", "/quotations", "/orders", "/inventory", "/warranty"].includes(pathname);
 
   const [dashboardOpen, setDashboardOpen] = useState(isDashboardArea);
@@ -76,7 +76,7 @@ function SidebarInner() {
       {/* Header / Logo */}
       <div className="flex items-center justify-between px-3 py-4 border-b border-[#6D5284]/70">
         <Link
-          href={role === "technician" ? "/technician" : role === "customer" ? "/customer" : "/"}
+          href={role === "technician" ? "/technician" : role === "customer" ? "/customer" : "/dashboard"}
           className="flex items-center gap-2 overflow-hidden"
         >
           <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-white shadow-sm flex-shrink-0 border border-[#B39CCB]/30 overflow-hidden">
@@ -275,6 +275,18 @@ function SidebarInner() {
               {isNavOpen && dashboardOpen && (
                 <div className="ml-3 pl-2 mt-1 space-y-1 border-l-2 border-[#8D73A8]/50">
                   <Link
+                    href="/dashboard"
+                    className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition ${
+                      pathname === "/dashboard"
+                        ? "bg-white/20 text-[#D7B6C7] font-bold"
+                        : "text-white/80 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    <TrendingUpIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
+                    <span className="truncate">Overview</span>
+                  </Link>
+
+                  <Link
                     href="/"
                     className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition ${
                       pathname === "/"
@@ -282,8 +294,8 @@ function SidebarInner() {
                         : "text-white/80 hover:bg-white/10 hover:text-white"
                     }`}
                   >
-                    <TrendingUpIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
-                    <span className="truncate">Overview</span>
+                    <SunIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
+                    <span className="truncate">Intro / Landing Page</span>
                   </Link>
 
                   <Link

@@ -19,6 +19,8 @@ function PageBreadcrumbBar() {
 
   const getPageMeta = (path: string) => {
     switch (path) {
+      case "/dashboard":
+        return { title: "Executive Performance Dashboard", parent: "Dashboard", parentHref: "/dashboard" };
       case "/leads":
         return { title: "Leads & CRM Pipeline", parent: "Lead & CRM", parentHref: "/leads" };
       case "/quotations":
