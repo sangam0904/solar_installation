@@ -287,18 +287,6 @@ function SidebarInner() {
                   </Link>
 
                   <Link
-                    href="/customer"
-                    className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition ${
-                      pathname === "/customer"
-                        ? "bg-white/20 text-[#D7B6C7] font-bold"
-                        : "text-white/80 hover:bg-white/10 hover:text-white"
-                    }`}
-                  >
-                    <UserIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
-                    <span className="truncate">Customer Portal</span>
-                  </Link>
-
-                  <Link
                     href="/technician"
                     className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition ${
                       pathname === "/technician"
@@ -338,15 +326,6 @@ function SidebarInner() {
                     >
                       <TrendingUpIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
                       <span>Overview</span>
-                    </Link>
-                    <Link
-                      href="/customer"
-                      className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition ${
-                        pathname === "/customer" ? "bg-white/20 text-[#D7B6C7] font-bold" : "text-white/90 hover:bg-white/10"
-                      }`}
-                    >
-                      <UserIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
-                      <span>Customer Portal</span>
                     </Link>
                     <Link
                       href="/technician"
