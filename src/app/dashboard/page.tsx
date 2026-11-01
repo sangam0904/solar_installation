@@ -89,6 +89,22 @@ export default function DashboardPage() {
         if (data.tickets) setLiveTickets(data.tickets);
       })
       .catch((e) => console.warn(e));
+
+    // Auto-scroll to #user-logs if clicked in sidebar or directly navigated
+    const handleHashScroll = () => {
+      if (typeof window !== "undefined" && window.location.hash === "#user-logs") {
+        setTimeout(() => {
+          const el = document.getElementById("user-logs");
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 200);
+      }
+    };
+
+    handleHashScroll();
+    window.addEventListener("hashchange", handleHashScroll);
+    return () => window.removeEventListener("hashchange", handleHashScroll);
   }, []);
   const leadStageCounts = leadStages.map((s) => ({
     ...s,

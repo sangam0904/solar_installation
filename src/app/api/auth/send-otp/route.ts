@@ -34,8 +34,11 @@ export async function POST(request: Request) {
 
     // Create branded HTML email
     const isReset = purpose === "reset_password";
+    const isSignup = purpose === "signup";
     const subject = isReset
       ? `🔐 SunPower Security: ${otp} is your password reset code`
+      : isSignup
+      ? `✨ Welcome to SunPower! ${otp} is your account verification code`
       : `⚡ SunPower Login Code: ${otp}`;
 
     const greetingName = name || (cleanEmail.split("@")[0].replace(/[._-]/g, " "));
@@ -65,10 +68,10 @@ export async function POST(request: Request) {
   <div class="card">
     <div class="header">
       <div class="logo">☀️ SunPower Operations</div>
-      <div class="badge">${isReset ? "Password Reset Verification" : `${role.toUpperCase()} Portal Access`}</div>
+      <div class="badge">${isReset ? "Password Reset Verification" : isSignup ? "New Account Activation" : `${role.toUpperCase()} Portal Access`}</div>
     </div>
-    <div class="title">${isReset ? "Reset Your SunPower Password" : "Your One-Time Sign-In Passcode"}</div>
-    <div class="subtitle">Hello <strong>${greetingName}</strong>,<br>${isReset ? "Use this 6-digit code to securely reset your account password." : "Use this single-use code to sign in to your solar management portal."}</div>
+    <div class="title">${isReset ? "Reset Your SunPower Password" : isSignup ? "Verify & Activate Your Solar Account" : "Your One-Time Sign-In Passcode"}</div>
+    <div class="subtitle">Hello <strong>${greetingName}</strong>,<br>${isReset ? "Use this 6-digit code to securely reset your account password." : isSignup ? "Welcome to SunPower Solutions! Enter this 6-digit code to verify your email and activate your solar rooftop account." : "Use this single-use code to sign in to your solar management portal."}</div>
     
     <div class="otp-box">
       <div class="otp-code">${otp}</div>

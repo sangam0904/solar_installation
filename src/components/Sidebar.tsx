@@ -244,7 +244,7 @@ function SidebarInner() {
             <div className="relative group">
               <div
                 className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium transition cursor-pointer ${
-                  pathname === "/"
+                  pathname === "/dashboard"
                     ? "bg-[#6D5284] text-white font-semibold shadow-xs border border-[#8D73A8]/50"
                     : isDashboardArea
                     ? "bg-[#6D5284]/60 text-white font-semibold border border-[#8D73A8]/30"
@@ -287,15 +287,15 @@ function SidebarInner() {
                   </Link>
 
                   <Link
-                    href="/"
+                    href="/customer"
                     className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition ${
-                      pathname === "/"
+                      pathname === "/customer"
                         ? "bg-white/20 text-[#D7B6C7] font-bold"
                         : "text-white/80 hover:bg-white/10 hover:text-white"
                     }`}
                   >
-                    <SunIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
-                    <span className="truncate">Intro / Landing Page</span>
+                    <UserIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
+                    <span className="truncate">Customer Portal</span>
                   </Link>
 
                   <Link
@@ -311,7 +311,7 @@ function SidebarInner() {
                   </Link>
 
                   <Link
-                    href="/#user-logs"
+                    href="/dashboard#user-logs"
                     className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-[11px] transition text-white/80 hover:bg-white/10 hover:text-white"
                   >
                     <UsersIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
@@ -331,13 +331,22 @@ function SidebarInner() {
                   </div>
                   <div className="space-y-0.5 text-xs">
                     <Link
-                      href="/"
+                      href="/dashboard"
                       className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition ${
-                        pathname === "/" ? "bg-white/20 text-[#D7B6C7] font-bold" : "text-white/90 hover:bg-white/10"
+                        pathname === "/dashboard" ? "bg-white/20 text-[#D7B6C7] font-bold" : "text-white/90 hover:bg-white/10"
                       }`}
                     >
                       <TrendingUpIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
                       <span>Overview</span>
+                    </Link>
+                    <Link
+                      href="/customer"
+                      className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition ${
+                        pathname === "/customer" ? "bg-white/20 text-[#D7B6C7] font-bold" : "text-white/90 hover:bg-white/10"
+                      }`}
+                    >
+                      <UserIcon className="w-3.5 h-3.5 text-[#B39CCB]" />
+                      <span>Customer Portal</span>
                     </Link>
                     <Link
                       href="/technician"
@@ -349,7 +358,7 @@ function SidebarInner() {
                       <span>Technician Portal</span>
                     </Link>
                     <Link
-                      href="/#user-logs"
+                      href="/dashboard#user-logs"
                       className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg transition text-white/90 hover:bg-white/10"
                     >
                       <UsersIcon className="w-3.5 h-3.5 text-[#B39CCB]" />

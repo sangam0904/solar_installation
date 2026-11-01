@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef, useId } from "react";
 import { useRouter } from "next/navigation";
@@ -301,42 +301,95 @@ export default function LoginPage() {
       return;
     }
 
-    // If user wants Email OTP Verification during signup
-    if (signupWithOtp && signupOtpStep === "form") {
-      setIsSubmittingSignup(true);
-      try {
-        const res = await fetch("/api/auth/send-otp", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: signupEmail.trim().toLowerCase(),
-            purpose: "signup",
-            role: signupRole,
-            name: signupName.trim(),
-          }),
-        });
+    // Default form submit: trigger email OTP verification
+    await handleSendSignupVerificationOtp();
+  };
 
-        const data = await res.json();
-        if (!data.success) {
-          setErrorMessage(data.error || "Failed to dispatch verification code.");
-          return;
-        }
+  const handleSendSignupVerificationOtp = async () => {
+    setErrorMessage("");
+    setStatusMessage("");
 
-        setSignupOtpStep("otp");
-        setStatusMessage(`Verification code sent to ${signupEmail}. Check your inbox!`);
-        setTimeout(() => signupOtpInputRefs.current[0]?.focus(), 150);
-        return;
-      } catch {
-        setErrorMessage("Unable to send OTP. You can uncheck 'Verify with OTP' for direct sign-up.");
-      } finally {
-        setIsSubmittingSignup(false);
-      }
+    if (!signupName.trim()) {
+      setErrorMessage("Please enter your full name.");
+      return;
+    }
+    if (!signupEmail.trim() || !signupEmail.includes("@")) {
+      setErrorMessage("Please provide a valid email address.");
+      return;
+    }
+    if (signupPassword.length < 6) {
+      setErrorMessage("Password must be at least 6 characters.");
+      return;
+    }
+    if (signupPassword !== signupConfirmPassword) {
+      setErrorMessage("Passwords do not match.");
       return;
     }
 
-    // Direct Instant Registration
     setIsSubmittingSignup(true);
     try {
+      const res = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: signupEmail.trim().toLowerCase(),
+          purpose: "signup",
+          role: signupRole,
+          name: signupName.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        setErrorMessage(data.error || "Failed to dispatch verification email.");
+        return;
+      }
+
+      setSignupOtpStep("otp");
+      setStatusMessage(`Verification code sent to ${signupEmail}. Please check your inbox (or spam folder)!`);
+      setTimeout(() => signupOtpInputRefs.current[0]?.focus(), 150);
+    } catch {
+      setErrorMessage("Unable to reach verification service. You can use 'Direct Instant Setup' to proceed.");
+    } finally {
+      setIsSubmittingSignup(false);
+    }
+  };
+
+  const handleDirectInstantSignup = () => {
+    setErrorMessage("");
+    setStatusMessage("");
+
+    if (!signupName.trim()) {
+      setErrorMessage("Please enter your full name.");
+      return;
+    }
+    if (!signupEmail.trim() || !signupEmail.includes("@")) {
+      setErrorMessage("Please provide a valid email address.");
+      return;
+    }
+    if (signupPassword.length < 6) {
+      setErrorMessage("Password must be at least 6 characters.");
+      return;
+    }
+    if (signupPassword !== signupConfirmPassword) {
+      setErrorMessage("Passwords do not match.");
+      return;
+    }
+
+    setIsSubmittingSignup(true);
+    try {
+      // Also send real welcome email in background
+      fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: signupEmail.trim().toLowerCase(),
+          purpose: "signup",
+          role: signupRole,
+          name: signupName.trim(),
+        }),
+      }).catch(() => {});
+
       registerUser({
         name: signupName.trim(),
         email: signupEmail.trim().toLowerCase(),
@@ -350,14 +403,10 @@ export default function LoginPage() {
             : signupSpecialization,
       });
 
-      setStatusMessage("Account created successfully! Redirecting to your portal...");
-
+      setStatusMessage(`Account created for ${signupName}! Redirecting to portal...`);
       setTimeout(() => {
-        if (signupRole === "technician") {
-          router.push("/technician");
-        } else {
-          router.push("/customer");
-        }
+        if (signupRole === "technician") router.push("/technician");
+        else router.push("/customer");
       }, 700);
     } catch {
       setErrorMessage("Failed to create account. Please try again.");
@@ -1209,32 +1258,27 @@ export default function LoginPage() {
                     </div>
                   </div>
 
-                  {/* OTP Checkbox Option */}
-                  <div className="flex items-center gap-2 pt-1">
-                    <input
-                      type="checkbox"
-                      id="otpVerifyCheckbox"
-                      checked={signupWithOtp}
-                      onChange={(e) => setSignupWithOtp(e.target.checked)}
-                      className="w-4 h-4 rounded text-[#4A355E] border-gray-300 focus:ring-[#4A355E]"
-                    />
-                    <label htmlFor="otpVerifyCheckbox" className="text-xs text-[#6D5284] cursor-pointer">
-                      Verify email address with 6-digit OTP code before signup
-                    </label>
-                  </div>
+                  {/* Two Sign Up Options */}
+                  <div className="space-y-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={handleSendSignupVerificationOtp}
+                      disabled={isSubmittingSignup}
+                      className="w-full py-3 bg-[#4A355E] hover:bg-[#372447] disabled:opacity-50 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <ZapIcon className="w-4 h-4 text-[#DA9B40]" />
+                      <span>{isSubmittingSignup ? "Sending Verification Code..." : "Send 6-Digit Code to Email ✉️"}</span>
+                    </button>
 
-                  {/* Submit Button */}
-                  <button
-                    type="submit"
-                    disabled={isSubmittingSignup}
-                    className="w-full py-3 bg-[#4A355E] hover:bg-[#372447] disabled:opacity-50 text-white font-extrabold rounded-xl text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    {isSubmittingSignup
-                      ? "Processing Account..."
-                      : signupWithOtp
-                      ? "Send Verification OTP ✉️"
-                      : "Create Account & Access Portal →"}
-                  </button>
+                    <button
+                      type="button"
+                      onClick={handleDirectInstantSignup}
+                      disabled={isSubmittingSignup}
+                      className="w-full py-2 bg-[#FAF4F7] hover:bg-[#F7EEF2] text-[#4A355E] border border-[#EBCED6] font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                    >
+                      <span>Direct Sign Up (Instant Setup / Demo) →</span>
+                    </button>
+                  </div>
                 </form>
               ) : (
                 /* Step 2: Verify Sign Up OTP */

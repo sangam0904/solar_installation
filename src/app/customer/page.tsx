@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   SunIcon,
@@ -154,8 +154,37 @@ function CustomerContent() {
       progressStep: 5,
     }
   ];
-  // Pick active profile strictly based on auth user phone/account
-  const current = customers.find((c) => c.phone === user?.phone) || customers[0];
+  // Pick active profile strictly based on auth user phone/account or name.
+  // If user is brand new (e.g. just signed up with their own name/email),
+  // dynamically build their personalized new customer profile instead of falling back to seeded names!
+  const matchedCustomer = customers.find(
+    (c) =>
+      (user?.phone && c.phone === user.phone) ||
+      (user?.name && c.name.toLowerCase() === user.name.toLowerCase()) ||
+      (user?.email && c.key.toLowerCase() === user.email.split("@")[0].toLowerCase())
+  );
+
+  const isBrandNewCustomer = !matchedCustomer;
+  const current = matchedCustomer || {
+    key: user?.email ? user.email.split("@")[0].toLowerCase() : "new-customer",
+    name: user?.name || "New Solar Homeowner",
+    phone: user?.phone || "+91 98290 12345",
+    address: user?.systemDetails?.includes("•")
+      ? user.systemDetails.split("•")[1].trim()
+      : "Jaipur, Rajasthan",
+    system: user?.systemDetails || "3 kW On-Grid System (PM Surya Ghar)",
+    installedDate: "Scheduled (Nov 2026)",
+    todayGen: "0.0 kWh (Survey Stage)",
+    monthlyGen: "Estimated 375 kWh/mo",
+    lifetimeSavings: "₹0 (Application Received)",
+    subsidyStatus: "Application Received • DBT Processing (₹78,000)",
+    inverterSerial: `ORD-NEW-${user?.id ? user.id.replace(/[^0-9]/g, "").slice(-4) || "8821" : "8821"}`,
+    panelSerial: "Waaree 540W Mono PERC Bifacial (Allocated)",
+    inverterWarranty: "Pending Activation (5 Yrs)",
+    panelWarranty: "Pending Activation (25 Yrs)",
+    progressStep: 1,
+    isBrandNew: true,
+  };
 
   // Uploaded Photos State
   const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([
@@ -607,7 +636,7 @@ function CustomerContent() {
               Customer Solar Passbook
             </h1>
             <span className="text-[10px] font-bold bg-[#F7F8F9] text-[#57707A] px-2.5 py-0.5 rounded-full border border-[#DEDCDC] uppercase tracking-wide">
-              Homeowner Self-Service Portal
+              {isBrandNewCustomer ? "✨ New Customer Account" : "Homeowner Self-Service Portal"}
             </span>
           </div>
           <p className="text-xs sm:text-sm text-[#57707A] mt-1">
@@ -626,6 +655,38 @@ function CustomerContent() {
           </span>
         </div>
       </div>
+
+            {/* If this is a newly registered customer, show their personalized onboarding status banner */}
+      {isBrandNewCustomer && (
+        <div className="bg-[#EBF5EC] border border-[#78B77B] rounded-2xl p-4 sm:p-5 text-[#261C33] shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-in fade-in">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-[#5B965E] text-white flex items-center justify-center text-xl flex-shrink-0 shadow-xs">
+              ⚡
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md border border-emerald-300">
+                  New Customer Onboarding Active
+                </span>
+                <span className="text-xs text-[#57707A] font-semibold">
+                  Verified Email: {user?.email}
+                </span>
+              </div>
+              <h3 className="text-sm sm:text-base font-bold text-[#191D23] mt-0.5">
+                Rooftop Solar Plant Application Confirmed for {current.name}
+              </h3>
+              <p className="text-xs text-gray-600 mt-0.5">
+                Allocated Reference <strong className="text-black font-mono">{current.inverterSerial}</strong> • Site in {current.address}. Assigned to Lead Installation Engineer Rohit Meena for 3D drone roof survey.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <span className="px-3.5 py-1.5 bg-[#5B965E] text-white text-xs font-bold rounded-xl shadow-xs">
+              Step 1: Site Survey &amp; Feasibility
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Hero Welcome Banner */}
       <div className="bg-gradient-to-r from-[#191D23] via-[#57707A] to-[#7B919C] rounded-2xl p-5 sm:p-6 text-white shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
